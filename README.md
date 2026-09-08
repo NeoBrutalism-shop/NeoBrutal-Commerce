@@ -6,7 +6,7 @@ Commerce is a flavor of the NeoBrutalism family. It shares the same tactile inte
 
 ## Status
 
-`0.7.0` is the current stable runtime baseline. The v0.8 branch adds the Docs & Adoption layer around that stable behavior before the final v0.8 version promotion.
+`0.8.0` — stable Commerce runtime plus release-grade quality hardening and a complete human/agent adoption layer.
 
 ## Start here
 
