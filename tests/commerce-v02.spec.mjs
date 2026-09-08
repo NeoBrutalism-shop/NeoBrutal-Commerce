@@ -7,11 +7,32 @@ async function expectNoSeriousAxe(page){
   expect(violations, JSON.stringify(violations,null,2)).toEqual([]);
 }
 
-test('v0.2 storefront passes serious/critical axe checks', async ({ page })=>{
+test('v0.2 storefront passes serious/critical axe checks without stylesheet failures', async ({ page })=>{
+  const stylesheetFailures=[];
+  page.on('response',response=>{
+    if(response.request().resourceType()==='stylesheet'&&response.status()>=400){
+      stylesheetFailures.push({status:response.status(),url:response.url()});
+    }
+  });
   await page.goto('/demo/v02.html');
   await expect(page.getByRole('heading',{name:'NeoBrutal Soft'})).toBeVisible();
   await expectNoSeriousAxe(page);
+  await page.waitForLoadState('networkidle');
+  expect(stylesheetFailures).toEqual([]);
 });
+
+async function cartHitTarget(button){
+  return button.evaluate(node=>{
+    const rect=node.getBoundingClientRect();
+    const center={x:rect.left+rect.width/2,y:rect.top+rect.height/2};
+    const target=document.elementFromPoint(center.x,center.y);
+    return {
+      center,
+      ok:target===node||node.contains(target),
+      target:target?`${target.tagName.toLowerCase()}${target.id?`#${target.id}`:''}`:null
+    };
+  });
+}
 
 test('license, cart, coupon and checkout stay synchronized', async ({ page })=>{
   await page.goto('/demo/v02.html');
@@ -21,8 +42,20 @@ test('license, cart, coupon and checkout stay synchronized', async ({ page })=>{
   const dialog=page.getByRole('dialog',{name:'Ready when you are.'});
   await expect(dialog).toBeVisible();
   await expect(dialog.locator('#cartLicense')).toHaveText('Team · 5 sites');
-  await dialog.getByRole('link',{name:'CHECKOUT →'}).click();
+  const bodyBox=await dialog.locator('[data-cart-region="body"]').boundingBox();
+  const footerBox=await dialog.locator('[data-cart-region="actions"]').boundingBox();
+  expect(bodyBox&&footerBox&&bodyBox.y+bodyBox.height<=footerBox.y+0.5).toBeTruthy();
+
+  const checkoutButton=dialog.getByRole('button',{name:'CHECKOUT →'});
+  await expect(checkoutButton).toBeVisible();
+  await expect(checkoutButton).toBeEnabled();
+  await checkoutButton.scrollIntoViewIfNeeded();
+  const hit=await cartHitTarget(checkoutButton);
+  expect(hit.ok,`Checkout center hit ${hit.target??'nothing'} instead of the button`).toBeTruthy();
+  await checkoutButton.click();
+
   await expect(dialog).toBeHidden();
+  await expect(page.locator('#checkout-title')).toBeFocused();
   await page.locator('#couponInput').fill('FOUNDRY10');
   await page.getByRole('button',{name:'APPLY'}).click();
   await expect(page.locator('#couponStatus')).toContainText('10% off');
@@ -47,6 +80,7 @@ test('mini cart supports escape and restores focus', async ({ page })=>{
 test('account tabs are keyboard navigable', async ({ page })=>{
   await page.goto('/demo/v02.html#account');
   const downloads=page.locator('#downloadsTab');
+  await expect(downloads).toBeVisible();
   await downloads.focus();
   await page.keyboard.press('ArrowRight');
   await expect(page.locator('#purchasesTab')).toBeFocused();
@@ -54,4 +88,9 @@ test('account tabs are keyboard navigable', async ({ page })=>{
   await page.keyboard.press('End');
   await expect(page.locator('#licensesTab')).toBeFocused();
   await expect(page.locator('#licensesPanel')).toBeVisible();
+});
+
+test('capture v0.2 visual review render', async ({ page }, testInfo)=>{
+  await page.goto('/demo/v02.html');
+  await page.screenshot({path:testInfo.outputPath(`commerce-v02-${testInfo.project.name}.png`),fullPage:true});
 });

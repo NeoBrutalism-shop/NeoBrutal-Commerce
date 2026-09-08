@@ -44,7 +44,7 @@ if(totalBytes>96*1024){
 }
 
 const v02=fs.readFileSync(path.join(root,'demo/v02.html'),'utf8');
-for(const marker of ['nbc-product-detail','nbc-mini-cart','nbc-checkout-shell','nbc-account','nbc-license-card']){
+for(const marker of ['v02-hero','nbc-gallery-stage','nbc-mini-cart','nbc-checkout-shell','nbc-account','nbc-license-card']){
   if(!v02.includes(marker)){
     console.error(`v0.2 workflow marker missing: ${marker}`);
     process.exit(1);

@@ -17,8 +17,8 @@ if(matchMedia('(prefers-reduced-motion: reduce)').matches)promo?.classList.add('
 promoToggle?.addEventListener('click',()=>{promo?.classList.toggle('is-paused');syncPromo()});syncPromo();
 
 const galleryStage=$('#galleryStage');const galleryLabel=$('#galleryLabel');
-const galleryData={sky:{label:'Dashboard kit',className:'v02-gallery-tone-sky',word:'SOFT.'},coral:{label:'Component library',className:'v02-gallery-tone-coral',word:'BUILD.'},lime:{label:'Agent workflow UI',className:'v02-gallery-tone-lime',word:'ACT.'}};
-$$('[data-gallery]').forEach(button=>button.addEventListener('click',()=>{const value=button.dataset.gallery;const data=galleryData[value];if(!data||!galleryStage)return;$$('[data-gallery]').forEach(item=>item.setAttribute('aria-pressed',String(item===button)));galleryStage.classList.remove('v02-gallery-tone-sky','v02-gallery-tone-coral','v02-gallery-tone-lime');galleryStage.classList.add(data.className);$('strong',galleryStage).textContent=data.word;if(galleryLabel)galleryLabel.textContent=data.label}));
+const galleryData={sky:{label:'Dashboard system',className:'v02-gallery-tone-sky',word:'SOFT.'},coral:{label:'Component system',className:'v02-gallery-tone-coral',word:'BUILD.'},lime:{label:'Agent workflow UI',className:'v02-gallery-tone-lime',word:'ACT.'}};
+$$('[data-gallery]').forEach(button=>button.addEventListener('click',()=>{const value=button.dataset.gallery;const data=galleryData[value];if(!data||!galleryStage)return;$$('[data-gallery]').forEach(item=>item.setAttribute('aria-pressed',String(item===button)));galleryStage.classList.remove('v02-gallery-tone-sky','v02-gallery-tone-coral','v02-gallery-tone-lime');galleryStage.classList.add(data.className);const word=$(':scope > strong',galleryStage);if(word)word.textContent=data.word;if(galleryLabel)galleryLabel.textContent=data.label}));
 
 function money(value){return `$${value.toFixed(2)}`}
 function currentSubtotal(){return priceMap[plan]+extras}
@@ -30,22 +30,31 @@ $$('input[name="license"]').forEach(input=>input.addEventListener('change',()=>{
 $$('[data-select-plan]').forEach(button=>button.addEventListener('click',()=>{plan=button.dataset.selectPlan;const radio=$(`input[name="license"][value="${plan}"]`);if(radio)radio.checked=true;updateCommerce();$('#product')?.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});showToast(`${planLabel[plan]} license selected.`)}));
 $$('[data-bundle]').forEach(input=>input.addEventListener('change',()=>{extras=$$('[data-bundle]:checked').reduce((sum,item)=>sum+Number(item.value),0);updateCommerce()}));
 
+const workflowTabs=$$('[data-workflow-target]');
+const workflowPanels=$$('[data-workflow-panel]');
+function activateWorkflow(name,{focus=false,scroll=false,updateHash=false}={}){const target=workflowPanels.find(panel=>panel.dataset.workflowPanel===name);if(!target)return;workflowPanels.forEach(panel=>{panel.hidden=panel!==target});workflowTabs.forEach(tab=>{const selected=tab.dataset.workflowTarget===name;tab.setAttribute('aria-selected',String(selected));tab.tabIndex=selected?0:-1});if(updateHash)history.replaceState(null,'',`#${name}`);if(scroll)target.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'start'});if(focus){const tab=workflowTabs.find(item=>item.dataset.workflowTarget===name);tab?.focus()}}
+workflowTabs.forEach((tab,index)=>{tab.tabIndex=tab.getAttribute('aria-selected')==='true'?0:-1;tab.addEventListener('click',()=>activateWorkflow(tab.dataset.workflowTarget,{updateHash:true}));tab.addEventListener('keydown',event=>{let next=null;if(event.key==='ArrowRight')next=workflowTabs[(index+1)%workflowTabs.length];if(event.key==='ArrowLeft')next=workflowTabs[(index-1+workflowTabs.length)%workflowTabs.length];if(event.key==='Home')next=workflowTabs[0];if(event.key==='End')next=workflowTabs.at(-1);if(next){event.preventDefault();activateWorkflow(next.dataset.workflowTarget,{focus:true,updateHash:true})}})});
+$$('[data-workflow-link]').forEach(link=>link.addEventListener('click',()=>{const name=link.dataset.workflowLink;activateWorkflow(name,{updateHash:false})}));
+function syncWorkflowFromHash(){const name=location.hash==='#account'?'account':location.hash==='#checkout'?'checkout':null;if(name)activateWorkflow(name)}
+syncWorkflowFromHash();window.addEventListener('hashchange',syncWorkflowFromHash);
+
 const cartBackdrop=$('#cartBackdrop');const closeCartButton=$('#closeCart');
 function focusableInCart(){return $$('a[href],button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"])',cartBackdrop).filter(node=>!node.hidden)}
-function openCart(trigger){if(!cartBackdrop)return;lastCartTrigger=trigger||document.activeElement;cartBackdrop.hidden=false;document.body.style.overflow='hidden';closeCartButton?.focus()}
-function closeCart(){if(!cartBackdrop)return;cartBackdrop.hidden=true;document.body.style.overflow='';lastCartTrigger?.focus?.()}
+function stopViewportMotion(){const previous=root.style.scrollBehavior;const top=window.scrollY;const left=window.scrollX;root.style.scrollBehavior='auto';window.scrollTo({top,left,behavior:'auto'});root.style.scrollBehavior=previous}
+function openCart(trigger){if(!cartBackdrop)return;stopViewportMotion();const status=$('#toast');if(status)status.hidden=true;lastCartTrigger=trigger||document.activeElement;cartBackdrop.hidden=false;document.body.style.overflow='hidden';closeCartButton?.focus()}
+function closeCart({restoreFocus=true}={}){if(!cartBackdrop)return;cartBackdrop.hidden=true;document.body.style.overflow='';if(restoreFocus)lastCartTrigger?.focus?.()}
 $('#openCart')?.addEventListener('click',event=>openCart(event.currentTarget));
-closeCartButton?.addEventListener('click',closeCart);
+closeCartButton?.addEventListener('click',()=>closeCart());
 cartBackdrop?.addEventListener('click',event=>{if(event.target===cartBackdrop)closeCart()});
 cartBackdrop?.addEventListener('keydown',event=>{if(event.key==='Escape'){event.preventDefault();closeCart();return}if(event.key!=='Tab')return;const nodes=focusableInCart();if(!nodes.length)return;const first=nodes[0],last=nodes.at(-1);if(event.shiftKey&&document.activeElement===first){event.preventDefault();last.focus()}else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first.focus()}});
-$('#goCheckout')?.addEventListener('click',closeCart);
+$('#goCheckout')?.addEventListener('click',()=>{closeCart({restoreFocus:false});activateWorkflow('checkout',{scroll:true,updateHash:true});$('#checkout-title')?.focus({preventScroll:true})});
 $('#addToCart')?.addEventListener('click',event=>{cartHasItem=true;const count=$('#cartCount');if(count)count.textContent='1';updateCommerce();showToast(`${planLabel[plan]} license added to cart.`);window.setTimeout(()=>openCart(event.currentTarget),180)});
 
 const couponForm=$('#couponForm');
 couponForm?.addEventListener('submit',event=>{event.preventDefault();const value=$('#couponInput')?.value.trim().toUpperCase();const status=$('#couponStatus');coupon=value==='FOUNDRY10';if(status){status.dataset.state=coupon?'success':'error';status.textContent=coupon?'FOUNDRY10 applied · 10% off this demo order.':'Coupon not recognized. Try FOUNDRY10.'}updateCommerce()});
 
 const checkoutForm=$('#checkoutForm');
-checkoutForm?.addEventListener('submit',event=>{event.preventDefault();if(!cartHasItem){cartHasItem=true;const count=$('#cartCount');if(count)count.textContent='1'}updateCommerce();const success=$('#orderSuccess');if(success){success.hidden=false;success.focus()}showToast('Demo order completed. Your entitlement is visible below.')});
+checkoutForm?.addEventListener('submit',event=>{event.preventDefault();if(!cartHasItem){cartHasItem=true;const count=$('#cartCount');if(count)count.textContent='1'}updateCommerce();const success=$('#orderSuccess');if(success){success.hidden=false;success.focus()}showToast('Demo order completed. Your entitlement is ready.')});
 
 const tabs=$$('.nbc-account-tab[role="tab"]');
 function activateTab(tab,moveFocus=true){tabs.forEach(item=>{const selected=item===tab;item.setAttribute('aria-selected',String(selected));item.tabIndex=selected?0:-1;const panel=$(`#${item.getAttribute('aria-controls')}`);if(panel)panel.hidden=!selected});if(moveFocus)tab.focus()}
