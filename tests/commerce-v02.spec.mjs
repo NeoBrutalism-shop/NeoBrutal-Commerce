@@ -21,6 +21,32 @@ test('v0.2 storefront passes serious/critical axe checks without stylesheet fail
   expect(stylesheetFailures).toEqual([]);
 });
 
+async function cartHitDiagnostics(button){
+  return button.evaluate(node=>{
+    const rect=node.getBoundingClientRect();
+    const center={x:rect.left+rect.width/2,y:rect.top+rect.height/2};
+    const target=document.elementFromPoint(center.x,center.y);
+    const body=node.closest('.nbc-mini-cart')?.querySelector('[data-cart-region="body"]');
+    const footer=node.closest('[data-cart-region="actions"]');
+    const sheet=node.closest('.nbc-mini-cart');
+    const box=value=>value?(()=>{const r=value.getBoundingClientRect();return {x:r.x,y:r.y,width:r.width,height:r.height,bottom:r.bottom}})():null;
+    return {
+      center,
+      button:box(node),
+      body:box(body),
+      footer:box(footer),
+      sheet:box(sheet),
+      sheetScrollTop:sheet?.scrollTop??null,
+      target:{tag:target?.tagName??null,id:target?.id??null,className:typeof target?.className==='string'?target.className:null},
+      hitTarget:target===node||node.contains(target),
+      transform:getComputedStyle(node).transform,
+      hoverFine:matchMedia('(hover:hover) and (pointer:fine)').matches,
+      hoverNone:matchMedia('(hover:none)').matches,
+      pointerCoarse:matchMedia('(pointer:coarse)').matches
+    };
+  });
+}
+
 test('license, cart, coupon and checkout stay synchronized', async ({ page })=>{
   await page.goto('/demo/v02.html');
   await page.getByRole('button',{name:'CHOOSE TEAM'}).click();
@@ -33,12 +59,14 @@ test('license, cart, coupon and checkout stay synchronized', async ({ page })=>{
   const footerBox=await dialog.locator('[data-cart-region="actions"]').boundingBox();
   expect(bodyBox&&footerBox&&bodyBox.y+bodyBox.height<=footerBox.y+0.5).toBeTruthy();
   const checkoutButton=dialog.getByRole('button',{name:'CHECKOUT →'});
-  const hitTarget=await checkoutButton.evaluate(button=>{
-    const rect=button.getBoundingClientRect();
-    const target=document.elementFromPoint(rect.left+rect.width/2,rect.top+rect.height/2);
-    return target===button||button.contains(target);
-  });
-  expect(hitTarget).toBeTruthy();
+  await checkoutButton.scrollIntoViewIfNeeded();
+  const beforePointer=await cartHitDiagnostics(checkoutButton);
+  await page.mouse.move(beforePointer.center.x,beforePointer.center.y);
+  await page.waitForTimeout(60);
+  const afterPointer=await cartHitDiagnostics(checkoutButton);
+  console.log('CART_HIT_DIAGNOSTICS',JSON.stringify({beforePointer,afterPointer}));
+  expect(beforePointer.hitTarget,JSON.stringify(beforePointer,null,2)).toBeTruthy();
+  expect(afterPointer.hitTarget,JSON.stringify(afterPointer,null,2)).toBeTruthy();
   await checkoutButton.click();
   await expect(dialog).toBeHidden();
   await expect(page.locator('#checkout-title')).toBeFocused();
