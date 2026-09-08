@@ -1,5 +1,5 @@
 {
-  "version": "0.5.0-dev",
+  "version": "0.5.0",
   "routes": [
     {"path":"/","id":"home","intent":"storefront-home","primaryComponents":["product-card","trust-strip","promo-band"]},
     {"path":"/products","id":"products","intent":"product-catalog","primaryComponents":["product-card","badge","price-block"]},
