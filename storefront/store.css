@@ -1,0 +1,2 @@
+@import url('./store-core.css');
+.store-skip{position:fixed;z-index:100;left:1rem;top:1rem;translate:0 -180%;padding:.7rem 1rem;border:2px solid #151515;border-radius:.4rem;background:var(--nbc-yellow);color:#151515;font-weight:950;text-decoration:none}.store-skip:focus{translate:0 0}
