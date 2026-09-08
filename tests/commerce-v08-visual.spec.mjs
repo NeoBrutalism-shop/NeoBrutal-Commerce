@@ -3,6 +3,7 @@ import {createHash} from 'node:crypto';
 import {test,expect} from '@playwright/test';
 
 const baseline=JSON.parse(fs.readFileSync(new URL('./visual-baselines-v08.json',import.meta.url),'utf8'));
+const canonicalSurfaceIds=['home','product','checkout','account','ownership'];
 
 function pngSize(buffer){
   if(buffer.length<24||buffer.toString('hex',0,8)!=='89504e470d0a1a0a')throw new Error('Expected Playwright screenshot to be a PNG');
@@ -10,6 +11,8 @@ function pngSize(buffer){
 }
 
 test('v0.8 canonical visual fingerprints remain stable',async({page},testInfo)=>{
+  expect(baseline.version).toBe('0.8.0');
+  expect(baseline.surfaces.map(surface=>surface.id)).toEqual(canonicalSurfaceIds);
   test.skip(process.platform!==baseline.platform,`Canonical v0.8 fingerprints are ${baseline.platform} CI baselines.`);
   const expectedProject=baseline.projects[testInfo.project.name];
   test.skip(!expectedProject,`${testInfo.project.name} is behavioral/accessibility coverage, not a canonical pixel surface.`);
