@@ -36,7 +36,7 @@ export function createSubscriptionSpec(subscription,options={}){
     createNode('div',{class:'nbc-lifecycle-head'},createNode('div',{},createNode('small',{},options.kicker??'Billing lifecycle'),createNode('h3',{},options.heading??'Update subscription')),stateBadge(state)),
     createNode('dl',{class:'nbc-lifecycle-facts'},
       createNode('div',{},createNode('dt',{},'Amount'),createNode('dd',{},`${formatMoney(subscription.amount,options.locale)} / ${subscription.interval}`)),
-      createNode('div',{},createNode('dt',{},subscription.cancelAtPeriodEnd?'Access through':'Renews'),createNode('dd',{},subscription.renewsAt??'Provider-managed')), 
+      createNode('div',{},createNode('dt',{},subscription.cancelAtPeriodEnd?'Access through':'Renews'),createNode('dd',{},subscription.renewsAt??'Provider-managed')),
       subscription.paymentMethodLabel?createNode('div',{},createNode('dt',{},'Payment'),createNode('dd',{},subscription.paymentMethodLabel)):null
     ),
     createNode('p',{class:'nbc-lifecycle-note'},subscription.cancelAtPeriodEnd?'Cancellation is scheduled for the end of the paid term. Existing licensed versions remain governed by the license terms.':'Cancellation should never imply immediate loss of already-paid access unless the provider explicitly returns that policy.')
@@ -60,6 +60,6 @@ export function createOwnershipTimelineSpec(events,options={}){
   const items=Array.isArray(events)?events:[];
   return createNode('section',{class:'nbc-lifecycle','data-commerce-component':'ownership-timeline'},
     createNode('div',{class:'nbc-lifecycle-head'},createNode('div',{},createNode('small',{},options.kicker??'Audit trail'),createNode('h3',{},options.heading??'Ownership timeline')),createNode('span',{class:'nbc-lifecycle-badge'},`${items.length} events`)),
-    createNode('ol',{class:'nbc-timeline'},items.map(item=>createNode('li',{'data-event-id':item.id},createNode('strong',{},item.summary),createNode('small',{},[item.occurredAt,item.actor].filter(Boolean).join(' · '))))
+    createNode('ol',{class:'nbc-timeline'},items.map(item=>createNode('li',{'data-event-id':item.id},createNode('strong',{},item.summary),createNode('small',{},[item.occurredAt,item.actor].filter(Boolean).join(' · ')))))
   );
 }
