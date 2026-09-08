@@ -1,12 +1,28 @@
 import {test,expect} from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 
+const productionRoutes=['/','/products/','/product/soft/','/pricing/','/cart/','/checkout/','/order/success/','/account/','/account/license/demo-soft-team/','/components/'];
 const criticalRoutes=['/','/product/soft/','/cart/','/checkout/','/account/','/account/license/demo-soft-team/'];
 
 async function activateWithKeyboard(locator,key='Enter'){
   await locator.focus();
   await expect(locator).toBeFocused();
   await locator.page().keyboard.press(key);
+}
+
+for(const route of productionRoutes){
+  test(`v0.7 strict accessibility ${route}`,async({page})=>{
+    const httpFailures=[];
+    const runtimeFailures=[];
+    page.on('response',response=>{if(response.status()>=400)httpFailures.push(`${response.status()} ${response.url()}`)});
+    page.on('pageerror',error=>runtimeFailures.push(error.message));
+    page.on('console',message=>{if(message.type()==='error')runtimeFailures.push(message.text())});
+    await page.goto(route,{waitUntil:'networkidle'});
+    const results=await new AxeBuilder({page}).withTags(['wcag2a','wcag2aa','wcag21a','wcag21aa']).analyze();
+    expect(results.violations,`${route} WCAG A/AA violations`).toEqual([]);
+    expect(httpFailures,`${route} HTTP failures`).toEqual([]);
+    expect(runtimeFailures,`${route} runtime/console failures`).toEqual([]);
+  });
 }
 
 test('v0.7 purchase journey is keyboard operable with visible focus',async({page})=>{
