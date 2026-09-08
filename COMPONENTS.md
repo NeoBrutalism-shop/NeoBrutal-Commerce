@@ -1,14 +1,30 @@
-# Component Surface — v0.6
+# Component Surface — v0.8
+
+v0.8 keeps the stable v0.7 runtime/component behavior and adds an explicit agent/adoption contract around it.
+
+## Machine-readable component registry
+
+`storefront/components.json` is the canonical agent-facing registry. It currently documents every primary component referenced by the ten production routes.
+
+Each entry declares:
+- `id` — stable component identifier
+- `kind` — read/action/input/selection/navigation/stateful/foundation role
+- `models` — normalized Commerce models the component consumes
+- `actions` — canonical Commerce commands the component may dispatch
+- `states` — canonical state IDs the component renders
+- `agentRules` — non-obvious generation constraints
+
+`scripts/docs-check.mjs` verifies that route components resolve in the registry and that referenced actions/states are canonical.
 
 ## Foundation
-- tokens
-- light/dark themes
+- tokens and semantic light/dark themes
 - fluid `clamp()` type/spacing
-- tactile depth physics
+- tactile depth physics: compress on hover, seat on press
+- visible focus
 - reduced motion
 - forced colors
 
-## Storefront
+## Storefront and product
 - Button / action button / action link
 - Product card / product action card
 - Product art / badge / price block / feature list
@@ -37,7 +53,6 @@
 - Order confirmation / receipt
 
 ## Account and ownership
-Existing:
 - Account navigation
 - Download row
 - Purchase-history row
@@ -47,79 +62,61 @@ Existing:
 - Renewal lifecycle
 - Team-seat assignment
 - Entitlement note
-- Active / grace / expired / cancelled / refunded states
-
-v0.6 additions:
 - Invoice history
 - Plan-change quote/result
 - Upgrade/downgrade timing
 - Ownership transfer/gift panel
 - Subscription management
 - Ownership timeline / audit trail
-- Ownership operation states: ready / quoted / processing / complete / failed
-- Subscription states: active / cancel-at-period-end / cancelled / past-due
+
+Canonical ownership states:
+- `active`, `grace`, `expired`, `cancelled`, `refunded`
+
+Canonical ownership-operation states:
+- `ready`, `quoted`, `processing`, `complete`, `failed`
+
+Canonical subscription states:
+- `active`, `cancel_at_period_end`, `cancelled`, `past_due`
 
 ## Runtime/data contracts
 
-Normalized models include v0.5 product/cart/order/license types plus:
-- `InvoiceView`
-- `SubscriptionView`
-- `PlanChangeQuoteView`
-- `OwnershipTransferView`
-- `OwnershipEventView`
+Normalized models include:
+- `ProductView`, `CartView`, `CheckoutQuoteView`, `OrderView`
+- `LicenseView`, `EntitlementView`, `ActivationView`, `SeatAssignmentView`, `SignedDownloadView`
+- `InvoiceView`, `SubscriptionView`, `PlanChangeQuoteView`, `OwnershipTransferView`, `OwnershipEventView`
 
-Capability additions:
+Capability flags are authoritative. UI does not infer support from EDD, WordPress, a gateway, a licensing provider or any provider name.
 
-CommerceAdapter:
-- `invoiceHistory`
-- `subscriptions`
+## Actions
 
-LicensingAdapter:
-- `planChanges`
-- `transfers`
-- `ownershipHistory`
-
-Capability flags are authoritative. UI does not infer support from EDD, WordPress, NeoLicenser or any provider name.
-
-## v0.6 actions
-
-In addition to the existing v0.5 commands:
+Canonical mutations/queries are exposed through `@neobrutal/commerce/actions`. Key lifecycle actions include:
 - `invoice.list`
-- `subscription.get`
-- `subscription.cancel`
-- `subscription.resume`
-- `license.change.quote`
-- `license.change.submit`
-- `license.transfers.list`
-- `license.transfer.create`
-- `license.transfer.cancel`
+- `subscription.get`, `subscription.cancel`, `subscription.resume`
+- `license.change.quote`, `license.change.submit`
+- `license.transfers.list`, `license.transfer.create`, `license.transfer.cancel`
 - `license.history.list`
 
 Plan change is quote-first. Pending transfer/gift does not mean ownership moved. Subscription cancellation does not silently revoke an already-paid license term.
 
 ## Renderers
 
-Existing:
+Read surfaces:
 - `@neobrutal/commerce/renderers/headless`
 - `@neobrutal/commerce/renderers/react`
+
+Action surfaces:
 - `@neobrutal/commerce/renderers/action-controls`
 - `@neobrutal/commerce/renderers/react-actions`
 
-v0.6:
+Ownership lifecycle:
 - `@neobrutal/commerce/renderers/ownership`
-  - `createPlanChangeSpec()`
-  - `createTransferListSpec()`
-  - `createSubscriptionSpec()`
-  - `createInvoiceHistorySpec()`
-  - `createOwnershipTimelineSpec()`
 - `@neobrutal/commerce/renderers/react-ownership`
-  - the same normalized lifecycle surfaces translated through React
 
 ## Provider adapters
 
-- `@neobrutal/commerce/adapters/reference` — deterministic test/runtime fixture including lifecycle operations.
+- `@neobrutal/commerce/adapters/reference` — deterministic test/reference runtime.
 - `@neobrutal/commerce/adapters/edd` — injected transaction-provider bridge.
-- `@neobrutal/commerce/adapters/licensing-bridge` — injected licensing-provider transport plus normalizers for licenses, entitlements, activations, seats, plan changes, transfers and ownership history.
+- `@neobrutal/commerce/adapters/licensing-bridge` — replaceable licensing transport + normalized lifecycle bridge.
 
 ## Production page patterns
 - Storefront/home
@@ -129,16 +126,18 @@ v0.6:
 - Checkout + invoice/tax + payment recovery
 - Order success
 - Account dashboard + invoice history
-- License lifecycle workspace: activations + seats + plan change + transfer/gift + subscription + renewal + audit timeline
+- License lifecycle workspace
 - Component/state showcase
 
-## Machine-readable contracts
-- `storefront/catalog.json`
-- `storefront/routes.json`
-- `storefront/states.json`
-- `src/contracts/`
-- `src/actions/`
-- `docs/OWNERSHIP-LIFECYCLE.md`
+## Agent/adoption sources
+- `AGENTS.md` — first-read entry point for coding agents
+- `LLMS.md` — non-negotiable interaction/commerce/boundary laws
+- `docs/ADOPTION.md` — human adoption guide
+- `docs/AGENT-PLAYBOOK.md` — deterministic implementation workflow
+- `docs/AI-COMPONENT-NOTES.md` — high-risk component generation notes
+- `storefront/components.json` — machine-readable component contract
+- `storefront/routes.json` — route contract
+- `storefront/states.json` — state contract
 
 ## Delivery rule
 
@@ -149,10 +148,3 @@ Read path:
 
 Action path:
 `UI/agent → Commerce action → normalized runtime → adapter → provider`
-
-## Next after v0.6
-- provider-specific NeoLicenser implementation on top of the licensing bridge, when that project is intentionally in scope
-- transfer acceptance / recipient-side workflow
-- subscription payment-method replacement and billing recovery UI
-- richer jurisdictional tax outcomes
-- snapshot visual baselines and WebKit coverage

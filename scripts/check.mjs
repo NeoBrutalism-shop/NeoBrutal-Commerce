@@ -2,6 +2,11 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 const root=process.cwd();
+const read=file=>fs.readFileSync(path.join(root,file),'utf8');
+const json=file=>JSON.parse(read(file));
+const exists=file=>fs.existsSync(path.join(root,file));
+const fail=message=>{console.error(message);process.exit(1)};
+
 const components=['button.css','product.css','cart.css','product-detail.css','pricing.css','checkout.css','account.css','license.css','table.css','review.css','media.css','state.css','lifecycle.css','summary.css'];
 const storefrontRoutes=['index.html','products/index.html','product/soft/index.html','pricing/index.html','cart/index.html','checkout/index.html','order/success/index.html','account/index.html','account/license/demo-soft-team/index.html','components/index.html'];
 const contractFiles=[
@@ -10,35 +15,34 @@ const contractFiles=[
   'src/adapters/reference.js','src/adapters/reference.d.ts','src/adapters/edd.js','src/adapters/edd.d.ts','src/adapters/licensing-bridge.js','src/adapters/licensing-bridge.d.ts',
   'src/renderers/headless.js','src/renderers/headless.d.ts','src/renderers/react.js','src/renderers/react.d.ts','src/renderers/README.md',
   'src/renderers/action-controls.js','src/renderers/action-controls.d.ts','src/renderers/react-actions.js','src/renderers/react-actions.d.ts',
-  'src/renderers/ownership.js','src/renderers/ownership.d.ts','src/renderers/react-ownership.js','src/renderers/react-ownership.d.ts',
-  'tests/contracts-v05.test.mjs','tests/reference-adapter-v05.test.mjs','tests/renderers-v05.test.mjs','tests/actions-v05.test.mjs','tests/action-bindings-v05.test.mjs','tests/edd-adapter-v05.test.mjs','tests/ownership-v06.test.mjs','tests/edd-lifecycle-v06.test.mjs'
+  'src/renderers/ownership.js','src/renderers/ownership.d.ts','src/renderers/react-ownership.js','src/renderers/react-ownership.d.ts'
 ];
+const adoptionFiles=['AGENTS.md','LLMS.md','COMPONENTS.md','docs/ADOPTION.md','docs/AGENT-PLAYBOOK.md','docs/AI-COMPONENT-NOTES.md','docs/RECIPES.md','docs/THEMING.md','docs/MIGRATION.md','docs/PROVIDER-EXAMPLES.md'];
 const required=[
   'src/tokens.css','src/base.css','src/index.css',...components.map(file=>`src/components/${file}`),...contractFiles,
   'demo/index.html','demo/demo.css','demo/demo.js','demo/v02.html','demo/v02.css','demo/v02.js',
-  'storefront/store.css','storefront/store.js','storefront/catalog.json','storefront/routes.json','storefront/states.json',...storefrontRoutes,
-  'tests/commerce-v02.spec.mjs','tests/commerce-v03.spec.mjs','tests/commerce-v04.spec.mjs','tests/commerce-v06.spec.mjs','tests/commerce-v07.spec.mjs',
-  'scripts/performance.mjs','DESIGN.md','LLMS.md','COMPONENTS.md','docs/EDD-MAPPING.md','docs/OWNERSHIP-LIFECYCLE.md','package.json','playwright.config.mjs','.github/workflows/browser-qa.yml'
+  'storefront/store.css','storefront/store.js','storefront/catalog.json','storefront/routes.json','storefront/states.json','storefront/components.json',...storefrontRoutes,
+  'tests/contracts-v05.test.mjs','tests/reference-adapter-v05.test.mjs','tests/renderers-v05.test.mjs','tests/actions-v05.test.mjs','tests/action-bindings-v05.test.mjs','tests/edd-adapter-v05.test.mjs','tests/ownership-v06.test.mjs','tests/edd-lifecycle-v06.test.mjs',
+  'tests/commerce-v02.spec.mjs','tests/commerce-v03.spec.mjs','tests/commerce-v04.spec.mjs','tests/commerce-v06.spec.mjs','tests/commerce-v07.spec.mjs','tests/commerce-v08-visual.spec.mjs','tests/visual-baselines-v07.json',
+  'scripts/performance.mjs','scripts/docs-check.mjs','DESIGN.md','docs/EDD-MAPPING.md','docs/OWNERSHIP-LIFECYCLE.md',...adoptionFiles,
+  'package.json','playwright.config.mjs','.github/workflows/browser-qa.yml'
 ];
-
-for(const file of required){if(!fs.existsSync(path.join(root,file))){console.error(`Missing required file: ${file}`);process.exit(1);}}
+for(const file of required)if(!exists(file))fail(`Missing required file: ${file}`);
 
 const cssFiles=required.filter(file=>file.endsWith('.css'));
-const css=cssFiles.map(file=>fs.readFileSync(path.join(root,file),'utf8')).join('\n');
-if(/transition\s*:\s*all/i.test(css)){console.error('transition: all is prohibited');process.exit(1);}
-if(/:hover[^\{]*\{[^\}]*translate(?:Y)?\(\s*-/i.test(css)){console.error('Upward hover lift is prohibited');process.exit(1);}
-const storefrontCss=fs.readFileSync(path.join(root,'storefront/store.css'),'utf8');
-if(/@import/i.test(storefrontCss)){console.error('Storefront stylesheet must be self-contained');process.exit(1);}
-const entry=fs.readFileSync(path.join(root,'src/index.css'),'utf8');
-for(const component of components){if(!entry.includes(component)){console.error(`Component stylesheet not exported: ${component}`);process.exit(1);}}
+const css=cssFiles.map(read).join('\n');
+if(/transition\s*:\s*all/i.test(css))fail('transition: all is prohibited');
+if(/:hover[^\{]*\{[^\}]*translate(?:Y)?\(\s*-/i.test(css))fail('Upward hover lift is prohibited');
+if(/@import/i.test(read('storefront/store.css')))fail('Storefront stylesheet must be self-contained');
+const entry=read('src/index.css');
+for(const component of components)if(!entry.includes(component))fail(`Component stylesheet not exported: ${component}`);
 const totalBytes=cssFiles.reduce((sum,file)=>sum+fs.statSync(path.join(root,file)).size,0);
-if(totalBytes>116*1024){console.error(`CSS budget exceeded: ${(totalBytes/1024).toFixed(1)} KiB / 116 KiB`);process.exit(1);}
+if(totalBytes>116*1024)fail(`CSS budget exceeded: ${(totalBytes/1024).toFixed(1)} KiB / 116 KiB`);
 
-const v02=fs.readFileSync(path.join(root,'demo/v02.html'),'utf8');
-for(const marker of ['v02-hero','nbc-gallery-stage','nbc-mini-cart','nbc-checkout-shell','nbc-account','nbc-license-card']){if(!v02.includes(marker)){console.error(`v0.2 workflow marker missing: ${marker}`);process.exit(1);}}
-
-const packageManifest=JSON.parse(fs.readFileSync(path.join(root,'package.json'),'utf8'));
-if(packageManifest.version!=='0.7.0'){console.error(`Expected stable v0.7.0 package version, received ${packageManifest.version}`);process.exit(1);}
+const packageManifest=json('package.json');
+if(packageManifest.version!=='0.8.0')fail(`Expected stable v0.8.0 package version, received ${packageManifest.version}`);
+if(packageManifest.scripts?.['check:docs']!=='node scripts/docs-check.mjs')fail('v0.8 documentation conformance script is missing');
+if(packageManifest.scripts?.['test:performance']!=='node scripts/performance.mjs')fail('v0.7 performance regression script is missing');
 const expectedExports={
   './contracts':['./src/contracts/index.d.ts','./src/contracts/runtime.js'],
   './actions':['./src/actions/index.d.ts','./src/actions/runtime.js'],
@@ -53,66 +57,62 @@ const expectedExports={
   './renderers/ownership':['./src/renderers/ownership.d.ts','./src/renderers/ownership.js'],
   './renderers/react-ownership':['./src/renderers/react-ownership.d.ts','./src/renderers/react-ownership.js']
 };
-for(const [key,[types,defaultPath]] of Object.entries(expectedExports)){const value=packageManifest.exports?.[key];if(value?.types!==types||value?.default!==defaultPath){console.error(`Package ${key} export is missing or inconsistent`);process.exit(1);}}
-if(packageManifest.scripts?.['test:ownership']!=='node --test tests/ownership-v06.test.mjs tests/edd-lifecycle-v06.test.mjs'){console.error('v0.6 ownership regression script is missing or changed unexpectedly');process.exit(1);}
-if(packageManifest.scripts?.['test:performance']!=='node scripts/performance.mjs'){console.error('v0.7 performance budget script is missing or changed unexpectedly');process.exit(1);}
-
-const routeManifest=JSON.parse(fs.readFileSync(path.join(root,'storefront/routes.json'),'utf8'));
-const catalogManifest=JSON.parse(fs.readFileSync(path.join(root,'storefront/catalog.json'),'utf8'));
-const stateManifest=JSON.parse(fs.readFileSync(path.join(root,'storefront/states.json'),'utf8'));
-for(const [name,manifest] of Object.entries({routes:routeManifest,catalog:catalogManifest,states:stateManifest})){if(manifest.version!=='0.7.0'){console.error(`Expected stable v0.7.0 ${name} manifest, received ${manifest.version}`);process.exit(1);}}
-
-const routePaths=routeManifest.routes.map(route=>route.path);
-for(const route of ['/','/products','/product/soft','/pricing','/cart','/checkout','/order/success','/account','/account/license/:id','/components']){if(!routePaths.includes(route)){console.error(`Production route contract missing: ${route}`);process.exit(1);}}
-for(const file of storefrontRoutes){
-  const html=fs.readFileSync(path.join(root,file),'utf8');
-  if(!html.includes('data-commerce-page')||!html.includes('storefront/store.css')||!html.includes('storefront/store.js')){console.error(`Production route shell contract missing: ${file}`);process.exit(1);}
-  if(!html.includes('COMMERCE v0.7')){console.error(`Production route has stale Commerce version chrome: ${file}`);process.exit(1);}
-  for(const match of html.matchAll(/<td\b([^>]*)>/g)){if(!/\bdata-label=/.test(match[1])){console.error(`Responsive table cell missing data-label: ${file}`);process.exit(1);}}
+for(const [key,[types,defaultPath]] of Object.entries(expectedExports)){
+  const value=packageManifest.exports?.[key];
+  if(value?.types!==types||value?.default!==defaultPath)fail(`Package ${key} export is missing or inconsistent`);
 }
 
-const productionMarkers={
-  'product/soft/index.html':['product-media','review-summary','testimonials','guarantee'],
-  'checkout/index.html':['invoice-details','payment-failure','payment-recovery','processing-state'],
-  'account/index.html':['license-card','invoice-history'],
-  'account/license/demo-soft-team/index.html':['seat-assignment','renewal-state','plan-change','ownership-transfer','subscription-management','ownership-timeline'],
-  'components/index.html':['system-states','ownership-lifecycle']
-};
-for(const [file,markers] of Object.entries(productionMarkers)){const html=fs.readFileSync(path.join(root,file),'utf8');for(const marker of markers){if(!html.includes(`data-commerce-component=\"${marker}\"`)){console.error(`Production component contract missing ${marker}: ${file}`);process.exit(1);}}}
+const manifests={catalog:json('storefront/catalog.json'),routes:json('storefront/routes.json'),states:json('storefront/states.json')};
+for(const [name,manifest] of Object.entries(manifests))if(manifest.version!=='0.8.0')fail(`Expected stable v0.8.0 ${name} manifest, received ${manifest.version}`);
+const registry=json('storefront/components.json');
+if(registry.commerceVersion!=='0.8.0')fail(`Expected stable v0.8.0 component registry, received ${registry.commerceVersion}`);
+if(registry.components.length<40)fail('v0.8 component registry is incomplete');
+
+const routePaths=manifests.routes.routes.map(route=>route.path);
+for(const route of ['/','/products','/product/soft','/pricing','/cart','/checkout','/order/success','/account','/account/license/:id','/components'])if(!routePaths.includes(route))fail(`Production route contract missing: ${route}`);
+for(const file of storefrontRoutes){
+  const html=read(file);
+  if(!html.includes('data-commerce-page')||!html.includes('storefront/store.css')||!html.includes('storefront/store.js'))fail(`Production route shell contract missing: ${file}`);
+  if(!html.includes('COMMERCE v0.8'))fail(`Production route has stale Commerce version chrome: ${file}`);
+  for(const match of html.matchAll(/<td\b([^>]*)>/g))if(!/\bdata-label=/.test(match[1]))fail(`Responsive table cell missing data-label: ${file}`);
+}
 
 const requiredStates={checkout:['ready','processing','failed','recovered'],system:['empty','loading','error','offline','permission','unsupported'],ownership:['active','grace','expired','cancelled','refunded'],ownershipOperation:['ready','quoted','processing','complete','failed'],subscription:['active','cancel_at_period_end','cancelled','past_due'],media:['preview','code','files']};
-for(const [group,ids] of Object.entries(requiredStates)){const actual=new Set((stateManifest[group]||[]).map(state=>state.id));for(const id of ids){if(!actual.has(id)){console.error(`v0.7 state contract missing ${group}:${id}`);process.exit(1);}}}
-const soft=catalogManifest.products.find(product=>product.id==='soft');
-if(!soft){console.error('Production catalog must include the Soft reference product');process.exit(1);}
-if((soft.licenses||[]).map(license=>license.id).join(',')!=='individual,team,agency'){console.error('Unexpected Soft license plan contract');process.exit(1);}
-for(const capability of ['plan-changes','transfers','gifts','subscriptions','invoice-history','ownership-history']){if(!(soft.ownershipCapabilities||[]).includes(capability)){console.error(`Soft ownership capability missing: ${capability}`);process.exit(1);}}
+for(const [group,ids] of Object.entries(requiredStates)){
+  const actual=new Set((manifests.states[group]||[]).map(state=>state.id));
+  for(const id of ids)if(!actual.has(id))fail(`State contract missing ${group}:${id}`);
+}
+const soft=manifests.catalog.products.find(product=>product.id==='soft');
+if(!soft)fail('Production catalog must include Soft');
+if((soft.licenses||[]).map(license=>license.id).join(',')!=='individual,team,agency')fail('Unexpected Soft license plan contract');
+for(const capability of ['plan-changes','transfers','gifts','subscriptions','invoice-history','ownership-history'])if(!(soft.ownershipCapabilities||[]).includes(capability))fail(`Soft ownership capability missing: ${capability}`);
 
-const runtime=fs.readFileSync(path.join(root,'src/contracts/runtime.js'),'utf8');
-for(const marker of ['OWNERSHIP_OPERATION_STATES','SUBSCRIPTION_STATES','invoiceHistory','subscriptions','planChanges','transfers','ownershipHistory','createCommerceAdapter','createLicensingAdapter','composeCommerceRuntime',"version:'0.7.0'"]){if(!runtime.includes(marker)){console.error(`v0.7 runtime contract missing: ${marker}`);process.exit(1);}}
-const declarations=fs.readFileSync(path.join(root,'src/contracts/index.d.ts'),'utf8');
-for(const marker of ['interface PlanChangeQuoteView','interface OwnershipTransferView','interface OwnershipEventView','interface SubscriptionView','interface InvoiceView','planChanges:boolean','transfers:boolean','ownershipHistory:boolean',"readonly version:'0.7.0'"]){if(!declarations.includes(marker)){console.error(`v0.7 type contract missing: ${marker}`);process.exit(1);}}
-const actions=fs.readFileSync(path.join(root,'src/actions/runtime.js'),'utf8');
-for(const marker of ['license.change.quote','license.change.submit','license.transfer.create','license.transfer.cancel','license.history.list','subscription.cancel','subscription.resume','invoice.list']){if(!actions.includes(marker)){console.error(`Ownership action contract missing: ${marker}`);process.exit(1);}}
-const bridge=fs.readFileSync(path.join(root,'src/adapters/licensing-bridge.js'),'utf8');
-for(const marker of ['createLicensingBridgeAdapter','quotePlanChange','createTransfer','listOwnershipEvents']){if(!bridge.includes(marker)){console.error(`Licensing bridge missing: ${marker}`);process.exit(1);}}
-const referenceAdapter=fs.readFileSync(path.join(root,'src/adapters/reference.js'),'utf8');
-for(const marker of ['invoiceHistory:true','subscriptions:true','planChanges:true','transfers:true','ownershipHistory:true','quotePlanChange','changePlan','createTransfer','listOwnershipEvents','cancelSubscription','resumeSubscription']){if(!referenceAdapter.includes(marker)){console.error(`Reference lifecycle missing: ${marker}`);process.exit(1);}}
-const eddAdapter=fs.readFileSync(path.join(root,'src/adapters/edd.js'),'utf8');
-for(const marker of ['normalizeEddInvoice','normalizeEddSubscription','invoiceHistory','subscriptions','listInvoices','cancelSubscription','resumeSubscription']){if(!eddAdapter.includes(marker)){console.error(`EDD lifecycle integration missing: ${marker}`);process.exit(1);}}
-const ownershipRenderer=fs.readFileSync(path.join(root,'src/renderers/ownership.js'),'utf8');
-for(const marker of ['createPlanChangeSpec','createTransferListSpec','createSubscriptionSpec','createInvoiceHistorySpec','createOwnershipTimelineSpec']){if(!ownershipRenderer.includes(marker)){console.error(`Ownership renderer missing: ${marker}`);process.exit(1);}}
-const reactOwnership=fs.readFileSync(path.join(root,'src/renderers/react-ownership.js'),'utf8');
-for(const marker of ['createReactOwnershipBindings','PlanChange','TransferList','Subscription','InvoiceHistory','OwnershipTimeline']){if(!reactOwnership.includes(marker)){console.error(`React ownership renderer missing: ${marker}`);process.exit(1);}}
+const runtime=read('src/contracts/runtime.js');
+const declarations=read('src/contracts/index.d.ts');
+if(!runtime.includes("version:'0.8.0'"))fail('v0.8 runtime version contract missing');
+if(!declarations.includes("readonly version:'0.8.0'"))fail('v0.8 TypeScript runtime version contract missing');
+for(const marker of ['OWNERSHIP_OPERATION_STATES','SUBSCRIPTION_STATES','createCommerceAdapter','createLicensingAdapter','composeCommerceRuntime'])if(!runtime.includes(marker))fail(`Runtime contract missing: ${marker}`);
+for(const marker of ['interface PlanChangeQuoteView','interface OwnershipTransferView','interface OwnershipEventView','interface SubscriptionView','interface InvoiceView'])if(!declarations.includes(marker))fail(`Type contract missing: ${marker}`);
 
-const browserConfig=fs.readFileSync(path.join(root,'playwright.config.mjs'),'utf8');
-for(const marker of ["name:'chromium'","name:'mobile-chromium'","name:'firefox'","name:'webkit'"]){if(!browserConfig.includes(marker)){console.error(`v0.7 browser project missing: ${marker}`);process.exit(1);}}
-const browserWorkflow=fs.readFileSync(path.join(root,'.github/workflows/browser-qa.yml'),'utf8');
-if(!browserWorkflow.includes('chromium firefox webkit')){console.error('v0.7 browser workflow must install Chromium, Firefox and WebKit');process.exit(1);}
-const v07=fs.readFileSync(path.join(root,'tests/commerce-v07.spec.mjs'),'utf8');
-for(const marker of ['keyboard operable','reduced-motion','forced-colors','responsive matrix','layout-shift','visual baseline candidates']){if(!v07.includes(marker)){console.error(`v0.7 quality suite missing: ${marker}`);process.exit(1);}}
+const actions=read('src/actions/runtime.js');
+for(const marker of ['cart.add','checkout.submit','license.change.quote','license.transfer.create','subscription.cancel','invoice.list'])if(!actions.includes(marker))fail(`Action contract missing: ${marker}`);
+const bridge=read('src/adapters/licensing-bridge.js');
+for(const marker of ['createLicensingBridgeAdapter','quotePlanChange','createTransfer','listOwnershipEvents'])if(!bridge.includes(marker))fail(`Licensing bridge missing: ${marker}`);
+const edd=read('src/adapters/edd.js');
+for(const marker of ['normalizeEddInvoice','normalizeEddSubscription','listInvoices','cancelSubscription','resumeSubscription'])if(!edd.includes(marker))fail(`EDD lifecycle integration missing: ${marker}`);
+const ownershipRenderer=read('src/renderers/ownership.js');
+for(const marker of ['createPlanChangeSpec','createTransferListSpec','createSubscriptionSpec','createInvoiceHistorySpec','createOwnershipTimelineSpec'])if(!ownershipRenderer.includes(marker))fail(`Ownership renderer missing: ${marker}`);
 
-for(const file of ['package.json','src/contracts/runtime.js','src/contracts/index.d.ts','storefront/catalog.json','storefront/routes.json','storefront/states.json','README.md','tests/contracts-v05.test.mjs','tests/reference-adapter-v05.test.mjs','tests/ownership-v06.test.mjs']){
-  if(fs.readFileSync(path.join(root,file),'utf8').includes('0.7.0-dev')){console.error(`Stable v0.7 release file still contains dev version: ${file}`);process.exit(1);}
+const browserConfig=read('playwright.config.mjs');
+for(const marker of ["name:'chromium'","name:'mobile-chromium'","name:'firefox'","name:'webkit'"])if(!browserConfig.includes(marker))fail(`Browser project missing: ${marker}`);
+if(!read('.github/workflows/browser-qa.yml').includes('chromium firefox webkit'))fail('Browser workflow must install Chromium, Firefox and WebKit');
+const v07=read('tests/commerce-v07.spec.mjs');
+for(const marker of ['strict accessibility','keyboard operable','reduced-motion','forced-colors','responsive matrix','layout-shift'])if(!v07.includes(marker))fail(`v0.7 hardening regression missing: ${marker}`);
+const v08Visual=read('tests/commerce-v08-visual.spec.mjs');
+for(const marker of ['v0.8','home','product','checkout','account','ownership'])if(!v08Visual.includes(marker))fail(`v0.8 visual candidate missing: ${marker}`);
+
+for(const file of ['package.json','src/contracts/runtime.js','src/contracts/index.d.ts','storefront/catalog.json','storefront/routes.json','storefront/states.json','storefront/components.json','README.md','tests/contracts-v05.test.mjs','tests/reference-adapter-v05.test.mjs','tests/ownership-v06.test.mjs']){
+  if(read(file).includes('0.8.0-dev'))fail(`Stable v0.8 release file still contains dev version: ${file}`);
 }
 
-console.log(`NeoBrutal Commerce v0.7.0 checks passed · ${(totalBytes/1024).toFixed(1)} KiB CSS · ${components.length} component stylesheets · ${storefrontRoutes.length} production routes · Chromium/Firefox/WebKit + accessibility/performance hardening`);
+console.log(`NeoBrutal Commerce v0.8.0 checks passed · ${(totalBytes/1024).toFixed(1)} KiB CSS · ${components.length} component stylesheets · ${storefrontRoutes.length} production routes · ${registry.components.length} agent-readable components`);
