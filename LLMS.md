@@ -40,9 +40,9 @@ Never pass raw EDD, WordPress, gateway SDK, database-row or licensing-provider o
 - Transaction data implements `CommerceAdapter`.
 - Licensing/entitlement data implements `LicensingAdapter`.
 - Use `createCommerceAdapter()` and `createLicensingAdapter()` to validate runtime surfaces.
-- Use `composeCommerceRuntime()` when one renderer needs both boundaries.
+- Use `composeCommerceRuntime()` when one renderer/action layer needs both boundaries.
 - Capability flags decide whether optional tax/refund/invoice/activation/seat/renewal/download actions exist. Never infer capabilities from a provider or plugin name.
-- `quoteCheckout()` / final order output is authoritative for money arithmetic. Do not independently reconstruct tax, discount or total calculations in the renderer.
+- `quoteCheckout()` and final order output are authoritative for money arithmetic. Do not independently reconstruct tax, discount or total calculations in the renderer.
 
 ## Normalized view models
 
@@ -85,6 +85,19 @@ Rules:
 - Do not call adapter methods directly from reusable components when an equivalent Commerce action exists.
 - Preserve action metadata such as `id`, `source` or `correlationId` for UI status and telemetry; do not use metadata to change commercial meaning.
 - UI loading/error state may follow dispatcher lifecycle, but authoritative result data still comes from the normalized adapter result.
+
+## Action binding rule
+
+For static/server-rendered controls, use `@neobrutal/commerce/actions/bindings` and `@neobrutal/commerce/renderers/action-controls`.
+
+- `createActionAttributes()` serializes a canonical action into stable `data-commerce-action`, `data-commerce-payload` and optional `data-commerce-meta` attributes.
+- `bindCommerceActions()` hydrates declarative controls through an `ActionDispatcher`.
+- `createProductActionCardSpec()` emits one primary commerce action rather than combining competing view/add CTAs.
+- Do not hand-build action JSON attributes when a helper can create them.
+- Do not serialize functions, provider clients or secrets into action attributes.
+- Treat action payloads as intent, not authority; the adapter/provider still validates prices, capability, ownership and payment state.
+
+For React, use `@neobrutal/commerce/renderers/react-actions` with the same dispatcher. Do not create a React-only command taxonomy.
 
 ## State contract
 Use `storefront/states.json` or the state constants from `@neobrutal/commerce/contracts` instead of inventing new state names.
@@ -135,21 +148,34 @@ Complete route/component intent lives in `storefront/routes.json`. Product/licen
 
 ## Renderer rule
 
-Use `@neobrutal/commerce/renderers/headless` when generating framework-neutral or server-rendered output. Use `@neobrutal/commerce/renderers/react` when generating React delivery code.
+Use `@neobrutal/commerce/renderers/headless` when generating framework-neutral or server-rendered output. Use `@neobrutal/commerce/renderers/react` for read-only React delivery, and `@neobrutal/commerce/renderers/react-actions` for dispatcher-backed controls.
 
 - Headless builders produce immutable semantic renderer specs.
 - `renderSpecToHtml()` is the supported HTML serializer and escapes model-provided text/attributes.
-- React is injected through `createReactBindings(React)`; do not make React types or provider data part of the core contract.
+- React is injected by the consuming application; do not make React types or provider data part of the core contract.
 - Preserve renderer-produced `data-commerce-component`, `data-state`, product/license IDs and semantic elements.
 - Wire interactions to Commerce actions rather than provider callbacks.
-- Do not fork separate HTML and React anatomy for the same Commerce component; both must come from the same renderer spec.
+- Do not fork separate HTML and React anatomy for the same Commerce component; both should consume the same normalized model/spec contract.
 
 CSS, HTML, React/shadcn, WordPress templates and future renderers are all consumers of the same normalized contract. A renderer must not create a new provider-specific model layer that contradicts the core declarations.
 
-## Backend boundary
-Commerce owns presentation and customer-facing interaction. Easy Digital Downloads or another commerce adapter can own order/payment transaction state. NeoLicenser or another licensing adapter can own products, licenses, entitlements, activations, releases and signed-download authorization. Keep adapters replaceable.
+## EDD adapter rule
 
-See `docs/EDD-MAPPING.md` for the EDD/NeoLicenser mapping contract.
+Use `@neobrutal/commerce/adapters/edd` when the transaction provider is Easy Digital Downloads.
+
+- The host supplies the EDD bridge transport; Commerce does not invent endpoint URLs, authentication or WordPress session rules.
+- `createEddCommerceAdapter()` normalizes EDD-style product, variable-price, cart, quote, order and refund responses.
+- Explicitly configure `taxes`, `discounts`, `invoices` and `refunds` capabilities.
+- Unknown EDD/gateway state names must be normalized deliberately or rejected. Do not create a component-only synonym.
+- The adapter normalizes money shape but does not recalculate provider totals.
+- EDD purchase/order data does not substitute for licensing/entitlement data.
+
+See `docs/EDD-MAPPING.md` for the supported bridge contract.
+
+## Backend boundary
+Commerce owns presentation and customer-facing interaction. Easy Digital Downloads or another commerce adapter can own order/payment transaction state. A licensing provider can own products, licenses, entitlements, activations, releases and signed-download authorization. Keep adapters replaceable.
+
+Do not switch component contracts to a specific licensing provider merely because an EDD deployment uses one.
 
 ## Theme contract
 Set `data-theme="light"` or `data-theme="dark"` on the document root. Prefer semantic tokens over raw theme colors.

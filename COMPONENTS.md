@@ -11,6 +11,7 @@
 ## Storefront
 - Button
 - Product card
+- Product action card
 - Product art
 - Badge
 - Price block
@@ -101,9 +102,9 @@ Normalized view models:
 Adapter contracts:
 - `CommerceAdapter` — products, cart, checkout, orders and customer purchase history
 - `LicensingAdapter` — licenses, entitlements and optional activation/seat/renewal/download capabilities
-- `composeCommerceRuntime()` — combines replaceable transaction and licensing adapters for a renderer/action layer
+- `composeCommerceRuntime()` — combines replaceable transaction and licensing adapters for renderer/action layers
 
-Runtime contract helpers:
+Runtime helpers:
 - canonical checkout/system/ownership/media state constants
 - state type guards
 - adapter method/capability validation
@@ -128,6 +129,14 @@ React package export: `@neobrutal/commerce/renderers/react`
 - no bundled or pinned React runtime
 - same headless specs and `data-commerce-component` anatomy
 - suitable for shadcn-style copy/composition without creating a second data contract
+
+Action-aware renderer exports:
+- `@neobrutal/commerce/renderers/action-controls`
+- `@neobrutal/commerce/renderers/react-actions`
+- canonical action button/link specs
+- product action card
+- dispatcher-bound React controls
+- one normalized action path for HTML/static and React delivery
 
 The `summary.css` primitive gives normalized cart/quote totals a reusable core surface instead of depending on demo-only `.store-*` classes.
 
@@ -154,7 +163,28 @@ Action helpers:
 - `createActionDispatcher()` — adds stable action identity plus `start`, `success` and `error` lifecycle events
 - optional action execution is capability-gated by adapter flags/methods
 
-Reusable UI should dispatch these normalized commands instead of calling provider APIs directly.
+Declarative binding export: `@neobrutal/commerce/actions/bindings`
+
+- `createActionAttributes()`
+- `readCommerceAction()`
+- `createActionHandler()`
+- `bindCommerceActions()`
+
+Reusable UI dispatches normalized commands instead of calling provider APIs directly.
+
+## v0.5 provider adapters
+
+Reference adapter:
+- `@neobrutal/commerce/adapters/reference`
+- deterministic backend-free fixture for catalog, cart, quote, order, refund, licenses, seats, activations, renewal and signed downloads
+
+EDD transaction adapter:
+- `@neobrutal/commerce/adapters/edd`
+- injected EDD bridge transport
+- product/download + variable-price normalization
+- cart, checkout quote, order/history and optional refund normalization
+- explicit provider → canonical checkout/order state mapping
+- no hardcoded WordPress URL, authentication or gateway SDK
 
 ## Machine-readable contracts
 - `storefront/catalog.json` — products, licenses, review/guarantee/renewal metadata
@@ -163,9 +193,12 @@ Reusable UI should dispatch these normalized commands instead of calling provide
 - `src/contracts/runtime.js` — runtime adapter/state contract
 - `src/contracts/index.d.ts` — TypeScript view models and interfaces
 - `src/actions/runtime.js` — provider-neutral command execution
-- `src/actions/index.d.ts` — typed discriminated action commands
+- `src/actions/bindings.js` — declarative command hydration
 - `src/renderers/headless.js` — renderer spec builders and HTML serializer
-- `src/renderers/react.js` — React translation of renderer specs
+- `src/renderers/action-controls.js` — action-aware specs
+- `src/renderers/react.js` — React translation of read-only renderer specs
+- `src/renderers/react-actions.js` — React action delivery
+- `src/adapters/edd.js` — EDD transaction normalization
 
 ## Renderer/action rule
 
@@ -177,10 +210,8 @@ Read path:
 Action path:
 `UI/agent → Commerce action → normalized runtime → adapter`
 
-## Next
-- bind canonical action descriptors into interactive renderer controls
-- real EDD transaction adapter
-- real licensing-provider adapter mapping
+## Next after v0.5
+- real licensing-provider adapter implementation
 - upgrade/downgrade ownership flows
 - gift/transfer ownership
 - invoice/receipt history and richer tax outcomes

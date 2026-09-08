@@ -45,6 +45,7 @@ test('runtime state constants stay synchronized with storefront/states.json',()=
   assert.deepEqual(manifest.system.map(state=>state.id),SYSTEM_STATES);
   assert.deepEqual(manifest.ownership.map(state=>state.id),OWNERSHIP_STATES);
   assert.deepEqual(manifest.media.map(state=>state.id),MEDIA_STATES);
+  assert.equal(manifest.version,'0.5.0');
 });
 
 test('license plan IDs stay synchronized with the production catalog',()=>{
@@ -52,6 +53,7 @@ test('license plan IDs stay synchronized with the production catalog',()=>{
   const soft=catalog.products.find(product=>product.id==='soft');
   assert.ok(soft,'Soft product must exist in production catalog');
   assert.deepEqual(soft.licenses.map(license=>license.id),LICENSE_PLAN_IDS);
+  assert.equal(catalog.version,'0.5.0');
 });
 
 test('state guards accept canonical values and reject invented values',()=>{
@@ -103,7 +105,7 @@ test('licensing capabilities require the methods they advertise',()=>{
 
 test('composed runtime keeps commerce and licensing backends replaceable',()=>{
   const runtime=composeCommerceRuntime({commerce:commerceStub(),licensing:licensingStub()});
-  assert.equal(runtime.version,'0.5.0-dev');
+  assert.equal(runtime.version,'0.5.0');
   assert.equal(runtime.commerce.kind,'commerce');
   assert.equal(runtime.licensing.kind,'licensing');
   assert.equal(Object.isFrozen(runtime),true);

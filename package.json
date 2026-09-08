@@ -1,6 +1,6 @@
 {
   "name": "@neobrutal/commerce",
-  "version": "0.5.0-dev",
+  "version": "0.5.0",
   "private": true,
   "type": "module",
   "description": "Expressive Neo-Brutalism for digital-product and software commerce.",
@@ -9,16 +9,21 @@
     "./styles.css": "./src/index.css",
     "./contracts": {"types":"./src/contracts/index.d.ts","default":"./src/contracts/runtime.js"},
     "./actions": {"types":"./src/actions/index.d.ts","default":"./src/actions/runtime.js"},
+    "./actions/bindings": {"types":"./src/actions/bindings.d.ts","default":"./src/actions/bindings.js"},
     "./adapters/reference": {"types":"./src/adapters/reference.d.ts","default":"./src/adapters/reference.js"},
+    "./adapters/edd": {"types":"./src/adapters/edd.d.ts","default":"./src/adapters/edd.js"},
     "./renderers/headless": {"types":"./src/renderers/headless.d.ts","default":"./src/renderers/headless.js"},
-    "./renderers/react": {"types":"./src/renderers/react.d.ts","default":"./src/renderers/react.js"}
+    "./renderers/react": {"types":"./src/renderers/react.d.ts","default":"./src/renderers/react.js"},
+    "./renderers/action-controls": {"types":"./src/renderers/action-controls.d.ts","default":"./src/renderers/action-controls.js"},
+    "./renderers/react-actions": {"types":"./src/renderers/react-actions.d.ts","default":"./src/renderers/react-actions.js"}
   },
   "scripts": {
-    "check": "npm run check:static && npm run test:contracts && npm run test:renderers && npm run test:actions",
+    "check": "npm run check:static && npm run test:contracts && npm run test:renderers && npm run test:actions && npm run test:integrations",
     "check:static": "node scripts/check.mjs",
     "test:contracts": "node --test tests/contracts-v05.test.mjs tests/reference-adapter-v05.test.mjs",
     "test:renderers": "node --test tests/renderers-v05.test.mjs",
     "test:actions": "node --test tests/actions-v05.test.mjs",
+    "test:integrations": "node --test tests/action-bindings-v05.test.mjs tests/edd-adapter-v05.test.mjs",
     "test:browser": "playwright test"
   },
   "devDependencies": {"@axe-core/playwright":"^4.13.0","@playwright/test":"^1.63.0"},
