@@ -47,6 +47,7 @@ test('mini cart supports escape and restores focus', async ({ page })=>{
 test('account tabs are keyboard navigable', async ({ page })=>{
   await page.goto('/demo/v02.html#account');
   const downloads=page.locator('#downloadsTab');
+  await expect(downloads).toBeVisible();
   await downloads.focus();
   await page.keyboard.press('ArrowRight');
   await expect(page.locator('#purchasesTab')).toBeFocused();
@@ -54,4 +55,9 @@ test('account tabs are keyboard navigable', async ({ page })=>{
   await page.keyboard.press('End');
   await expect(page.locator('#licensesTab')).toBeFocused();
   await expect(page.locator('#licensesPanel')).toBeVisible();
+});
+
+test('capture v0.2 visual review render', async ({ page }, testInfo)=>{
+  await page.goto('/demo/v02.html');
+  await page.screenshot({path:testInfo.outputPath(`commerce-v02-${testInfo.project.name}.png`),fullPage:true});
 });
