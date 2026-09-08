@@ -16,8 +16,9 @@ test('v0.2 storefront passes serious/critical axe checks without stylesheet fail
   });
   await page.goto('/demo/v02.html');
   await expect(page.getByRole('heading',{name:'NeoBrutal Soft'})).toBeVisible();
-  expect(stylesheetFailures).toEqual([]);
   await expectNoSeriousAxe(page);
+  await page.waitForLoadState('networkidle');
+  expect(stylesheetFailures).toEqual([]);
 });
 
 test('license, cart, coupon and checkout stay synchronized', async ({ page })=>{
@@ -28,6 +29,9 @@ test('license, cart, coupon and checkout stay synchronized', async ({ page })=>{
   const dialog=page.getByRole('dialog',{name:'Ready when you are.'});
   await expect(dialog).toBeVisible();
   await expect(dialog.locator('#cartLicense')).toHaveText('Team · 5 sites');
+  const bodyBox=await dialog.locator('[data-cart-region="body"]').boundingBox();
+  const footerBox=await dialog.locator('[data-cart-region="actions"]').boundingBox();
+  expect(bodyBox&&footerBox&&bodyBox.y+bodyBox.height<=footerBox.y+0.5).toBeTruthy();
   await dialog.getByRole('button',{name:'CHECKOUT →'}).click();
   await expect(dialog).toBeHidden();
   await expect(page.locator('#checkout-title')).toBeFocused();
