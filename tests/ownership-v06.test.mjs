@@ -8,7 +8,7 @@ import {OWNERSHIP_OPERATION_STATES,SUBSCRIPTION_STATES} from '../src/contracts/r
 test('v0.6 runtime exposes canonical operation and subscription states',()=>{
   assert.deepEqual(OWNERSHIP_OPERATION_STATES,['ready','quoted','processing','complete','failed']);
   assert.deepEqual(SUBSCRIPTION_STATES,['active','cancel_at_period_end','cancelled','past_due']);
-  assert.equal(createReferenceRuntime().version,'0.6.0');
+  assert.equal(createReferenceRuntime().version,'0.7.0-dev');
 });
 
 test('plan changes quote upgrades and protect unsafe immediate downgrades',async()=>{

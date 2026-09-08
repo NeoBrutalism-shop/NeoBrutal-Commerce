@@ -6,7 +6,7 @@ Commerce is a flavor of the NeoBrutalism family. It shares the same tactile inte
 
 ## Status
 
-`0.6.0` — production storefront plus normalized ownership lifecycle management across replaceable transaction and licensing provider boundaries.
+`0.7.0-dev` — stable v0.6 ownership lifecycle plus release-grade accessibility, browser, responsive, visual and performance hardening.
 
 ## Production surface
 
@@ -20,7 +20,8 @@ Commerce is a flavor of the NeoBrutalism family. It shares the same tactile inte
 - typed provider-neutral contracts, actions and action lifecycle events
 - dependency-free headless renderers plus optional React/action bindings
 - EDD transaction bridge and replaceable licensing-provider bridge
-- **v0.6 ownership lifecycle:** upgrade/downgrade quote/apply, gift/transfer records, subscription cancel/resume, invoice history and ownership audit timeline
+- ownership lifecycle: upgrade/downgrade quote/apply, gift/transfer records, subscription cancel/resume, invoice history and ownership audit timeline
+- **v0.7 hardening:** strict Axe AA checks, keyboard journeys, reduced-motion/forced-colors assertions, Chromium/Firefox/WebKit coverage, responsive matrix, CLS and static payload budgets, and visual-regression baselines
 
 ## Production routes
 
@@ -58,9 +59,9 @@ Write path:
 
 `UI / agent → Commerce action → normalized runtime → adapter → provider`
 
-## v0.6 lifecycle model
+## Ownership lifecycle model
 
-v0.6 keeps transaction, ownership and billing concepts separate:
+Commerce keeps transaction, ownership and billing concepts separate:
 
 - `OrderView` proves a transaction.
 - `InvoiceView` records provider-authoritative billing/tax/refund history.
@@ -75,9 +76,9 @@ An immediate downgrade cannot silently strand active usage above the target capa
 
 See `docs/OWNERSHIP-LIFECYCLE.md` for the full contract.
 
-## v0.6 canonical actions
+## Canonical actions
 
-Existing v0.5 commands remain supported. v0.6 adds:
+Existing purchase and ownership commands remain supported, including:
 
 - `invoice.list`
 - `subscription.get`
@@ -117,7 +118,7 @@ React is injected by the consuming application; Commerce does not bundle or pin 
 
 ## Provider integration
 
-The EDD adapter accepts an injected transaction transport and maps products/variable prices, carts, checkout quotes, orders and refunds into the normalized commerce boundary.
+The EDD adapter accepts an injected transaction transport and maps products/variable prices, carts, checkout quotes, orders, refunds, invoice history and recurring billing into the normalized commerce boundary.
 
 The licensing bridge accepts an injected licensing transport plus normalizers. It can expose activations, seats, renewal, signed downloads, plan changes, transfers and ownership history without changing renderer/component contracts.
 
@@ -133,9 +134,21 @@ See `docs/EDD-MAPPING.md` and `docs/OWNERSHIP-LIFECYCLE.md`.
 - `src/renderers/` — headless, React, action and ownership renderers
 - `LLMS.md` — generation/integration rules for agents
 
-## Quality gates
+## v0.7 quality contract
 
-`npm run check` validates static conformance plus v0.5 regression suites and the v0.6 lifecycle suite. Browser QA validates the production routes and ownership interactions in desktop Chromium, mobile Chromium and desktop Firefox.
+`npm run check` enforces static conformance, contract/action/adapter regressions and payload budgets. Browser QA runs the production journeys in desktop Chromium, mobile Chromium, desktop Firefox and desktop WebKit/Safari-class rendering.
+
+The v0.7 browser gate adds:
+
+- WCAG A/AA Axe checks including color contrast on every production route
+- keyboard-only purchase and ownership actions with visible focus
+- reduced-motion and forced-colors execution
+- viewport and touch-target checks from 320px through 1440px
+- history/state resilience and delayed-hydration readability
+- critical-route cumulative layout shift budget
+- reviewed visual baseline candidates, followed by committed screenshot regression baselines
+
+No known failing commerce journey is accepted for merge.
 
 ## License
 

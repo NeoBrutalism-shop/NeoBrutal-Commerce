@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "version": "0.6.0",
+  "version": "0.7.0-dev",
   "currency": "USD",
   "products": [
     {
@@ -21,7 +21,7 @@
       "ownershipCapabilities": ["plan-changes","transfers","gifts","subscriptions","invoice-history","ownership-history"],
       "media": ["preview","code","files"]
     },
-    {"id":"rivet","name":"NeoBrutal Rivet","kind":"component-system","summary":"Dense, structural Neo-Brutal components for technical products.","status":"catalog-example"},
+    {"id":"rivet","name":"NeoBrutal Rivet","kind":"component-system","summary":"Dense, structural NeoBrutal components for technical products.","status":"catalog-example"},
     {"id":"commerce","name":"NeoBrutal Commerce","kind":"commerce-flavor","summary":"Storefront, checkout, account and ownership patterns for digital products.","status":"catalog-example"}
   ]
 }

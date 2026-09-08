@@ -23,7 +23,7 @@ test('reference commerce adapter rejects invalid purchase operations',async()=>{
   await assert.rejects(()=>commerce.submitOrder({cartId:empty.id,paymentMethodId:'reference-card',licenseTermsAccepted:false}),/License terms/);
 });
 
-test('reference licensing adapter keeps v0.5 activation seat renewal and download behavior',async()=>{
+test('reference licensing adapter keeps activation seat renewal and download behavior',async()=>{
   const licensing=createReferenceLicensingAdapter();const license=(await licensing.listLicenses()).items[0];
   assert.equal(license.status,'active');assert.equal(license.capacity.sites,5);assert.equal(license.capacity.seats,5);assert.equal((await licensing.listActivations(license.id)).items.length,2);
   const afterAssign=await licensing.assignSeat({licenseId:license.id,assignee:{email:'qa@example.invalid',name:'QA'},role:'member'});assert.equal(afterAssign.items.length,3);
@@ -35,6 +35,6 @@ test('reference licensing adapter keeps v0.5 activation seat renewal and downloa
 });
 
 test('reference runtime composes replaceable commerce and licensing adapters',async()=>{
-  const runtime=createReferenceRuntime();assert.equal(runtime.version,'0.6.0');assert.equal(runtime.commerce.kind,'commerce');assert.equal(runtime.licensing.kind,'licensing');
+  const runtime=createReferenceRuntime();assert.equal(runtime.version,'0.7.0-dev');assert.equal(runtime.commerce.kind,'commerce');assert.equal(runtime.licensing.kind,'licensing');
   const product=await runtime.commerce.getProduct('soft');const license=await runtime.licensing.getLicense('license-reference-team');assert.equal(product.id,'soft');assert.equal(license.productId,product.id);
 });
