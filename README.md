@@ -6,7 +6,7 @@ Commerce is a flavor of the NeoBrutalism family. It shares the same tactile inte
 
 ## Status
 
-`0.6.0-dev` — v0.5 production storefront/adapters/renderers/actions plus normalized ownership lifecycle management.
+`0.6.0` — production storefront plus normalized ownership lifecycle management across replaceable transaction and licensing provider boundaries.
 
 ## Production surface
 

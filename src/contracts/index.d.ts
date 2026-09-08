@@ -121,7 +121,7 @@ export declare function createCommerceAdapter<T extends CommerceAdapter>(adapter
 export declare function createLicensingAdapter<T extends LicensingAdapter>(adapter:T):Readonly<Omit<T,'capabilities'> & {kind:'licensing';capabilities:Readonly<LicensingAdapterCapabilities>}>;
 
 export interface CommerceRuntime<C extends CommerceAdapter=CommerceAdapter,L extends LicensingAdapter=LicensingAdapter>{
-  readonly version:'0.6.0-dev';
+  readonly version:'0.6.0';
   readonly commerce:ReturnType<typeof createCommerceAdapter<C>>;
   readonly licensing:ReturnType<typeof createLicensingAdapter<L>>;
 }

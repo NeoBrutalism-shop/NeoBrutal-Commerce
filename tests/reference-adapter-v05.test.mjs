@@ -35,6 +35,6 @@ test('reference licensing adapter keeps v0.5 activation seat renewal and downloa
 });
 
 test('reference runtime composes replaceable commerce and licensing adapters',async()=>{
-  const runtime=createReferenceRuntime();assert.equal(runtime.version,'0.6.0-dev');assert.equal(runtime.commerce.kind,'commerce');assert.equal(runtime.licensing.kind,'licensing');
+  const runtime=createReferenceRuntime();assert.equal(runtime.version,'0.6.0');assert.equal(runtime.commerce.kind,'commerce');assert.equal(runtime.licensing.kind,'licensing');
   const product=await runtime.commerce.getProduct('soft');const license=await runtime.licensing.getLicense('license-reference-team');assert.equal(product.id,'soft');assert.equal(license.productId,product.id);
 });
