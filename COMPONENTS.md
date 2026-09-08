@@ -1,4 +1,4 @@
-# Component Surface — v0.2
+# Component Surface — v0.3
 
 ## Foundation
 - tokens
@@ -20,6 +20,7 @@
 - Product gallery + thumbnails
 - Product metadata
 - Renewal note
+- Responsive data table
 
 ## Pricing
 - Pricing tiers
@@ -49,6 +50,18 @@
 - Activation/site rows
 - Update eligibility
 - Entitlement note
+
+## v0.3 page patterns
+- Storefront/home
+- Product catalog
+- Product detail
+- Pricing/comparison/bundles
+- Full cart
+- Checkout
+- Order success
+- Account dashboard
+- License detail
+- Component showcase
 
 ## Next
 - ratings/testimonials
