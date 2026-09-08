@@ -42,6 +42,7 @@ jobs:
           node --check tests/action-bindings-v05.test.mjs
           node --check tests/edd-adapter-v05.test.mjs
           node --check tests/ownership-v06.test.mjs
+          node --check tests/edd-lifecycle-v06.test.mjs
           node --check tests/commerce-v06.spec.mjs
       - name: Serve static production routes
         shell: bash
