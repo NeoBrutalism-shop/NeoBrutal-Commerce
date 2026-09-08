@@ -1,4 +1,4 @@
-# Component Surface — v0.4
+# Component Surface — v0.5
 
 ## Foundation
 - tokens
@@ -83,17 +83,51 @@
 - License detail + activations + seats + renewal
 - Component/state showcase
 
+## v0.5 runtime/data contracts
+
+The component system now has a framework-neutral data boundary in `src/contracts/`.
+
+Normalized view models:
+- `ProductView` / `ProductOffer`
+- `CartView` / `CartLineView`
+- `CheckoutQuoteView`
+- `OrderView`
+- `LicenseView`
+- `EntitlementView`
+- `ActivationView`
+- `SeatAssignmentView`
+- `SignedDownloadView`
+
+Adapter contracts:
+- `CommerceAdapter` — products, cart, checkout, orders and customer purchase history
+- `LicensingAdapter` — licenses, entitlements and optional activation/seat/renewal/download capabilities
+- `composeCommerceRuntime()` — combines replaceable transaction and licensing adapters for a renderer
+
+Runtime contract helpers:
+- canonical checkout/system/ownership/media state constants
+- state type guards
+- adapter method/capability validation
+- package export: `@neobrutal/commerce/contracts`
+
 ## Machine-readable contracts
 - `storefront/catalog.json` — products, licenses, review/guarantee/renewal metadata
 - `storefront/routes.json` — route intent, primary components and supported route states
 - `storefront/states.json` — checkout, system, ownership and media state taxonomy
+- `src/contracts/runtime.js` — runtime adapter/state contract
+- `src/contracts/index.d.ts` — TypeScript view models and interfaces
+
+## Renderer rule
+
+HTML/static, React/shadcn, WordPress and other UI layers render the normalized models above. They must not accept raw provider objects as component contracts.
 
 ## Next
+- reference/mock adapters and renderer consumption example
+- React/shadcn wrappers over normalized contracts
+- typed component events/actions
+- real EDD transaction adapter
+- real NeoLicenser licensing adapter
 - upgrade/downgrade ownership flows
 - gift/transfer ownership
 - invoice/receipt history and richer tax outcomes
 - subscription management actions
-- React/shadcn wrappers
-- typed component APIs/events
-- EDD adapter mapping implementation
 - visual regression baselines and broader cross-browser coverage

@@ -6,7 +6,7 @@ Commerce is a flavor of the NeoBrutalism family. It shares the same tactile inte
 
 ## Status
 
-`0.4.0-dev` — multi-page storefront architecture plus production state/component completeness.
+`0.5.0-dev` — production storefront system plus typed, replaceable commerce/licensing adapter contracts.
 
 ## Current production surface
 
@@ -26,6 +26,8 @@ Commerce is a flavor of the NeoBrutalism family. It shares the same tactile inte
 - active, grace, expired, cancelled and refunded ownership states
 - empty, loading, error, offline, permission and unsupported system states
 - machine-readable product, route and state contracts
+- framework-neutral runtime adapter validation
+- TypeScript declarations for normalized product/cart/checkout/order/license/entitlement models
 
 ## Production routes
 
@@ -42,16 +44,56 @@ Commerce is a flavor of the NeoBrutalism family. It shares the same tactile inte
 
 The legacy `demo/v02.html` workflow remains as regression coverage while production validation happens on the real routes above.
 
+## Typed contract package
+
+Use the CSS system and contract runtime independently or together:
+
+```js
+import '@neobrutal/commerce/styles.css';
+import {
+  createCommerceAdapter,
+  createLicensingAdapter,
+  composeCommerceRuntime
+} from '@neobrutal/commerce/contracts';
+```
+
+TypeScript consumers receive declarations automatically from the `./contracts` export.
+
+The normalized contract covers:
+- products and offers
+- carts, discounts, taxes and totals
+- invoice and checkout state
+- orders and purchase history
+- licenses and entitlements
+- activations and team seats
+- renewal and signed-download capabilities
+- canonical checkout/system/ownership/media states
+
+Components do **not** receive raw EDD, WordPress, gateway SDK, database-row or licensing-provider objects. Provider adapters translate those objects into Commerce view models first.
+
 ## Machine-readable contracts
 
 - `storefront/catalog.json` — product/license/review/renewal metadata
 - `storefront/routes.json` — route intent and component/state coverage
 - `storefront/states.json` — checkout, system, ownership and media state taxonomy
+- `src/contracts/runtime.js` — runtime state guards and adapter validators
+- `src/contracts/index.d.ts` — TypeScript normalized view-model and adapter interfaces
+- `src/contracts/README.md` — adapter authoring rules
 - `LLMS.md` — generation and commerce-semantic rules for agents
 
 ## Architecture
 
-The foundation is CSS-first and framework/backend-independent. React/shadcn wrappers and commerce backends are adapters, not prerequisites. EDD or another commerce backend can own transaction lifecycle; NeoLicenser or another licensing backend can own licensing/entitlements/releases; Commerce owns the customer-facing interaction language and component contracts.
+The foundation is CSS-first and framework/backend-independent. React/shadcn wrappers are renderers over the same contract, not a second contract. EDD or another commerce backend can own transaction lifecycle; NeoLicenser or another licensing backend can own licensing/entitlements/releases; Commerce owns the customer-facing interaction language and normalized component/view-model boundary.
+
+The integration path is always:
+
+`provider data/event → provider adapter → normalized Commerce model → renderer/component`
+
+See `docs/EDD-MAPPING.md` for the first provider mapping contract.
+
+## Quality gates
+
+`npm run check` runs static conformance plus v0.5 runtime/manifest synchronization tests. Browser QA continues to validate production routes, accessibility, interaction state and responsive behavior across desktop and mobile Chromium.
 
 ## License
 

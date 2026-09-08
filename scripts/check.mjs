@@ -4,14 +4,20 @@ import path from 'node:path';
 const root=process.cwd();
 const components=['button.css','product.css','cart.css','product-detail.css','pricing.css','checkout.css','account.css','license.css','table.css','review.css','media.css','state.css','lifecycle.css'];
 const storefrontRoutes=['index.html','products/index.html','product/soft/index.html','pricing/index.html','cart/index.html','checkout/index.html','order/success/index.html','account/index.html','account/license/demo-soft-team/index.html','components/index.html'];
+const contractFiles=[
+  'src/contracts/runtime.js','src/contracts/index.d.ts','src/contracts/README.md',
+  'src/adapters/reference.js','src/adapters/reference.d.ts',
+  'tests/contracts-v05.test.mjs','tests/reference-adapter-v05.test.mjs'
+];
 const required=[
   'src/tokens.css','src/base.css','src/index.css',
   ...components.map(file=>`src/components/${file}`),
+  ...contractFiles,
   'demo/index.html','demo/demo.css','demo/demo.js','demo/v02.html','demo/v02.css','demo/v02.js',
   'storefront/store.css','storefront/store.js','storefront/catalog.json','storefront/routes.json','storefront/states.json',
   ...storefrontRoutes,
   'tests/commerce-v02.spec.mjs','tests/commerce-v03.spec.mjs','tests/commerce-v04.spec.mjs',
-  'DESIGN.md','LLMS.md','COMPONENTS.md','docs/EDD-MAPPING.md'
+  'DESIGN.md','LLMS.md','COMPONENTS.md','docs/EDD-MAPPING.md','package.json'
 ];
 
 for(const file of required){
@@ -59,11 +65,36 @@ for(const marker of ['v02-hero','nbc-gallery-stage','nbc-mini-cart','nbc-checkou
   }
 }
 
-const routeManifest=JSON.parse(fs.readFileSync(path.join(root,'storefront/routes.json'),'utf8'));
-if(!String(routeManifest.version).startsWith('0.4.')){
-  console.error(`Expected v0.4 route manifest, received ${routeManifest.version}`);
+const packageManifest=JSON.parse(fs.readFileSync(path.join(root,'package.json'),'utf8'));
+if(!String(packageManifest.version).startsWith('0.5.')){
+  console.error(`Expected v0.5 package version, received ${packageManifest.version}`);
   process.exit(1);
 }
+const contractsExport=packageManifest.exports?.['./contracts'];
+if(contractsExport?.types!=='./src/contracts/index.d.ts'||contractsExport?.default!=='./src/contracts/runtime.js'){
+  console.error('Package ./contracts export must expose the v0.5 declarations and runtime');
+  process.exit(1);
+}
+const referenceExport=packageManifest.exports?.['./adapters/reference'];
+if(referenceExport?.types!=='./src/adapters/reference.d.ts'||referenceExport?.default!=='./src/adapters/reference.js'){
+  console.error('Package ./adapters/reference export must expose the v0.5 reference adapter declarations and runtime');
+  process.exit(1);
+}
+if(packageManifest.scripts?.['test:contracts']!=='node --test tests/contracts-v05.test.mjs tests/reference-adapter-v05.test.mjs'){
+  console.error('v0.5 contract/reference test script is missing or changed unexpectedly');
+  process.exit(1);
+}
+
+const routeManifest=JSON.parse(fs.readFileSync(path.join(root,'storefront/routes.json'),'utf8'));
+const catalogManifest=JSON.parse(fs.readFileSync(path.join(root,'storefront/catalog.json'),'utf8'));
+const stateManifest=JSON.parse(fs.readFileSync(path.join(root,'storefront/states.json'),'utf8'));
+for(const [name,manifest] of Object.entries({routes:routeManifest,catalog:catalogManifest,states:stateManifest})){
+  if(!String(manifest.version).startsWith('0.5.')){
+    console.error(`Expected v0.5 ${name} manifest, received ${manifest.version}`);
+    process.exit(1);
+  }
+}
+
 const routePaths=routeManifest.routes.map(route=>route.path);
 for(const route of ['/','/products','/product/soft','/pricing','/cart','/checkout','/order/success','/account','/account/license/:id','/components']){
   if(!routePaths.includes(route)){
@@ -85,32 +116,64 @@ for(const file of storefrontRoutes){
   }
 }
 
-const v04Markers={
+const productionMarkers={
   'product/soft/index.html':['product-media','review-summary','testimonials','guarantee'],
   'checkout/index.html':['invoice-details','payment-failure','payment-recovery','processing-state'],
   'account/license/demo-soft-team/index.html':['seat-assignment','renewal-state'],
   'components/index.html':['system-states','ownership-lifecycle']
 };
-for(const [file,markers] of Object.entries(v04Markers)){
+for(const [file,markers] of Object.entries(productionMarkers)){
   const html=fs.readFileSync(path.join(root,file),'utf8');
   for(const marker of markers){
     if(!html.includes(`data-commerce-component=\"${marker}\"`)){
-      console.error(`v0.4 component contract missing ${marker}: ${file}`);
+      console.error(`Production component contract missing ${marker}: ${file}`);
       process.exit(1);
     }
   }
 }
 
-const stateManifest=JSON.parse(fs.readFileSync(path.join(root,'storefront/states.json'),'utf8'));
 const requiredStates={checkout:['ready','processing','failed','recovered'],system:['empty','loading','error','offline','permission','unsupported'],ownership:['active','grace','expired','cancelled','refunded'],media:['preview','code','files']};
 for(const [group,ids] of Object.entries(requiredStates)){
   const actual=new Set((stateManifest[group]||[]).map(state=>state.id));
   for(const id of ids){
     if(!actual.has(id)){
-      console.error(`v0.4 state contract missing ${group}:${id}`);
+      console.error(`v0.5 state contract missing ${group}:${id}`);
       process.exit(1);
     }
   }
 }
 
-console.log(`NeoBrutal Commerce checks passed · ${(totalBytes/1024).toFixed(1)} KiB CSS · ${components.length} component stylesheets · ${storefrontRoutes.length} production routes · v0.4 state taxonomy`);
+const soft=catalogManifest.products.find(product=>product.id==='soft');
+if(!soft){
+  console.error('Production catalog must include the Soft reference product');
+  process.exit(1);
+}
+const planIds=(soft.licenses||[]).map(license=>license.id);
+if(planIds.join(',')!=='individual,team,agency'){
+  console.error(`Unexpected Soft license plan contract: ${planIds.join(',')}`);
+  process.exit(1);
+}
+
+const runtime=fs.readFileSync(path.join(root,'src/contracts/runtime.js'),'utf8');
+for(const marker of ['CHECKOUT_STATES','SYSTEM_STATES','OWNERSHIP_STATES','MEDIA_STATES','createCommerceAdapter','createLicensingAdapter','composeCommerceRuntime']){
+  if(!runtime.includes(marker)){
+    console.error(`v0.5 runtime contract missing: ${marker}`);
+    process.exit(1);
+  }
+}
+const declarations=fs.readFileSync(path.join(root,'src/contracts/index.d.ts'),'utf8');
+for(const marker of ['interface ProductView','interface CartView','interface CheckoutQuoteView','interface OrderView','interface LicenseView','interface EntitlementView','interface CommerceAdapter','interface LicensingAdapter']){
+  if(!declarations.includes(marker)){
+    console.error(`v0.5 type contract missing: ${marker}`);
+    process.exit(1);
+  }
+}
+const referenceAdapter=fs.readFileSync(path.join(root,'src/adapters/reference.js'),'utf8');
+for(const marker of ['createReferenceCommerceAdapter','createReferenceLicensingAdapter','createReferenceRuntime','requestRefund','assignSeat','createSignedDownload']){
+  if(!referenceAdapter.includes(marker)){
+    console.error(`v0.5 reference adapter missing: ${marker}`);
+    process.exit(1);
+  }
+}
+
+console.log(`NeoBrutal Commerce checks passed · ${(totalBytes/1024).toFixed(1)} KiB CSS · ${components.length} component stylesheets · ${storefrontRoutes.length} production routes · v0.5 typed + reference adapter contract`);

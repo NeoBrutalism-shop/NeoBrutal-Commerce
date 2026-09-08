@@ -1,6 +1,6 @@
 # NeoBrutal Commerce — LLM Guidance
 
-Use this file when an agent generates commerce UI with this system.
+Use this file when an agent generates commerce UI or integration code with this system.
 
 ## Interaction laws
 - Never move a normal control upward on hover.
@@ -27,8 +27,40 @@ A software purchase should read as:
 
 Do not collapse ownership and purchasing into the same mental model. Storefront surfaces may be expressive; post-purchase account/license surfaces should become calmer and operational.
 
+## v0.5 data boundary
+
+When generating application code, import the normalized contract from `@neobrutal/commerce/contracts` or follow the declarations in `src/contracts/index.d.ts`.
+
+The integration path is:
+
+`provider data/event → provider adapter → normalized Commerce model → renderer/component`
+
+Never pass raw EDD, WordPress, gateway SDK, database-row or licensing-provider objects directly into Commerce components.
+
+- Transaction data implements `CommerceAdapter`.
+- Licensing/entitlement data implements `LicensingAdapter`.
+- Use `createCommerceAdapter()` and `createLicensingAdapter()` to validate runtime surfaces.
+- Use `composeCommerceRuntime()` when one renderer needs both boundaries.
+- Capability flags decide whether optional tax/refund/invoice/activation/seat/renewal/download actions exist. Never infer capabilities from a provider or plugin name.
+- `quoteCheckout()` / final order output is authoritative for money arithmetic. Do not independently reconstruct tax, discount or total calculations in the renderer.
+
+## Normalized view models
+
+Prefer these stable types rather than provider-shaped objects:
+- `ProductView` / `ProductOffer`
+- `CartView` / `CartLineView`
+- `CheckoutQuoteView`
+- `OrderView`
+- `LicenseView`
+- `EntitlementView`
+- `ActivationView`
+- `SeatAssignmentView`
+- `SignedDownloadView`
+
+A renderer may add local presentation state, but must not mutate the meaning of normalized commercial or ownership data.
+
 ## State contract
-Use `storefront/states.json` instead of inventing new state names.
+Use `storefront/states.json` or the state constants from `@neobrutal/commerce/contracts` instead of inventing new state names.
 
 - Checkout: `ready`, `processing`, `failed`, `recovered`.
 - System: `empty`, `loading`, `error`, `offline`, `permission`, `unsupported`.
@@ -36,6 +68,8 @@ Use `storefront/states.json` instead of inventing new state names.
 - Product media: `preview`, `code`, `files`.
 
 A failure state must preserve the information needed to recover. Loading must respect reduced motion. Offline UI must not discard local cart or ownership context. Permission and unsupported states must explain the missing capability and expose a safe alternate path when one exists.
+
+Do not invent synonyms such as `declined`, `busy`, `paused` or `disabled-license` when a canonical state already expresses the intent.
 
 ## Ownership semantics
 - A purchase is not a license.
@@ -51,7 +85,7 @@ A failure state must preserve the information needed to recover. Loading must re
 ## Component contracts
 Prefer stable `data-commerce-component` anatomy and the shared component CSS exported by `src/index.css`.
 
-Current v0.4 additions include:
+Current production components include:
 - `product-media`
 - `review-summary`
 - `testimonials`
@@ -65,10 +99,16 @@ Current v0.4 additions include:
 - `system-states`
 - `ownership-lifecycle`
 
-Complete route/component intent lives in `storefront/routes.json`. Product/license commercial metadata lives in `storefront/catalog.json`.
+Complete route/component intent lives in `storefront/routes.json`. Product/license commercial metadata lives in `storefront/catalog.json`. Runtime adapter/type intent lives in `src/contracts/`.
+
+## Renderer rule
+
+CSS, HTML, React/shadcn, WordPress templates and future renderers are all consumers of the same normalized contract. A renderer must not create a new provider-specific model layer that contradicts the core declarations.
 
 ## Backend boundary
 Commerce owns presentation and customer-facing interaction. Easy Digital Downloads or another commerce adapter can own order/payment transaction state. NeoLicenser or another licensing adapter can own products, licenses, entitlements, activations, releases and signed-download authorization. Keep adapters replaceable.
+
+See `docs/EDD-MAPPING.md` for the EDD/NeoLicenser mapping contract.
 
 ## Theme contract
 Set `data-theme="light"` or `data-theme="dark"` on the document root. Prefer semantic tokens over raw theme colors.
