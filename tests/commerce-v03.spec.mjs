@@ -28,7 +28,7 @@ test('product → cart → checkout → order journey persists commerce state',a
   await page.getByRole('link',{name:'CHECKOUT →'}).click();
   await expect(page).toHaveURL(/\/checkout\/?$/);
   await expect(page.locator('[data-cart-total]').first()).toHaveText('$99.00');
-  await page.getByRole('checkbox').check();
+  await page.getByRole('checkbox',{name:/I agree to the license terms/i}).check();
   await page.getByRole('button',{name:'PLACE DEMO ORDER →'}).click();
   await expect(page).toHaveURL(/\/order\/success\/?$/);
   await expect(page.locator('[data-order-plan]').first()).toHaveText('Team');

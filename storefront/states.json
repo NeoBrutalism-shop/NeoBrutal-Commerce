@@ -1,0 +1,29 @@
+{
+  "version": "0.4.0-dev",
+  "checkout": [
+    {"id":"ready","intent":"payment-ready","preservesOrderContext":true},
+    {"id":"processing","intent":"payment-processing","blocksSubmit":true,"preservesOrderContext":true},
+    {"id":"failed","intent":"payment-failure","allowsRetry":true,"preservesOrderContext":true},
+    {"id":"recovered","intent":"payment-recovered","allowsRetry":true,"preservesOrderContext":true}
+  ],
+  "system": [
+    {"id":"empty","intent":"no-content","mustExposeNextAction":true},
+    {"id":"loading","intent":"pending-content","supportsReducedMotion":true},
+    {"id":"error","intent":"recoverable-error","mustExposeRecovery":true},
+    {"id":"offline","intent":"network-unavailable","mustPreserveLocalState":true},
+    {"id":"permission","intent":"action-not-authorized","mustExplainCapability":true},
+    {"id":"unsupported","intent":"feature-unavailable","mustExposeAlternatePath":true}
+  ],
+  "ownership": [
+    {"id":"active","intent":"entitlement-active"},
+    {"id":"grace","intent":"renewal-recovery-window"},
+    {"id":"expired","intent":"updates-expired"},
+    {"id":"cancelled","intent":"future-renewal-cancelled"},
+    {"id":"refunded","intent":"purchase-refunded"}
+  ],
+  "media": [
+    {"id":"preview","intent":"visual-product-preview"},
+    {"id":"code","intent":"implementation-preview"},
+    {"id":"files","intent":"download-contents-preview"}
+  ]
+}

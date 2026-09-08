@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "version": "0.3.0-dev",
+  "version": "0.4.0-dev",
   "currency": "USD",
   "products": [
     {
@@ -14,7 +14,11 @@
         {"id":"team","label":"Team","sites":5,"price":99},
         {"id":"agency","label":"Agency","sites":25,"price":179}
       ],
-      "entitlements": ["source-files","12-month-updates","commercial-use"]
+      "entitlements": ["source-files","12-month-updates","commercial-use"],
+      "reviewSummary": {"rating":4.9,"count":38,"source":"verified-buyers"},
+      "guarantee": {"days":30,"policySource":"commerce-adapter"},
+      "renewal": {"updateEligibilityMonths":12,"existingLicensedVersionsRemainOwned":true},
+      "media": ["preview","code","files"]
     },
     {
       "id": "rivet",

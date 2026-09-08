@@ -17,6 +17,8 @@ Use this file when an agent generates commerce UI with this system.
 - Cart and checkout totals remain inspectable before purchase.
 - Optional extras are off by default.
 - Do not create fake urgency, fake scarcity or hidden fees.
+- Reviews must carry useful context and must not be fabricated by adapters or generated UI.
+- Guarantees/refund promises are policy data from the commerce adapter; never invent them.
 
 ## Workflow contract
 A software purchase should read as:
@@ -25,6 +27,16 @@ A software purchase should read as:
 
 Do not collapse ownership and purchasing into the same mental model. Storefront surfaces may be expressive; post-purchase account/license surfaces should become calmer and operational.
 
+## State contract
+Use `storefront/states.json` instead of inventing new state names.
+
+- Checkout: `ready`, `processing`, `failed`, `recovered`.
+- System: `empty`, `loading`, `error`, `offline`, `permission`, `unsupported`.
+- Ownership: `active`, `grace`, `expired`, `cancelled`, `refunded`.
+- Product media: `preview`, `code`, `files`.
+
+A failure state must preserve the information needed to recover. Loading must respect reduced motion. Offline UI must not discard local cart or ownership context. Permission and unsupported states must explain the missing capability and expose a safe alternate path when one exists.
+
 ## Ownership semantics
 - A purchase is not a license.
 - A license is not an entitlement.
@@ -32,26 +44,31 @@ Do not collapse ownership and purchasing into the same mental model. Storefront 
 - Expired update access should not imply the installed product stops working.
 - Mask secrets/keys by default.
 - Show activation/site capacity explicitly.
+- Team seats and activation sites are separate capacity concepts unless an adapter explicitly maps them together.
+- Cancellation of future renewal does not automatically mean loss of already licensed versions.
+- Refund behavior is adapter/policy driven; UI must render the returned entitlement result rather than assume it.
 
-## Recommended v0.2 primitives
-- `.nbc-product-detail`
-- `.nbc-gallery`
-- `.nbc-license-selector`
-- `.nbc-plan-grid`
-- `.nbc-compare`
-- `.nbc-bundle`
-- `.nbc-mini-cart`
-- `.nbc-coupon`
-- `.nbc-checkout-shell`
-- `.nbc-payment-method`
-- `.nbc-order-success`
-- `.nbc-account`
-- `.nbc-download-row`
-- `.nbc-license-card`
-- `.nbc-update-card`
+## Component contracts
+Prefer stable `data-commerce-component` anatomy and the shared component CSS exported by `src/index.css`.
+
+Current v0.4 additions include:
+- `product-media`
+- `review-summary`
+- `testimonials`
+- `guarantee`
+- `invoice-details`
+- `payment-failure`
+- `processing-state`
+- `payment-recovery`
+- `seat-assignment`
+- `renewal-state`
+- `system-states`
+- `ownership-lifecycle`
+
+Complete route/component intent lives in `storefront/routes.json`. Product/license commercial metadata lives in `storefront/catalog.json`.
 
 ## Backend boundary
-Commerce owns presentation and customer-facing interaction. Easy Digital Downloads will eventually own order/payment transaction state. NeoLicenser will own products, licenses, entitlements, activations, releases and signed-download authorization. Keep adapters replaceable.
+Commerce owns presentation and customer-facing interaction. Easy Digital Downloads or another commerce adapter can own order/payment transaction state. NeoLicenser or another licensing adapter can own products, licenses, entitlements, activations, releases and signed-download authorization. Keep adapters replaceable.
 
 ## Theme contract
 Set `data-theme="light"` or `data-theme="dark"` on the document root. Prefer semantic tokens over raw theme colors.

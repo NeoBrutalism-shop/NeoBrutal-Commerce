@@ -2,15 +2,15 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 const root=process.cwd();
-const components=['button.css','product.css','cart.css','product-detail.css','pricing.css','checkout.css','account.css','license.css','table.css'];
+const components=['button.css','product.css','cart.css','product-detail.css','pricing.css','checkout.css','account.css','license.css','table.css','review.css','media.css','state.css','lifecycle.css'];
 const storefrontRoutes=['index.html','products/index.html','product/soft/index.html','pricing/index.html','cart/index.html','checkout/index.html','order/success/index.html','account/index.html','account/license/demo-soft-team/index.html','components/index.html'];
 const required=[
   'src/tokens.css','src/base.css','src/index.css',
   ...components.map(file=>`src/components/${file}`),
   'demo/index.html','demo/demo.css','demo/demo.js','demo/v02.html','demo/v02.css','demo/v02.js',
-  'storefront/store.css','storefront/store.js','storefront/catalog.json','storefront/routes.json',
+  'storefront/store.css','storefront/store.js','storefront/catalog.json','storefront/routes.json','storefront/states.json',
   ...storefrontRoutes,
-  'tests/commerce-v02.spec.mjs','tests/commerce-v03.spec.mjs',
+  'tests/commerce-v02.spec.mjs','tests/commerce-v03.spec.mjs','tests/commerce-v04.spec.mjs',
   'DESIGN.md','LLMS.md','COMPONENTS.md','docs/EDD-MAPPING.md'
 ];
 
@@ -60,17 +60,21 @@ for(const marker of ['v02-hero','nbc-gallery-stage','nbc-mini-cart','nbc-checkou
 }
 
 const routeManifest=JSON.parse(fs.readFileSync(path.join(root,'storefront/routes.json'),'utf8'));
+if(!String(routeManifest.version).startsWith('0.4.')){
+  console.error(`Expected v0.4 route manifest, received ${routeManifest.version}`);
+  process.exit(1);
+}
 const routePaths=routeManifest.routes.map(route=>route.path);
 for(const route of ['/','/products','/product/soft','/pricing','/cart','/checkout','/order/success','/account','/account/license/:id','/components']){
   if(!routePaths.includes(route)){
-    console.error(`v0.3 route contract missing: ${route}`);
+    console.error(`Production route contract missing: ${route}`);
     process.exit(1);
   }
 }
 for(const file of storefrontRoutes){
   const html=fs.readFileSync(path.join(root,file),'utf8');
   if(!html.includes('data-commerce-page')||!html.includes('storefront/store.css')||!html.includes('storefront/store.js')){
-    console.error(`v0.3 route shell contract missing: ${file}`);
+    console.error(`Production route shell contract missing: ${file}`);
     process.exit(1);
   }
   for(const match of html.matchAll(/<td\b([^>]*)>/g)){
@@ -81,4 +85,32 @@ for(const file of storefrontRoutes){
   }
 }
 
-console.log(`NeoBrutal Commerce checks passed · ${(totalBytes/1024).toFixed(1)} KiB CSS · ${components.length} component stylesheets · ${storefrontRoutes.length} v0.3 routes`);
+const v04Markers={
+  'product/soft/index.html':['product-media','review-summary','testimonials','guarantee'],
+  'checkout/index.html':['invoice-details','payment-failure','payment-recovery','processing-state'],
+  'account/license/demo-soft-team/index.html':['seat-assignment','renewal-state'],
+  'components/index.html':['system-states','ownership-lifecycle']
+};
+for(const [file,markers] of Object.entries(v04Markers)){
+  const html=fs.readFileSync(path.join(root,file),'utf8');
+  for(const marker of markers){
+    if(!html.includes(`data-commerce-component=\"${marker}\"`)){
+      console.error(`v0.4 component contract missing ${marker}: ${file}`);
+      process.exit(1);
+    }
+  }
+}
+
+const stateManifest=JSON.parse(fs.readFileSync(path.join(root,'storefront/states.json'),'utf8'));
+const requiredStates={checkout:['ready','processing','failed','recovered'],system:['empty','loading','error','offline','permission','unsupported'],ownership:['active','grace','expired','cancelled','refunded'],media:['preview','code','files']};
+for(const [group,ids] of Object.entries(requiredStates)){
+  const actual=new Set((stateManifest[group]||[]).map(state=>state.id));
+  for(const id of ids){
+    if(!actual.has(id)){
+      console.error(`v0.4 state contract missing ${group}:${id}`);
+      process.exit(1);
+    }
+  }
+}
+
+console.log(`NeoBrutal Commerce checks passed · ${(totalBytes/1024).toFixed(1)} KiB CSS · ${components.length} component stylesheets · ${storefrontRoutes.length} production routes · v0.4 state taxonomy`);
