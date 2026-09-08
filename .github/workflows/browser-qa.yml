@@ -11,7 +11,7 @@ permissions:
 jobs:
   browser-qa:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -19,8 +19,8 @@ jobs:
           node-version: 22
       - name: Install QA dependencies
         run: npm install --no-audit --no-fund
-      - name: Install Chromium and Firefox
-        run: npx playwright install --with-deps chromium firefox
+      - name: Install Chromium Firefox and WebKit
+        run: npx playwright install --with-deps chromium firefox webkit
       - name: Run browser QA
         run: npm run test:browser
       - name: Upload browser report

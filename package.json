@@ -21,13 +21,14 @@
     "./renderers/react-ownership": {"types":"./src/renderers/react-ownership.d.ts","default":"./src/renderers/react-ownership.js"}
   },
   "scripts": {
-    "check": "npm run check:static && npm run test:contracts && npm run test:renderers && npm run test:actions && npm run test:integrations && npm run test:ownership",
+    "check": "npm run check:static && npm run test:contracts && npm run test:renderers && npm run test:actions && npm run test:integrations && npm run test:ownership && npm run test:performance",
     "check:static": "node scripts/check.mjs",
     "test:contracts": "node --test tests/contracts-v05.test.mjs tests/reference-adapter-v05.test.mjs",
     "test:renderers": "node --test tests/renderers-v05.test.mjs",
     "test:actions": "node --test tests/actions-v05.test.mjs",
     "test:integrations": "node --test tests/action-bindings-v05.test.mjs tests/edd-adapter-v05.test.mjs",
     "test:ownership": "node --test tests/ownership-v06.test.mjs tests/edd-lifecycle-v06.test.mjs",
+    "test:performance": "node scripts/performance.mjs",
     "test:browser": "playwright test"
   },
   "devDependencies": {"@axe-core/playwright":"^4.13.0","@playwright/test":"^1.63.0"},
