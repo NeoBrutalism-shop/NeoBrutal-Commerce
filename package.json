@@ -21,9 +21,10 @@
     "./renderers/react-ownership": {"types":"./src/renderers/react-ownership.d.ts","default":"./src/renderers/react-ownership.js"}
   },
   "scripts": {
-    "check": "npm run check:static && npm run check:docs && npm run test:contracts && npm run test:renderers && npm run test:actions && npm run test:integrations && npm run test:ownership && npm run test:performance",
+    "check": "npm run check:static && npm run check:docs && npm run check:release && npm run test:contracts && npm run test:renderers && npm run test:actions && npm run test:integrations && npm run test:ownership && npm run test:performance",
     "check:static": "node scripts/check.mjs",
     "check:docs": "node scripts/docs-check.mjs",
+    "check:release": "node scripts/release-check.mjs",
     "test:contracts": "node --test tests/contracts-v05.test.mjs tests/reference-adapter-v05.test.mjs",
     "test:renderers": "node --test tests/renderers-v05.test.mjs",
     "test:actions": "node --test tests/actions-v05.test.mjs",
