@@ -1,5 +1,5 @@
 {
-  "version": "0.5.0",
+  "version": "0.6.0-dev",
   "routes": [
     {"path":"/","id":"home","intent":"storefront-home","primaryComponents":["product-card","trust-strip","promo-band"]},
     {"path":"/products","id":"products","intent":"product-catalog","primaryComponents":["product-card","badge","price-block"]},
@@ -8,8 +8,8 @@
     {"path":"/cart","id":"cart","intent":"full-cart","primaryComponents":["cart-item","order-summary","coupon"]},
     {"path":"/checkout","id":"checkout","intent":"checkout","primaryComponents":["checkout-field","invoice-details","checkout-steps","payment-method","payment-failure","payment-recovery","processing-state","order-summary"],"states":["ready","processing","failed","recovered"]},
     {"path":"/order/success","id":"order-success","intent":"receipt-entitlement","primaryComponents":["order-confirmation","receipt","download-entitlement"]},
-    {"path":"/account","id":"account","intent":"customer-ownership","primaryComponents":["account-nav","download-row","purchase-history-row","license-card"]},
-    {"path":"/account/license/:id","id":"account-license","intent":"license-detail","example":"/account/license/demo-soft-team","primaryComponents":["license-card","license-status","activation-row","update-eligibility","seat-assignment","renewal-state"],"states":["active","grace","expired","cancelled","refunded"]},
+    {"path":"/account","id":"account","intent":"customer-ownership","primaryComponents":["account-nav","download-row","purchase-history-row","license-card","invoice-history"]},
+    {"path":"/account/license/:id","id":"account-license","intent":"license-lifecycle","example":"/account/license/demo-soft-team","primaryComponents":["license-card","license-status","activation-row","update-eligibility","seat-assignment","renewal-state","plan-change","ownership-transfer","subscription-management","ownership-timeline"],"states":["active","grace","expired","cancelled","refunded","ready","quoted","processing","complete","failed","cancel_at_period_end","past_due"]},
     {"path":"/components","id":"components","intent":"system-showcase","primaryComponents":["component-contract","tokens","system-states","ownership-lifecycle","review-summary","guarantee"]}
   ]
 }
