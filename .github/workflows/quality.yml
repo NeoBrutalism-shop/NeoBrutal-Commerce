@@ -18,11 +18,12 @@ jobs:
           node-version: 22
       - name: Conformance
         run: npm run check
-      - name: Demo JavaScript syntax
+      - name: JavaScript syntax
         run: |
           node --check demo/demo.js
           node --check demo/v02.js
-      - name: Serve static demos
+          node --check storefront/store.js
+      - name: Serve static production routes
         shell: bash
         run: |
           set -euo pipefail
@@ -33,4 +34,10 @@ jobs:
           curl --fail --silent http://127.0.0.1:4173/ >/dev/null
           curl --fail --silent http://127.0.0.1:4173/demo/ >/dev/null
           curl --fail --silent http://127.0.0.1:4173/demo/v02.html >/dev/null
+          curl --fail --silent http://127.0.0.1:4173/product/soft/ >/dev/null
+          curl --fail --silent 'http://127.0.0.1:4173/checkout/?state=failed' >/dev/null
+          curl --fail --silent http://127.0.0.1:4173/account/license/demo-soft-team/ >/dev/null
+          curl --fail --silent http://127.0.0.1:4173/components/ >/dev/null
           curl --fail --silent http://127.0.0.1:4173/src/index.css >/dev/null
+          curl --fail --silent http://127.0.0.1:4173/storefront/store.js >/dev/null
+          curl --fail --silent http://127.0.0.1:4173/storefront/states.json >/dev/null
