@@ -5,7 +5,12 @@
   "type": "module",
   "description": "Expressive Neo-Brutalism for digital-product and software commerce.",
   "scripts": {
-    "check": "node scripts/check.mjs"
+    "check": "node scripts/check.mjs",
+    "test:browser": "playwright test"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "^4.13.0",
+    "@playwright/test": "^1.63.0"
   },
   "license": "UNLICENSED"
 }
