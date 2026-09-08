@@ -42,3 +42,10 @@ test('theme preference persists across production routes',async({page})=>{
   await page.goto('/products/');
   await expect(page.locator('html')).toHaveAttribute('data-theme','dark');
 });
+
+test('capture v0.3 storefront visual review',async({page},testInfo)=>{
+  for(const [name,route] of [['home','/'],['product-soft','/product/soft/'],['account','/account/']]){
+    await page.goto(route);
+    await page.screenshot({path:testInfo.outputPath(`commerce-v03-${name}-${testInfo.project.name}.png`),fullPage:true});
+  }
+});
