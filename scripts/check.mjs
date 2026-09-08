@@ -6,9 +6,10 @@ const components=['button.css','product.css','cart.css','product-detail.css','pr
 const storefrontRoutes=['index.html','products/index.html','product/soft/index.html','pricing/index.html','cart/index.html','checkout/index.html','order/success/index.html','account/index.html','account/license/demo-soft-team/index.html','components/index.html'];
 const contractFiles=[
   'src/contracts/runtime.js','src/contracts/index.d.ts','src/contracts/README.md',
+  'src/actions/runtime.js','src/actions/index.d.ts','src/actions/README.md',
   'src/adapters/reference.js','src/adapters/reference.d.ts',
   'src/renderers/headless.js','src/renderers/headless.d.ts','src/renderers/react.js','src/renderers/react.d.ts','src/renderers/README.md',
-  'tests/contracts-v05.test.mjs','tests/reference-adapter-v05.test.mjs','tests/renderers-v05.test.mjs'
+  'tests/contracts-v05.test.mjs','tests/reference-adapter-v05.test.mjs','tests/renderers-v05.test.mjs','tests/actions-v05.test.mjs'
 ];
 const required=[
   'src/tokens.css','src/base.css','src/index.css',
@@ -76,6 +77,11 @@ if(contractsExport?.types!=='./src/contracts/index.d.ts'||contractsExport?.defau
   console.error('Package ./contracts export must expose the v0.5 declarations and runtime');
   process.exit(1);
 }
+const actionsExport=packageManifest.exports?.['./actions'];
+if(actionsExport?.types!=='./src/actions/index.d.ts'||actionsExport?.default!=='./src/actions/runtime.js'){
+  console.error('Package ./actions export must expose the v0.5 action declarations and runtime');
+  process.exit(1);
+}
 const referenceExport=packageManifest.exports?.['./adapters/reference'];
 if(referenceExport?.types!=='./src/adapters/reference.d.ts'||referenceExport?.default!=='./src/adapters/reference.js'){
   console.error('Package ./adapters/reference export must expose the v0.5 reference adapter declarations and runtime');
@@ -97,6 +103,10 @@ if(packageManifest.scripts?.['test:contracts']!=='node --test tests/contracts-v0
 }
 if(packageManifest.scripts?.['test:renderers']!=='node --test tests/renderers-v05.test.mjs'){
   console.error('v0.5 renderer test script is missing or changed unexpectedly');
+  process.exit(1);
+}
+if(packageManifest.scripts?.['test:actions']!=='node --test tests/actions-v05.test.mjs'){
+  console.error('v0.5 action test script is missing or changed unexpectedly');
   process.exit(1);
 }
 
@@ -183,6 +193,13 @@ for(const marker of ['interface ProductView','interface CartView','interface Che
     process.exit(1);
   }
 }
+const actions=fs.readFileSync(path.join(root,'src/actions/runtime.js'),'utf8');
+for(const marker of ['ACTION_TYPES','createCommerceAction','executeCommerceAction','createActionDispatcher','cart.add','checkout.submit','seat.assign','license.renew','download.create']){
+  if(!actions.includes(marker)){
+    console.error(`v0.5 action contract missing: ${marker}`);
+    process.exit(1);
+  }
+}
 const referenceAdapter=fs.readFileSync(path.join(root,'src/adapters/reference.js'),'utf8');
 for(const marker of ['createReferenceCommerceAdapter','createReferenceLicensingAdapter','createReferenceRuntime','requestRefund','assignSeat','createSignedDownload']){
   if(!referenceAdapter.includes(marker)){
@@ -205,4 +222,4 @@ for(const marker of ['renderSpecWithReact','createReactBindings','ProductCard','
   }
 }
 
-console.log(`NeoBrutal Commerce checks passed · ${(totalBytes/1024).toFixed(1)} KiB CSS · ${components.length} component stylesheets · ${storefrontRoutes.length} production routes · v0.5 typed adapters + renderer layer`);
+console.log(`NeoBrutal Commerce checks passed · ${(totalBytes/1024).toFixed(1)} KiB CSS · ${components.length} component stylesheets · ${storefrontRoutes.length} production routes · v0.5 adapters + renderers + actions`);
