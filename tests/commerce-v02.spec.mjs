@@ -52,13 +52,7 @@ test('license, cart, coupon and checkout stay synchronized', async ({ page })=>{
   await checkoutButton.scrollIntoViewIfNeeded();
   const hit=await cartHitTarget(checkoutButton);
   expect(hit.ok,`Checkout center hit ${hit.target??'nothing'} instead of the button`).toBeTruthy();
-
-  const coarsePointer=await page.evaluate(()=>matchMedia('(pointer:coarse)').matches);
-  if(coarsePointer){
-    await page.touchscreen.tap(hit.center.x,hit.center.y);
-  }else{
-    await checkoutButton.click();
-  }
+  await checkoutButton.click();
 
   await expect(dialog).toBeHidden();
   await expect(page.locator('#checkout-title')).toBeFocused();
