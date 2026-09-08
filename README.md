@@ -6,7 +6,7 @@ Commerce is a flavor of the NeoBrutalism family. It shares the same tactile inte
 
 ## Status
 
-`0.5.0-dev` — production storefront system plus typed, replaceable commerce/licensing adapter contracts.
+`0.5.0-dev` — production storefront system plus typed adapters and framework-neutral renderer delivery.
 
 ## Current production surface
 
@@ -28,6 +28,8 @@ Commerce is a flavor of the NeoBrutalism family. It shares the same tactile inte
 - machine-readable product, route and state contracts
 - framework-neutral runtime adapter validation
 - TypeScript declarations for normalized product/cart/checkout/order/license/entitlement models
+- dependency-free headless renderer specs with safe HTML serialization
+- React bindings generated from the same headless anatomy
 
 ## Production routes
 
@@ -71,6 +73,31 @@ The normalized contract covers:
 
 Components do **not** receive raw EDD, WordPress, gateway SDK, database-row or licensing-provider objects. Provider adapters translate those objects into Commerce view models first.
 
+## Renderer delivery
+
+Headless rendering is dependency-free:
+
+```js
+import {
+  createProductCardSpec,
+  createOrderSummarySpec,
+  renderSpecToHtml
+} from '@neobrutal/commerce/renderers/headless';
+```
+
+React remains optional and is injected from the consuming app:
+
+```js
+import React from 'react';
+import {createReactBindings} from '@neobrutal/commerce/renderers/react';
+
+const {ProductCard,OrderSummary,SystemState}=createReactBindings(React);
+```
+
+Both surfaces render the same immutable spec anatomy and stable `data-commerce-component` identifiers. That makes the React/shadcn-style layer a delivery mechanism rather than a second design-system contract.
+
+Current renderer builders cover product cards, order summaries, system states, license cards, seat assignment and activation lists. See `src/renderers/README.md` for copy/use rules.
+
 ## Machine-readable contracts
 
 - `storefront/catalog.json` — product/license/review/renewal metadata
@@ -79,6 +106,8 @@ Components do **not** receive raw EDD, WordPress, gateway SDK, database-row or l
 - `src/contracts/runtime.js` — runtime state guards and adapter validators
 - `src/contracts/index.d.ts` — TypeScript normalized view-model and adapter interfaces
 - `src/contracts/README.md` — adapter authoring rules
+- `src/renderers/headless.js` — framework-neutral semantic renderer specs
+- `src/renderers/react.js` — React bindings over the headless specs
 - `LLMS.md` — generation and commerce-semantic rules for agents
 
 ## Architecture
@@ -87,13 +116,13 @@ The foundation is CSS-first and framework/backend-independent. React/shadcn wrap
 
 The integration path is always:
 
-`provider data/event → provider adapter → normalized Commerce model → renderer/component`
+`provider data/event → provider adapter → normalized Commerce model → renderer spec → framework/HTML`
 
 See `docs/EDD-MAPPING.md` for the first provider mapping contract.
 
 ## Quality gates
 
-`npm run check` runs static conformance plus v0.5 runtime/manifest synchronization tests. Browser QA continues to validate production routes, accessibility, interaction state and responsive behavior across desktop and mobile Chromium.
+`npm run check` runs static conformance, v0.5 runtime/manifest synchronization tests, reference-adapter journey tests and renderer parity/escaping tests. Browser QA continues to validate production routes, accessibility, interaction state and responsive behavior across desktop and mobile Chromium.
 
 ## License
 

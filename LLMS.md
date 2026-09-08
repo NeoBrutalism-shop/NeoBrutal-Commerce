@@ -33,7 +33,7 @@ When generating application code, import the normalized contract from `@neobruta
 
 The integration path is:
 
-`provider data/event → provider adapter → normalized Commerce model → renderer/component`
+`provider data/event → provider adapter → normalized Commerce model → renderer spec → framework/HTML`
 
 Never pass raw EDD, WordPress, gateway SDK, database-row or licensing-provider objects directly into Commerce components.
 
@@ -86,6 +86,8 @@ Do not invent synonyms such as `declined`, `busy`, `paused` or `disabled-license
 Prefer stable `data-commerce-component` anatomy and the shared component CSS exported by `src/index.css`.
 
 Current production components include:
+- `product-card`
+- `order-summary`
 - `product-media`
 - `review-summary`
 - `testimonials`
@@ -94,14 +96,26 @@ Current production components include:
 - `payment-failure`
 - `processing-state`
 - `payment-recovery`
+- `license-card`
 - `seat-assignment`
+- `activation-list`
 - `renewal-state`
+- `system-state`
 - `system-states`
 - `ownership-lifecycle`
 
 Complete route/component intent lives in `storefront/routes.json`. Product/license commercial metadata lives in `storefront/catalog.json`. Runtime adapter/type intent lives in `src/contracts/`.
 
 ## Renderer rule
+
+Use `@neobrutal/commerce/renderers/headless` when generating framework-neutral or server-rendered output. Use `@neobrutal/commerce/renderers/react` when generating React delivery code.
+
+- Headless builders produce immutable semantic renderer specs.
+- `renderSpecToHtml()` is the supported HTML serializer and escapes model-provided text/attributes.
+- React is injected through `createReactBindings(React)`; do not make React types or provider data part of the core contract.
+- Preserve renderer-produced `data-commerce-component`, `data-state`, product/license IDs and semantic elements.
+- Compose application events around renderer output rather than replacing normalized view models with component-local provider objects.
+- Do not fork separate HTML and React anatomy for the same Commerce component; both must come from the same renderer spec.
 
 CSS, HTML, React/shadcn, WordPress templates and future renderers are all consumers of the same normalized contract. A renderer must not create a new provider-specific model layer that contradicts the core declarations.
 

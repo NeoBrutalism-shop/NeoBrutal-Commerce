@@ -85,7 +85,7 @@
 
 ## v0.5 runtime/data contracts
 
-The component system now has a framework-neutral data boundary in `src/contracts/`.
+The component system has a framework-neutral data boundary in `src/contracts/`.
 
 Normalized view models:
 - `ProductView` / `ProductOffer`
@@ -109,23 +109,45 @@ Runtime contract helpers:
 - adapter method/capability validation
 - package export: `@neobrutal/commerce/contracts`
 
+## v0.5 renderer contracts
+
+Headless package export: `@neobrutal/commerce/renderers/headless`
+
+- immutable semantic renderer specs
+- safe HTML serialization
+- product-card renderer
+- normalized order-summary renderer
+- system-state renderer
+- license-card renderer
+- seat-assignment renderer
+- activation-list renderer
+
+React package export: `@neobrutal/commerce/renderers/react`
+
+- `createReactBindings(React)`
+- no bundled or pinned React runtime
+- same headless specs and `data-commerce-component` anatomy
+- suitable for shadcn-style copy/composition without creating a second data contract
+
+The new `summary.css` primitive gives normalized cart/quote totals a reusable core surface instead of depending on demo-only `.store-*` classes.
+
 ## Machine-readable contracts
 - `storefront/catalog.json` — products, licenses, review/guarantee/renewal metadata
 - `storefront/routes.json` — route intent, primary components and supported route states
 - `storefront/states.json` — checkout, system, ownership and media state taxonomy
 - `src/contracts/runtime.js` — runtime adapter/state contract
 - `src/contracts/index.d.ts` — TypeScript view models and interfaces
+- `src/renderers/headless.js` — renderer spec builders and HTML serializer
+- `src/renderers/react.js` — React translation of renderer specs
 
 ## Renderer rule
 
-HTML/static, React/shadcn, WordPress and other UI layers render the normalized models above. They must not accept raw provider objects as component contracts.
+HTML/static, React/shadcn, WordPress and other UI layers render the normalized models above. They must not accept raw provider objects as component contracts, and equivalent framework outputs should come from the same renderer anatomy.
 
 ## Next
-- reference/mock adapters and renderer consumption example
-- React/shadcn wrappers over normalized contracts
-- typed component events/actions
+- typed component events/actions for add-to-cart, checkout recovery, seats and activations
 - real EDD transaction adapter
-- real NeoLicenser licensing adapter
+- real licensing-provider adapter mapping
 - upgrade/downgrade ownership flows
 - gift/transfer ownership
 - invoice/receipt history and richer tax outcomes
