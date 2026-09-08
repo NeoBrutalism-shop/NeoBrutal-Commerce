@@ -1,4 +1,4 @@
-import {createCommerceAdapter,createLicensingAdapter} from '../contracts/runtime.js';
+import {createCommerceAdapter,createLicensingAdapter,composeCommerceRuntime} from '../contracts/runtime.js';
 
 const clone=value=>structuredClone(value);
 const nowIso=()=>new Date().toISOString();
@@ -263,9 +263,10 @@ export function createReferenceLicensingAdapter({productId='soft',offerId='team'
 }
 
 export function createReferenceRuntime(options={}){
-  const commerce=createReferenceCommerceAdapter(options.commerce);
-  const licensing=createReferenceLicensingAdapter(options.licensing);
-  return Object.freeze({version:'0.5.0-dev',commerce,licensing});
+  return composeCommerceRuntime({
+    commerce:createReferenceCommerceAdapter(options.commerce),
+    licensing:createReferenceLicensingAdapter(options.licensing)
+  });
 }
 
 export {DEFAULT_PRODUCT as REFERENCE_PRODUCT};
