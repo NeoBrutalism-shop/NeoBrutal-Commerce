@@ -24,12 +24,14 @@ jobs:
           node --check demo/v02.js
           node --check storefront/store.js
           node --check src/contracts/runtime.js
+          node --check src/actions/runtime.js
           node --check src/adapters/reference.js
           node --check src/renderers/headless.js
           node --check src/renderers/react.js
           node --check tests/contracts-v05.test.mjs
           node --check tests/reference-adapter-v05.test.mjs
           node --check tests/renderers-v05.test.mjs
+          node --check tests/actions-v05.test.mjs
       - name: Serve static production routes
         shell: bash
         run: |
@@ -48,6 +50,8 @@ jobs:
           curl --fail --silent http://127.0.0.1:4173/src/index.css >/dev/null
           curl --fail --silent http://127.0.0.1:4173/src/contracts/runtime.js >/dev/null
           curl --fail --silent http://127.0.0.1:4173/src/contracts/index.d.ts >/dev/null
+          curl --fail --silent http://127.0.0.1:4173/src/actions/runtime.js >/dev/null
+          curl --fail --silent http://127.0.0.1:4173/src/actions/index.d.ts >/dev/null
           curl --fail --silent http://127.0.0.1:4173/src/adapters/reference.js >/dev/null
           curl --fail --silent http://127.0.0.1:4173/src/adapters/reference.d.ts >/dev/null
           curl --fail --silent http://127.0.0.1:4173/src/renderers/headless.js >/dev/null

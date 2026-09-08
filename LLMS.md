@@ -31,7 +31,7 @@ Do not collapse ownership and purchasing into the same mental model. Storefront 
 
 When generating application code, import the normalized contract from `@neobrutal/commerce/contracts` or follow the declarations in `src/contracts/index.d.ts`.
 
-The integration path is:
+The read path is:
 
 `provider data/event → provider adapter → normalized Commerce model → renderer spec → framework/HTML`
 
@@ -58,6 +58,33 @@ Prefer these stable types rather than provider-shaped objects:
 - `SignedDownloadView`
 
 A renderer may add local presentation state, but must not mutate the meaning of normalized commercial or ownership data.
+
+## Action contract
+
+Use `@neobrutal/commerce/actions` for user/application intent. The action path is:
+
+`UI/agent intent → Commerce action → normalized runtime → provider adapter`
+
+Canonical action names are:
+- `cart.add`
+- `cart.remove`
+- `checkout.quote`
+- `checkout.submit`
+- `order.refund`
+- `license.activations.list`
+- `license.seats.list`
+- `seat.assign`
+- `seat.remove`
+- `license.renew`
+- `download.create`
+
+Rules:
+- Use `createCommerceAction()` instead of inventing provider-specific command names.
+- Use `createActionDispatcher()` when UI needs `start`, `success` and `error` lifecycle events.
+- Optional commands are capability-gated. Never expose an action merely because a provider is known to support something in general.
+- Do not call adapter methods directly from reusable components when an equivalent Commerce action exists.
+- Preserve action metadata such as `id`, `source` or `correlationId` for UI status and telemetry; do not use metadata to change commercial meaning.
+- UI loading/error state may follow dispatcher lifecycle, but authoritative result data still comes from the normalized adapter result.
 
 ## State contract
 Use `storefront/states.json` or the state constants from `@neobrutal/commerce/contracts` instead of inventing new state names.
@@ -104,7 +131,7 @@ Current production components include:
 - `system-states`
 - `ownership-lifecycle`
 
-Complete route/component intent lives in `storefront/routes.json`. Product/license commercial metadata lives in `storefront/catalog.json`. Runtime adapter/type intent lives in `src/contracts/`.
+Complete route/component intent lives in `storefront/routes.json`. Product/license commercial metadata lives in `storefront/catalog.json`. Runtime adapter/type intent lives in `src/contracts/`. Action intent lives in `src/actions/`.
 
 ## Renderer rule
 
@@ -114,7 +141,7 @@ Use `@neobrutal/commerce/renderers/headless` when generating framework-neutral o
 - `renderSpecToHtml()` is the supported HTML serializer and escapes model-provided text/attributes.
 - React is injected through `createReactBindings(React)`; do not make React types or provider data part of the core contract.
 - Preserve renderer-produced `data-commerce-component`, `data-state`, product/license IDs and semantic elements.
-- Compose application events around renderer output rather than replacing normalized view models with component-local provider objects.
+- Wire interactions to Commerce actions rather than provider callbacks.
 - Do not fork separate HTML and React anatomy for the same Commerce component; both must come from the same renderer spec.
 
 CSS, HTML, React/shadcn, WordPress templates and future renderers are all consumers of the same normalized contract. A renderer must not create a new provider-specific model layer that contradicts the core declarations.
