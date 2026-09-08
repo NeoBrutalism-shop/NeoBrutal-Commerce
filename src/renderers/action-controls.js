@@ -21,7 +21,7 @@ export function createCommerceActionLinkSpec(action,{label='Continue',href='#',c
 }
 
 export function createProductActionCardSpec(product,action,options={}){
-  const base=createProductCardSpec(product,{...options,ctaHref:null});
+  const base=createProductCardSpec(product,{...options,ctaHref:false});
   const label=options.actionLabel??`ADD ${product.name.toUpperCase()} →`;
   return createNode(base.tag,base.props,...base.children,createCommerceActionButtonSpec(action,{label,className:options.actionClassName}));
 }
