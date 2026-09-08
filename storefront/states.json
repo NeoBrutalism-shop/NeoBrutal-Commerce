@@ -1,5 +1,5 @@
 {
-  "version": "0.4.0-dev",
+  "version": "0.5.0-dev",
   "checkout": [
     {"id":"ready","intent":"payment-ready","preservesOrderContext":true},
     {"id":"processing","intent":"payment-processing","blocksSubmit":true,"preservesOrderContext":true},
