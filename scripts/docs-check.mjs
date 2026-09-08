@@ -4,7 +4,12 @@ import path from 'node:path';
 const root=process.cwd();
 const read=file=>fs.readFileSync(path.join(root,file),'utf8');
 const json=file=>JSON.parse(read(file));
-const required=['AGENTS.md','docs/ADOPTION.md','docs/AGENT-PLAYBOOK.md','docs/AI-COMPONENT-NOTES.md','storefront/components.json','LLMS.md','COMPONENTS.md'];
+const required=[
+  'AGENTS.md','LLMS.md','COMPONENTS.md',
+  'docs/ADOPTION.md','docs/AGENT-PLAYBOOK.md','docs/AI-COMPONENT-NOTES.md',
+  'docs/RECIPES.md','docs/THEMING.md','docs/MIGRATION.md','docs/PROVIDER-EXAMPLES.md',
+  'storefront/components.json'
+];
 for(const file of required){if(!fs.existsSync(path.join(root,file))){console.error(`Missing v0.8 adoption file: ${file}`);process.exit(1);}}
 
 const manifest=json('storefront/components.json');
@@ -38,5 +43,13 @@ const playbook=read('docs/AGENT-PLAYBOOK.md');
 for(const marker of ['Read before write','Do not guess','Validation loop','storefront/routes.json']){if(!playbook.includes(marker)){console.error(`AGENT-PLAYBOOK.md missing marker: ${marker}`);process.exit(1);}}
 const notes=read('docs/AI-COMPONENT-NOTES.md');
 for(const marker of ['product-media','checkout','plan-change','ownership-transfer','subscription-management','system-states']){if(!notes.includes(marker)){console.error(`AI-COMPONENT-NOTES.md missing marker: ${marker}`);process.exit(1);}}
+const recipes=read('docs/RECIPES.md');
+for(const marker of ['createReferenceRuntime','createProductCardSpec','bindCommerceActions','createReactActionBindings','createEddCommerceAdapter','createLicensingBridgeAdapter']){if(!recipes.includes(marker)){console.error(`RECIPES.md missing marker: ${marker}`);process.exit(1);}}
+const theming=read('docs/THEMING.md');
+for(const marker of ['--nbc-bg','--nbc-depth','--nbc-space-7','--nbc-text-display','forced-colors']){if(!theming.includes(marker)){console.error(`THEMING.md missing marker: ${marker}`);process.exit(1);}}
+const migration=read('docs/MIGRATION.md');
+for(const marker of ['v0.5 → v0.6','v0.6 → v0.7','v0.7 → v0.8','storefront/components.json','npm run test:browser']){if(!migration.includes(marker)){console.error(`MIGRATION.md missing marker: ${marker}`);process.exit(1);}}
+const providers=read('docs/PROVIDER-EXAMPLES.md');
+for(const marker of ['createEddCommerceAdapter','createLicensingBridgeAdapter','capabilities','normalize','cancel_at_period_end']){if(!providers.includes(marker)){console.error(`PROVIDER-EXAMPLES.md missing marker: ${marker}`);process.exit(1);}}
 
-console.log(`NeoBrutal Commerce v0.8 adoption docs passed · ${manifest.components.length} machine-readable components · ${routes.routes.length} production routes`);
+console.log(`NeoBrutal Commerce v0.8 adoption docs passed · ${manifest.components.length} machine-readable components · ${routes.routes.length} production routes · recipes/theming/migration/provider examples verified`);

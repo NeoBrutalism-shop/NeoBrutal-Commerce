@@ -6,7 +6,33 @@ Commerce is a flavor of the NeoBrutalism family. It shares the same tactile inte
 
 ## Status
 
-`0.7.0` — stable ownership lifecycle plus release-grade accessibility, browser, responsive, visual and performance hardening.
+`0.7.0` is the current stable runtime baseline. The v0.8 branch adds the Docs & Adoption layer around that stable behavior before the final v0.8 version promotion.
+
+## Start here
+
+### Humans
+
+- `docs/ADOPTION.md` — architecture and adoption checklist
+- `docs/RECIPES.md` — copy-paste integration recipes
+- `docs/THEMING.md` — semantic colors, tactile depth, fluid spacing/type and accessibility requirements
+- `docs/PROVIDER-EXAMPLES.md` — concrete EDD and replaceable licensing bridge examples
+- `docs/MIGRATION.md` — version-safe migration guidance
+- `docs/EDD-MAPPING.md` — deeper EDD transaction mapping contract
+- `docs/OWNERSHIP-LIFECYCLE.md` — ownership, billing and entitlement semantics
+
+### Coding agents / LLMs
+
+Read in this order:
+
+1. `AGENTS.md`
+2. `LLMS.md`
+3. `docs/AGENT-PLAYBOOK.md`
+4. `storefront/routes.json`
+5. `storefront/components.json`
+6. `storefront/states.json`
+7. `docs/AI-COMPONENT-NOTES.md` when the target component is high-risk
+
+Do not infer Commerce meaning from provider payloads or demo copy. Normalized contracts and machine-readable manifests are authoritative.
 
 ## Production surface
 
@@ -21,7 +47,8 @@ Commerce is a flavor of the NeoBrutalism family. It shares the same tactile inte
 - dependency-free headless renderers plus optional React/action bindings
 - EDD transaction bridge and replaceable licensing-provider bridge
 - ownership lifecycle: upgrade/downgrade quote/apply, gift/transfer records, subscription cancel/resume, invoice history and ownership audit timeline
-- **v0.7 hardening:** strict Axe AA checks, keyboard journeys, reduced-motion/forced-colors assertions, Chromium/Firefox/WebKit coverage, responsive matrix, CLS and static payload budgets, and committed visual-regression baselines
+- strict Axe AA, keyboard, reduced-motion, forced-colors, Chromium/Firefox/WebKit, responsive, CLS/static-payload and visual-fingerprint release gates
+- v0.8 machine-readable component/adoption contract for humans and agents
 
 ## Production routes
 
@@ -49,7 +76,7 @@ const runtime=composeCommerceRuntime({commerce,licensing});
 const actions=createActionDispatcher(runtime);
 ```
 
-Provider objects stop at the adapters. Components and agents consume normalized models and dispatch normalized commands.
+Provider objects stop at adapters. Components and agents consume normalized models and canonical commands.
 
 Read path:
 
@@ -63,35 +90,16 @@ Write path:
 
 Commerce keeps transaction, ownership and billing concepts separate:
 
-- `OrderView` proves a transaction.
-- `InvoiceView` records provider-authoritative billing/tax/refund history.
-- `LicenseView` describes owned product scope.
-- `EntitlementView` describes current download/update rights.
-- `SubscriptionView` controls future recurring billing, not current ownership.
-- `PlanChangeQuoteView` exposes scope/timing/price consequences before mutation.
-- `OwnershipTransferView` represents pending/accepted/cancelled/expired gift or transfer operations.
-- `OwnershipEventView` provides the auditable lifecycle timeline.
+- `OrderView` — transaction
+- `InvoiceView` — provider-authoritative billing/tax/refund history
+- `LicenseView` — owned product scope
+- `EntitlementView` — current download/update/use rights
+- `SubscriptionView` — future recurring billing state
+- `PlanChangeQuoteView` — consequences before a plan mutation
+- `OwnershipTransferView` — gift/transfer workflow state
+- `OwnershipEventView` — auditable lifecycle history
 
-An immediate downgrade cannot silently strand active usage above the target capacity. `cancel_at_period_end` means future renewal is cancelled while the paid term remains in force. A transfer invitation does not mean ownership has already moved.
-
-See `docs/OWNERSHIP-LIFECYCLE.md` for the full contract.
-
-## Canonical actions
-
-Existing purchase and ownership commands remain supported, including:
-
-- `invoice.list`
-- `subscription.get`
-- `subscription.cancel`
-- `subscription.resume`
-- `license.change.quote`
-- `license.change.submit`
-- `license.transfers.list`
-- `license.transfer.create`
-- `license.transfer.cancel`
-- `license.history.list`
-
-Optional actions are capability-gated. Components must never infer support from provider names.
+An immediate downgrade cannot silently strand active usage above target capacity. `cancel_at_period_end` preserves the already-paid term. A pending transfer invitation does not mean ownership has moved.
 
 ## Delivery packages
 
@@ -116,37 +124,24 @@ Renderers:
 
 React is injected by the consuming application; Commerce does not bundle or pin it.
 
-## Provider integration
-
-The EDD adapter accepts an injected transaction transport and maps products/variable prices, carts, checkout quotes, orders, refunds, invoice history and recurring billing into the normalized commerce boundary.
-
-The licensing bridge accepts an injected licensing transport plus normalizers. It can expose activations, seats, renewal, signed downloads, plan changes, transfers and ownership history without changing renderer/component contracts.
-
-See `docs/EDD-MAPPING.md` and `docs/OWNERSHIP-LIFECYCLE.md`.
-
 ## Machine-readable contracts
 
 - `storefront/catalog.json` — product/license/lifecycle metadata
-- `storefront/routes.json` — route intent and component/state coverage
+- `storefront/routes.json` — route intent and required components/states
+- `storefront/components.json` — component models, actions, states and agent rules
 - `storefront/states.json` — checkout/system/ownership/operation/subscription/media taxonomy
 - `src/contracts/` — normalized runtime + TypeScript model interfaces
 - `src/actions/` — canonical commands, lifecycle events and DOM bindings
 - `src/renderers/` — headless, React, action and ownership renderers
-- `LLMS.md` — generation/integration rules for agents
 
-## v0.7 quality contract
+## Quality contract
 
-`npm run check` enforces static conformance, contract/action/adapter regressions and payload budgets. Browser QA runs the production journeys in desktop Chromium, mobile Chromium, desktop Firefox and desktop WebKit/Safari-class rendering.
+```bash
+npm run check
+npm run test:browser
+```
 
-The v0.7 browser gate includes:
-
-- WCAG A/AA Axe checks including color contrast on every production route
-- keyboard-only purchase and ownership actions with visible focus
-- reduced-motion and forced-colors execution
-- viewport and touch-target checks from 320px through 1440px
-- history/state resilience and delayed-hydration readability
-- critical-route cumulative layout shift budget
-- committed screenshot regression baselines for critical storefront and ownership surfaces
+`npm run check` enforces static conformance, docs/component-registry consistency, contract/action/adapter regressions and payload budgets. Browser QA runs desktop Chromium, mobile Chromium, Firefox and WebKit and includes strict WCAG A/AA Axe checks, keyboard journeys, reduced-motion, forced-colors, 320–1440px responsive checks, state resilience, CLS and canonical visual fingerprints.
 
 No known failing commerce journey is accepted for merge.
 
