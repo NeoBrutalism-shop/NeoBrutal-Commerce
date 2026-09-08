@@ -3,6 +3,8 @@ const freezeList=(values)=>Object.freeze([...values]);
 export const CHECKOUT_STATES=freezeList(['ready','processing','failed','recovered']);
 export const SYSTEM_STATES=freezeList(['empty','loading','error','offline','permission','unsupported']);
 export const OWNERSHIP_STATES=freezeList(['active','grace','expired','cancelled','refunded']);
+export const OWNERSHIP_OPERATION_STATES=freezeList(['ready','quoted','processing','complete','failed']);
+export const SUBSCRIPTION_STATES=freezeList(['active','cancel_at_period_end','cancelled','past_due']);
 export const MEDIA_STATES=freezeList(['preview','code','files']);
 export const LICENSE_PLAN_IDS=freezeList(['individual','team','agency']);
 
@@ -24,11 +26,19 @@ export const LICENSING_REQUIRED_METHODS=freezeList([
   'listEntitlements'
 ]);
 
+const COMMERCE_CAPABILITY_METHODS=Object.freeze({
+  invoiceHistory:freezeList(['listInvoices']),
+  subscriptions:freezeList(['getSubscription','cancelSubscription','resumeSubscription'])
+});
+
 const LICENSING_CAPABILITY_METHODS=Object.freeze({
   activations:freezeList(['listActivations']),
   seats:freezeList(['listSeats','assignSeat','removeSeat']),
   renewals:freezeList(['renewUpdates']),
-  signedDownloads:freezeList(['createSignedDownload'])
+  signedDownloads:freezeList(['createSignedDownload']),
+  planChanges:freezeList(['quotePlanChange','changePlan']),
+  transfers:freezeList(['listTransfers','createTransfer','cancelTransfer']),
+  ownershipHistory:freezeList(['listOwnershipEvents'])
 });
 
 function hasOwnMethod(value,key){
@@ -62,6 +72,8 @@ function makeStateGuard(values){
 export const isCheckoutState=makeStateGuard(CHECKOUT_STATES);
 export const isSystemState=makeStateGuard(SYSTEM_STATES);
 export const isOwnershipState=makeStateGuard(OWNERSHIP_STATES);
+export const isOwnershipOperationState=makeStateGuard(OWNERSHIP_OPERATION_STATES);
+export const isSubscriptionState=makeStateGuard(SUBSCRIPTION_STATES);
 export const isMediaState=makeStateGuard(MEDIA_STATES);
 export const isLicensePlanId=makeStateGuard(LICENSE_PLAN_IDS);
 
@@ -70,6 +82,8 @@ export function assertKnownState(group,value){
     checkout:CHECKOUT_STATES,
     system:SYSTEM_STATES,
     ownership:OWNERSHIP_STATES,
+    ownershipOperation:OWNERSHIP_OPERATION_STATES,
+    subscription:SUBSCRIPTION_STATES,
     media:MEDIA_STATES
   };
   const values=groups[group];
@@ -87,8 +101,13 @@ export function createCommerceAdapter(adapter){
     taxes:false,
     discounts:false,
     invoices:false,
-    refunds:false
+    refunds:false,
+    invoiceHistory:false,
+    subscriptions:false
   });
+  for(const [capability,methods] of Object.entries(COMMERCE_CAPABILITY_METHODS)){
+    if(capabilities[capability])assertMethods(adapter,methods,`Commerce adapter capability "${capability}"`);
+  }
   return Object.freeze({...adapter,kind:'commerce',capabilities});
 }
 
@@ -99,7 +118,10 @@ export function createLicensingAdapter(adapter){
     activations:false,
     seats:false,
     renewals:false,
-    signedDownloads:false
+    signedDownloads:false,
+    planChanges:false,
+    transfers:false,
+    ownershipHistory:false
   });
   for(const [capability,methods] of Object.entries(LICENSING_CAPABILITY_METHODS)){
     if(capabilities[capability])assertMethods(adapter,methods,`Licensing adapter capability "${capability}"`);
@@ -111,7 +133,7 @@ export function composeCommerceRuntime({commerce,licensing}){
   const commerceAdapter=createCommerceAdapter(commerce);
   const licensingAdapter=createLicensingAdapter(licensing);
   return Object.freeze({
-    version:'0.5.0',
+    version:'0.6.0-dev',
     commerce:commerceAdapter,
     licensing:licensingAdapter
   });
