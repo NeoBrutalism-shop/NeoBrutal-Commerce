@@ -2,7 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 const root=process.cwd();
-const components=['button.css','product.css','cart.css','product-detail.css','pricing.css','checkout.css','account.css','license.css'];
+const components=['button.css','product.css','cart.css','product-detail.css','pricing.css','checkout.css','account.css','license.css','table.css'];
 const storefrontRoutes=['index.html','products/index.html','product/soft/index.html','pricing/index.html','cart/index.html','checkout/index.html','order/success/index.html','account/index.html','account/license/demo-soft-team/index.html','components/index.html'];
 const required=[
   'src/tokens.css','src/base.css','src/index.css',
@@ -72,6 +72,12 @@ for(const file of storefrontRoutes){
   if(!html.includes('data-commerce-page')||!html.includes('storefront/store.css')||!html.includes('storefront/store.js')){
     console.error(`v0.3 route shell contract missing: ${file}`);
     process.exit(1);
+  }
+  for(const match of html.matchAll(/<td\b([^>]*)>/g)){
+    if(!/\bdata-label=/.test(match[1])){
+      console.error(`Responsive table cell missing data-label: ${file}`);
+      process.exit(1);
+    }
   }
 }
 
