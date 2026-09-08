@@ -1,6 +1,7 @@
-import type {ActionBindingCallbacks,ActionDispatcher,CommerceAction} from '../actions/index.js';
+import type {ActionDispatcher,CommerceAction} from '../actions/index.js';
+import type {ActionBindingCallbacks} from '../actions/bindings.js';
 import type {ProductView} from '../contracts/index.js';
-import type {RenderNode,ProductCardOptions} from './headless.js';
+import type {RenderSpec,ProductCardRenderOptions} from './headless.js';
 
 export interface CommerceActionControlOptions{
   label?:string;
@@ -10,12 +11,12 @@ export interface CommerceActionControlOptions{
   href?:string;
 }
 
-export interface ProductActionCardOptions extends ProductCardOptions{
+export interface ProductActionCardOptions extends ProductCardRenderOptions{
   actionLabel?:string;
   actionClassName?:string;
 }
 
-export declare function createCommerceActionButtonSpec(action:CommerceAction,options?:CommerceActionControlOptions):RenderNode;
-export declare function createCommerceActionLinkSpec(action:CommerceAction,options?:CommerceActionControlOptions):RenderNode;
-export declare function createProductActionCardSpec(product:ProductView,action:CommerceAction,options?:ProductActionCardOptions):RenderNode;
-export declare function bindActionSpec(spec:RenderNode,dispatcher:ActionDispatcher,callbacks?:ActionBindingCallbacks):RenderNode;
+export declare function createCommerceActionButtonSpec(action:CommerceAction,options?:CommerceActionControlOptions):RenderSpec;
+export declare function createCommerceActionLinkSpec(action:CommerceAction,options?:CommerceActionControlOptions):RenderSpec;
+export declare function createProductActionCardSpec(product:ProductView,action:CommerceAction,options?:ProductActionCardOptions):RenderSpec;
+export declare function bindActionSpec(spec:RenderSpec,dispatcher:ActionDispatcher,callbacks?:ActionBindingCallbacks):RenderSpec;
