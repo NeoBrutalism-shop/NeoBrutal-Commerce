@@ -19,8 +19,10 @@ jobs:
       - name: Conformance
         run: npm run check
       - name: Demo JavaScript syntax
-        run: node --check demo/demo.js
-      - name: Serve static demo
+        run: |
+          node --check demo/demo.js
+          node --check demo/v02.js
+      - name: Serve static demos
         shell: bash
         run: |
           set -euo pipefail
@@ -30,4 +32,5 @@ jobs:
           sleep 1
           curl --fail --silent http://127.0.0.1:4173/ >/dev/null
           curl --fail --silent http://127.0.0.1:4173/demo/ >/dev/null
+          curl --fail --silent http://127.0.0.1:4173/demo/v02.html >/dev/null
           curl --fail --silent http://127.0.0.1:4173/src/index.css >/dev/null
