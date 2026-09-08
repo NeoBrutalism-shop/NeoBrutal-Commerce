@@ -40,7 +40,8 @@ syncWorkflowFromHash();window.addEventListener('hashchange',syncWorkflowFromHash
 
 const cartBackdrop=$('#cartBackdrop');const closeCartButton=$('#closeCart');
 function focusableInCart(){return $$('a[href],button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"])',cartBackdrop).filter(node=>!node.hidden)}
-function openCart(trigger){if(!cartBackdrop)return;const status=$('#toast');if(status)status.hidden=true;lastCartTrigger=trigger||document.activeElement;cartBackdrop.hidden=false;document.body.style.overflow='hidden';closeCartButton?.focus()}
+function stopViewportMotion(){const previous=root.style.scrollBehavior;const top=window.scrollY;const left=window.scrollX;root.style.scrollBehavior='auto';window.scrollTo({top,left,behavior:'auto'});root.style.scrollBehavior=previous}
+function openCart(trigger){if(!cartBackdrop)return;stopViewportMotion();const status=$('#toast');if(status)status.hidden=true;lastCartTrigger=trigger||document.activeElement;cartBackdrop.hidden=false;document.body.style.overflow='hidden';closeCartButton?.focus()}
 function closeCart({restoreFocus=true}={}){if(!cartBackdrop)return;cartBackdrop.hidden=true;document.body.style.overflow='';if(restoreFocus)lastCartTrigger?.focus?.()}
 $('#openCart')?.addEventListener('click',event=>openCart(event.currentTarget));
 closeCartButton?.addEventListener('click',()=>closeCart());
