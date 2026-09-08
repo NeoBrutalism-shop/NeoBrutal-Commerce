@@ -43,8 +43,23 @@ test('theme preference persists across production routes',async({page})=>{
   await expect(page.locator('html')).toHaveAttribute('data-theme','dark');
 });
 
+test('commerce tables become labelled viewport-safe records on mobile',async({page})=>{
+  await page.setViewportSize({width:390,height:844});
+  for(const route of ['/pricing/','/account/','/account/license/demo-soft-team/']){
+    await page.goto(route);
+    const cells=page.locator('.store-table td');
+    await expect(cells.first()).toBeVisible();
+    const labels=await cells.evaluateAll(nodes=>nodes.map(node=>node.getAttribute('data-label')));
+    expect(labels.length).toBeGreaterThan(0);
+    expect(labels.every(Boolean)).toBe(true);
+    const rows=page.locator('.store-table tbody tr');
+    const boxes=await rows.evaluateAll(nodes=>nodes.map(node=>{const box=node.getBoundingClientRect();return {left:box.left,right:box.right,width:box.width}}));
+    expect(boxes.every(box=>box.left>=-1&&box.right<=391&&box.width<=391)).toBe(true);
+  }
+});
+
 test('capture v0.3 storefront visual review',async({page},testInfo)=>{
-  for(const [name,route] of [['home','/'],['product-soft','/product/soft/'],['account','/account/']]){
+  for(const [name,route] of [['home','/'],['product-soft','/product/soft/'],['pricing','/pricing/'],['account','/account/'],['license-detail','/account/license/demo-soft-team/']]){
     await page.goto(route);
     await page.screenshot({path:testInfo.outputPath(`commerce-v03-${name}-${testInfo.project.name}.png`),fullPage:true});
   }
