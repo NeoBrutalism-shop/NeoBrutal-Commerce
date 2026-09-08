@@ -41,12 +41,12 @@ syncWorkflowFromHash();window.addEventListener('hashchange',syncWorkflowFromHash
 const cartBackdrop=$('#cartBackdrop');const closeCartButton=$('#closeCart');
 function focusableInCart(){return $$('a[href],button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"])',cartBackdrop).filter(node=>!node.hidden)}
 function openCart(trigger){if(!cartBackdrop)return;lastCartTrigger=trigger||document.activeElement;cartBackdrop.hidden=false;document.body.style.overflow='hidden';closeCartButton?.focus()}
-function closeCart(){if(!cartBackdrop)return;cartBackdrop.hidden=true;document.body.style.overflow='';lastCartTrigger?.focus?.()}
+function closeCart({restoreFocus=true}={}){if(!cartBackdrop)return;cartBackdrop.hidden=true;document.body.style.overflow='';if(restoreFocus)lastCartTrigger?.focus?.()}
 $('#openCart')?.addEventListener('click',event=>openCart(event.currentTarget));
-closeCartButton?.addEventListener('click',closeCart);
+closeCartButton?.addEventListener('click',()=>closeCart());
 cartBackdrop?.addEventListener('click',event=>{if(event.target===cartBackdrop)closeCart()});
 cartBackdrop?.addEventListener('keydown',event=>{if(event.key==='Escape'){event.preventDefault();closeCart();return}if(event.key!=='Tab')return;const nodes=focusableInCart();if(!nodes.length)return;const first=nodes[0],last=nodes.at(-1);if(event.shiftKey&&document.activeElement===first){event.preventDefault();last.focus()}else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first.focus()}});
-$('#goCheckout')?.addEventListener('click',()=>{closeCart();activateWorkflow('checkout')});
+$('#goCheckout')?.addEventListener('click',()=>{closeCart({restoreFocus:false});activateWorkflow('checkout',{scroll:true,updateHash:true});$('#checkout-title')?.focus({preventScroll:true})});
 $('#addToCart')?.addEventListener('click',event=>{cartHasItem=true;const count=$('#cartCount');if(count)count.textContent='1';updateCommerce();showToast(`${planLabel[plan]} license added to cart.`);window.setTimeout(()=>openCart(event.currentTarget),180)});
 
 const couponForm=$('#couponForm');

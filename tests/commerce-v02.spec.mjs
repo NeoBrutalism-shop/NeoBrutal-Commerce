@@ -7,9 +7,16 @@ async function expectNoSeriousAxe(page){
   expect(violations, JSON.stringify(violations,null,2)).toEqual([]);
 }
 
-test('v0.2 storefront passes serious/critical axe checks', async ({ page })=>{
+test('v0.2 storefront passes serious/critical axe checks without stylesheet failures', async ({ page })=>{
+  const stylesheetFailures=[];
+  page.on('response',response=>{
+    if(response.request().resourceType()==='stylesheet'&&response.status()>=400){
+      stylesheetFailures.push({status:response.status(),url:response.url()});
+    }
+  });
   await page.goto('/demo/v02.html');
   await expect(page.getByRole('heading',{name:'NeoBrutal Soft'})).toBeVisible();
+  expect(stylesheetFailures).toEqual([]);
   await expectNoSeriousAxe(page);
 });
 
@@ -21,8 +28,9 @@ test('license, cart, coupon and checkout stay synchronized', async ({ page })=>{
   const dialog=page.getByRole('dialog',{name:'Ready when you are.'});
   await expect(dialog).toBeVisible();
   await expect(dialog.locator('#cartLicense')).toHaveText('Team · 5 sites');
-  await dialog.getByRole('link',{name:'CHECKOUT →'}).click();
+  await dialog.getByRole('button',{name:'CHECKOUT →'}).click();
   await expect(dialog).toBeHidden();
+  await expect(page.locator('#checkout-title')).toBeFocused();
   await page.locator('#couponInput').fill('FOUNDRY10');
   await page.getByRole('button',{name:'APPLY'}).click();
   await expect(page.locator('#couponStatus')).toContainText('10% off');

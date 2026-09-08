@@ -7,6 +7,7 @@
   <meta name="description" content="NeoBrutal Commerce v0.2 — a tactile storefront workflow for digital products, checkout and customer ownership." />
   <title>NeoBrutal Commerce — Storefront Workflow v0.2</title>
   <link rel="stylesheet" href="../src/index.css" />
+  <link rel="stylesheet" href="./demo.css" />
   <link rel="stylesheet" href="./v02.css" />
   <script type="module" src="./v02.js"></script>
 </head>
@@ -145,7 +146,7 @@
         </div>
 
         <section id="checkout" class="v02-workflow-panel" data-workflow-panel="checkout" aria-labelledby="checkout-title">
-          <div class="v02-panel-heading"><p class="v02-kicker">CHECKOUT</p><h3 id="checkout-title">Know the total before you pay.</h3><p>This is a UI workflow demo. No payment is processed.</p></div>
+          <div class="v02-panel-heading"><p class="v02-kicker">CHECKOUT</p><h3 id="checkout-title" tabindex="-1">Know the total before you pay.</h3><p>This is a UI workflow demo. No payment is processed.</p></div>
           <div class="nbc-checkout-shell v02-checkout-shell">
             <form class="nbc-checkout-card" id="checkoutForm">
               <div class="nbc-checkout-steps" aria-label="Checkout progress"><div class="nbc-checkout-step" aria-current="step"><span>01</span>Details</div><div class="nbc-checkout-step"><span>02</span>Payment</div><div class="nbc-checkout-step"><span>03</span>Download</div></div>
@@ -176,7 +177,7 @@
 
   <footer class="v02-footer nbc-shell"><div><strong>NEOBRUTAL COMMERCE</strong><span>Storefront / checkout / ownership</span></div><a href="https://github.com/NeoBrutalism-shop/NeoBrutal-Commerce">Source on GitHub ↗</a></footer>
 
-  <div class="nbc-mini-cart-backdrop" id="cartBackdrop" hidden><aside class="nbc-mini-cart" role="dialog" aria-modal="true" aria-labelledby="cartTitle"><div class="nbc-mini-cart-header"><div><p class="v02-kicker">YOUR CART</p><h2 id="cartTitle">Ready when you are.</h2></div><button class="nbc-icon-button nbc-tactile" id="closeCart" type="button" aria-label="Close cart">×</button></div><div class="v02-stack"><div class="nbc-cart-item"><div><strong>NeoBrutal Soft</strong><small id="cartLicense">Individual · 1 site</small></div><strong id="cartProductPrice">$49.00</strong></div><div class="v02-cart-line" id="cartExtrasRow" hidden><span><strong>Optional extras</strong><small>Bundle</small></span><strong id="cartExtras">$0.00</strong></div></div><div class="v02-stack"><div class="v02-total v02-total--grand"><span>Cart total</span><strong id="cartTotal">$49.00</strong></div><a class="nbc-button nbc-button--primary nbc-tactile" id="goCheckout" href="#checkout" data-workflow-link="checkout">CHECKOUT →</a></div></aside></div>
+  <div class="nbc-mini-cart-backdrop" id="cartBackdrop" hidden><aside class="nbc-mini-cart" role="dialog" aria-modal="true" aria-labelledby="cartTitle"><div class="nbc-mini-cart-header"><div><p class="v02-kicker">YOUR CART</p><h2 id="cartTitle">Ready when you are.</h2></div><button class="nbc-icon-button nbc-tactile" id="closeCart" type="button" aria-label="Close cart">×</button></div><div class="nbc-mini-cart-body v02-stack" data-cart-region="body"><div class="nbc-cart-item"><div><strong>NeoBrutal Soft</strong><small id="cartLicense">Individual · 1 site</small></div><strong id="cartProductPrice">$49.00</strong></div><div class="v02-cart-line" id="cartExtrasRow" hidden><span><strong>Optional extras</strong><small>Bundle</small></span><strong id="cartExtras">$0.00</strong></div></div><footer class="nbc-mini-cart-footer v02-stack" data-cart-region="actions"><div class="v02-total v02-total--grand"><span>Cart total</span><strong id="cartTotal">$49.00</strong></div><button class="nbc-button nbc-button--primary nbc-tactile nbc-mini-cart-action" id="goCheckout" type="button" aria-controls="checkout">CHECKOUT →</button></footer></aside></div>
   <div class="v02-toast" id="toast" role="status" aria-live="polite" hidden></div>
 </body>
 </html>
