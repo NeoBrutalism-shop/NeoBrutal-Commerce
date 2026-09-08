@@ -49,6 +49,8 @@ test('v0.9 production storefront stress keeps ownership operations isolated and 
   await page.goto('/account/license/demo-soft-team/');
   const activationRows=page.locator('[data-commerce-component="activation-row"] tbody tr');
   const activationCount=await activationRows.count();
+  const ownershipTimeline=page.locator('[data-ownership-timeline] li');
+  const ownershipCount=await ownershipTimeline.count();
 
   await page.locator('[data-plan-target]').selectOption('individual');
   await page.locator('[data-plan-effective]').selectOption('immediate');
@@ -75,7 +77,12 @@ test('v0.9 production storefront stress keeps ownership operations isolated and 
   await expect(subscription).toHaveAttribute('data-subscription-state','active');
 
   await expect(activationRows).toHaveCount(activationCount);
-  await expect(page.locator('[data-ownership-timeline] li')).toHaveCount(6);
+  await expect(ownershipTimeline).toHaveCount(ownershipCount+5);
+  await expect(ownershipTimeline.nth(0)).toContainText('Annual subscription renewal resumed');
+  await expect(ownershipTimeline.nth(1)).toContainText('Future subscription renewal cancelled');
+  await expect(ownershipTimeline.nth(2)).toContainText('Ownership invitation cancelled');
+  await expect(ownershipTimeline.nth(3)).toContainText('Gift invitation created');
+  await expect(ownershipTimeline.nth(4)).toContainText('Team → Individual scheduled');
   const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-window.innerWidth);
   expect(overflow).toBeLessThanOrEqual(1);
   expect(failures).toEqual([]);
