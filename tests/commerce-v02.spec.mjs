@@ -32,7 +32,14 @@ test('license, cart, coupon and checkout stay synchronized', async ({ page })=>{
   const bodyBox=await dialog.locator('[data-cart-region="body"]').boundingBox();
   const footerBox=await dialog.locator('[data-cart-region="actions"]').boundingBox();
   expect(bodyBox&&footerBox&&bodyBox.y+bodyBox.height<=footerBox.y+0.5).toBeTruthy();
-  await dialog.getByRole('button',{name:'CHECKOUT →'}).click();
+  const checkoutButton=dialog.getByRole('button',{name:'CHECKOUT →'});
+  const hitTarget=await checkoutButton.evaluate(button=>{
+    const rect=button.getBoundingClientRect();
+    const target=document.elementFromPoint(rect.left+rect.width/2,rect.top+rect.height/2);
+    return target===button||button.contains(target);
+  });
+  expect(hitTarget).toBeTruthy();
+  await checkoutButton.click();
   await expect(dialog).toBeHidden();
   await expect(page.locator('#checkout-title')).toBeFocused();
   await page.locator('#couponInput').fill('FOUNDRY10');
