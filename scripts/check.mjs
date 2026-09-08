@@ -6,10 +6,12 @@ const components=['button.css','product.css','cart.css','product-detail.css','pr
 const storefrontRoutes=['index.html','products/index.html','product/soft/index.html','pricing/index.html','cart/index.html','checkout/index.html','order/success/index.html','account/index.html','account/license/demo-soft-team/index.html','components/index.html'];
 const contractFiles=[
   'src/contracts/runtime.js','src/contracts/index.d.ts','src/contracts/README.md',
-  'src/actions/runtime.js','src/actions/index.d.ts','src/actions/README.md',
-  'src/adapters/reference.js','src/adapters/reference.d.ts',
+  'src/actions/runtime.js','src/actions/index.d.ts','src/actions/README.md','src/actions/bindings.js','src/actions/bindings.d.ts',
+  'src/adapters/reference.js','src/adapters/reference.d.ts','src/adapters/edd.js','src/adapters/edd.d.ts',
   'src/renderers/headless.js','src/renderers/headless.d.ts','src/renderers/react.js','src/renderers/react.d.ts','src/renderers/README.md',
-  'tests/contracts-v05.test.mjs','tests/reference-adapter-v05.test.mjs','tests/renderers-v05.test.mjs','tests/actions-v05.test.mjs'
+  'src/renderers/action-controls.js','src/renderers/action-controls.d.ts','src/renderers/react-actions.js','src/renderers/react-actions.d.ts',
+  'tests/contracts-v05.test.mjs','tests/reference-adapter-v05.test.mjs','tests/renderers-v05.test.mjs','tests/actions-v05.test.mjs',
+  'tests/action-bindings-v05.test.mjs','tests/edd-adapter-v05.test.mjs'
 ];
 const required=[
   'src/tokens.css','src/base.css','src/index.css',
@@ -68,34 +70,27 @@ for(const marker of ['v02-hero','nbc-gallery-stage','nbc-mini-cart','nbc-checkou
 }
 
 const packageManifest=JSON.parse(fs.readFileSync(path.join(root,'package.json'),'utf8'));
-if(!String(packageManifest.version).startsWith('0.5.')){
-  console.error(`Expected v0.5 package version, received ${packageManifest.version}`);
+if(packageManifest.version!=='0.5.0'){
+  console.error(`Expected stable v0.5.0 package version, received ${packageManifest.version}`);
   process.exit(1);
 }
-const contractsExport=packageManifest.exports?.['./contracts'];
-if(contractsExport?.types!=='./src/contracts/index.d.ts'||contractsExport?.default!=='./src/contracts/runtime.js'){
-  console.error('Package ./contracts export must expose the v0.5 declarations and runtime');
-  process.exit(1);
-}
-const actionsExport=packageManifest.exports?.['./actions'];
-if(actionsExport?.types!=='./src/actions/index.d.ts'||actionsExport?.default!=='./src/actions/runtime.js'){
-  console.error('Package ./actions export must expose the v0.5 action declarations and runtime');
-  process.exit(1);
-}
-const referenceExport=packageManifest.exports?.['./adapters/reference'];
-if(referenceExport?.types!=='./src/adapters/reference.d.ts'||referenceExport?.default!=='./src/adapters/reference.js'){
-  console.error('Package ./adapters/reference export must expose the v0.5 reference adapter declarations and runtime');
-  process.exit(1);
-}
-const headlessExport=packageManifest.exports?.['./renderers/headless'];
-if(headlessExport?.types!=='./src/renderers/headless.d.ts'||headlessExport?.default!=='./src/renderers/headless.js'){
-  console.error('Package ./renderers/headless export must expose the v0.5 headless renderer');
-  process.exit(1);
-}
-const reactExport=packageManifest.exports?.['./renderers/react'];
-if(reactExport?.types!=='./src/renderers/react.d.ts'||reactExport?.default!=='./src/renderers/react.js'){
-  console.error('Package ./renderers/react export must expose the v0.5 React bindings');
-  process.exit(1);
+const expectedExports={
+  './contracts':['./src/contracts/index.d.ts','./src/contracts/runtime.js'],
+  './actions':['./src/actions/index.d.ts','./src/actions/runtime.js'],
+  './actions/bindings':['./src/actions/bindings.d.ts','./src/actions/bindings.js'],
+  './adapters/reference':['./src/adapters/reference.d.ts','./src/adapters/reference.js'],
+  './adapters/edd':['./src/adapters/edd.d.ts','./src/adapters/edd.js'],
+  './renderers/headless':['./src/renderers/headless.d.ts','./src/renderers/headless.js'],
+  './renderers/react':['./src/renderers/react.d.ts','./src/renderers/react.js'],
+  './renderers/action-controls':['./src/renderers/action-controls.d.ts','./src/renderers/action-controls.js'],
+  './renderers/react-actions':['./src/renderers/react-actions.d.ts','./src/renderers/react-actions.js']
+};
+for(const [key,[types,defaultPath]] of Object.entries(expectedExports)){
+  const value=packageManifest.exports?.[key];
+  if(value?.types!==types||value?.default!==defaultPath){
+    console.error(`Package ${key} export is missing or inconsistent`);
+    process.exit(1);
+  }
 }
 if(packageManifest.scripts?.['test:contracts']!=='node --test tests/contracts-v05.test.mjs tests/reference-adapter-v05.test.mjs'){
   console.error('v0.5 contract/reference test script is missing or changed unexpectedly');
@@ -109,13 +104,17 @@ if(packageManifest.scripts?.['test:actions']!=='node --test tests/actions-v05.te
   console.error('v0.5 action test script is missing or changed unexpectedly');
   process.exit(1);
 }
+if(packageManifest.scripts?.['test:integrations']!=='node --test tests/action-bindings-v05.test.mjs tests/edd-adapter-v05.test.mjs'){
+  console.error('v0.5 integration test script is missing or changed unexpectedly');
+  process.exit(1);
+}
 
 const routeManifest=JSON.parse(fs.readFileSync(path.join(root,'storefront/routes.json'),'utf8'));
 const catalogManifest=JSON.parse(fs.readFileSync(path.join(root,'storefront/catalog.json'),'utf8'));
 const stateManifest=JSON.parse(fs.readFileSync(path.join(root,'storefront/states.json'),'utf8'));
 for(const [name,manifest] of Object.entries({routes:routeManifest,catalog:catalogManifest,states:stateManifest})){
-  if(!String(manifest.version).startsWith('0.5.')){
-    console.error(`Expected v0.5 ${name} manifest, received ${manifest.version}`);
+  if(manifest.version!=='0.5.0'){
+    console.error(`Expected stable v0.5.0 ${name} manifest, received ${manifest.version}`);
     process.exit(1);
   }
 }
@@ -180,14 +179,14 @@ if(planIds.join(',')!=='individual,team,agency'){
 }
 
 const runtime=fs.readFileSync(path.join(root,'src/contracts/runtime.js'),'utf8');
-for(const marker of ['CHECKOUT_STATES','SYSTEM_STATES','OWNERSHIP_STATES','MEDIA_STATES','createCommerceAdapter','createLicensingAdapter','composeCommerceRuntime']){
+for(const marker of ['CHECKOUT_STATES','SYSTEM_STATES','OWNERSHIP_STATES','MEDIA_STATES','createCommerceAdapter','createLicensingAdapter','composeCommerceRuntime',"version:'0.5.0'"]){
   if(!runtime.includes(marker)){
     console.error(`v0.5 runtime contract missing: ${marker}`);
     process.exit(1);
   }
 }
 const declarations=fs.readFileSync(path.join(root,'src/contracts/index.d.ts'),'utf8');
-for(const marker of ['interface ProductView','interface CartView','interface CheckoutQuoteView','interface OrderView','interface LicenseView','interface EntitlementView','interface CommerceAdapter','interface LicensingAdapter']){
+for(const marker of ['interface ProductView','interface CartView','interface CheckoutQuoteView','interface OrderView','interface LicenseView','interface EntitlementView','interface CommerceAdapter','interface LicensingAdapter',"readonly version:'0.5.0'"]){
   if(!declarations.includes(marker)){
     console.error(`v0.5 type contract missing: ${marker}`);
     process.exit(1);
@@ -200,10 +199,24 @@ for(const marker of ['ACTION_TYPES','createCommerceAction','executeCommerceActio
     process.exit(1);
   }
 }
+const actionBindings=fs.readFileSync(path.join(root,'src/actions/bindings.js'),'utf8');
+for(const marker of ['createActionAttributes','readCommerceAction','createActionHandler','bindCommerceActions']){
+  if(!actionBindings.includes(marker)){
+    console.error(`v0.5 action binding missing: ${marker}`);
+    process.exit(1);
+  }
+}
 const referenceAdapter=fs.readFileSync(path.join(root,'src/adapters/reference.js'),'utf8');
-for(const marker of ['createReferenceCommerceAdapter','createReferenceLicensingAdapter','createReferenceRuntime','requestRefund','assignSeat','createSignedDownload']){
+for(const marker of ['createReferenceCommerceAdapter','createReferenceLicensingAdapter','createReferenceRuntime','requestRefund','assignSeat','createSignedDownload','composeCommerceRuntime']){
   if(!referenceAdapter.includes(marker)){
     console.error(`v0.5 reference adapter missing: ${marker}`);
+    process.exit(1);
+  }
+}
+const eddAdapter=fs.readFileSync(path.join(root,'src/adapters/edd.js'),'utf8');
+for(const marker of ['createEddCommerceAdapter','normalizeEddProduct','normalizeEddCart','normalizeEddQuote','normalizeEddOrder','normalizeEddCheckoutState','normalizeEddOrderStatus']){
+  if(!eddAdapter.includes(marker)){
+    console.error(`v0.5 EDD adapter missing: ${marker}`);
     process.exit(1);
   }
 }
@@ -221,5 +234,27 @@ for(const marker of ['renderSpecWithReact','createReactBindings','ProductCard','
     process.exit(1);
   }
 }
+const actionControls=fs.readFileSync(path.join(root,'src/renderers/action-controls.js'),'utf8');
+for(const marker of ['createCommerceActionButtonSpec','createCommerceActionLinkSpec','createProductActionCardSpec','bindActionSpec']){
+  if(!actionControls.includes(marker)){
+    console.error(`v0.5 renderer action control missing: ${marker}`);
+    process.exit(1);
+  }
+}
+const reactActions=fs.readFileSync(path.join(root,'src/renderers/react-actions.js'),'utf8');
+for(const marker of ['createReactActionBindings','ActionButton','ActionLink','ProductActionCard']){
+  if(!reactActions.includes(marker)){
+    console.error(`v0.5 React action binding missing: ${marker}`);
+    process.exit(1);
+  }
+}
 
-console.log(`NeoBrutal Commerce checks passed · ${(totalBytes/1024).toFixed(1)} KiB CSS · ${components.length} component stylesheets · ${storefrontRoutes.length} production routes · v0.5 adapters + renderers + actions`);
+for(const file of ['package.json','src/contracts/runtime.js','src/contracts/index.d.ts','src/adapters/reference.js','storefront/catalog.json','storefront/routes.json','storefront/states.json']){
+  const text=fs.readFileSync(path.join(root,file),'utf8');
+  if(text.includes('0.5.0-dev')){
+    console.error(`Stable v0.5 release file still contains dev version: ${file}`);
+    process.exit(1);
+  }
+}
+
+console.log(`NeoBrutal Commerce v0.5.0 checks passed · ${(totalBytes/1024).toFixed(1)} KiB CSS · ${components.length} component stylesheets · ${storefrontRoutes.length} production routes · typed adapters + renderers + actions + EDD integration`);
