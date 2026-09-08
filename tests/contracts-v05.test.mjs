@@ -52,5 +52,5 @@ test('licensing capabilities require methods they advertise',()=>{
 
 test('composed runtime keeps transaction and licensing backends replaceable',()=>{
   const runtime=composeCommerceRuntime({commerce:commerceStub(),licensing:licensingStub()});
-  assert.equal(runtime.version,'0.7.0-dev');assert.equal(runtime.commerce.kind,'commerce');assert.equal(runtime.licensing.kind,'licensing');assert.equal(Object.isFrozen(runtime),true);
+  assert.equal(runtime.version,'0.7.0');assert.equal(runtime.commerce.kind,'commerce');assert.equal(runtime.licensing.kind,'licensing');assert.equal(Object.isFrozen(runtime),true);
 });

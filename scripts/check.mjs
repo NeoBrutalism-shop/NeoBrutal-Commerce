@@ -38,7 +38,7 @@ const v02=fs.readFileSync(path.join(root,'demo/v02.html'),'utf8');
 for(const marker of ['v02-hero','nbc-gallery-stage','nbc-mini-cart','nbc-checkout-shell','nbc-account','nbc-license-card']){if(!v02.includes(marker)){console.error(`v0.2 workflow marker missing: ${marker}`);process.exit(1);}}
 
 const packageManifest=JSON.parse(fs.readFileSync(path.join(root,'package.json'),'utf8'));
-if(packageManifest.version!=='0.7.0-dev'){console.error(`Expected v0.7 development package version, received ${packageManifest.version}`);process.exit(1);}
+if(packageManifest.version!=='0.7.0'){console.error(`Expected stable v0.7.0 package version, received ${packageManifest.version}`);process.exit(1);}
 const expectedExports={
   './contracts':['./src/contracts/index.d.ts','./src/contracts/runtime.js'],
   './actions':['./src/actions/index.d.ts','./src/actions/runtime.js'],
@@ -60,13 +60,14 @@ if(packageManifest.scripts?.['test:performance']!=='node scripts/performance.mjs
 const routeManifest=JSON.parse(fs.readFileSync(path.join(root,'storefront/routes.json'),'utf8'));
 const catalogManifest=JSON.parse(fs.readFileSync(path.join(root,'storefront/catalog.json'),'utf8'));
 const stateManifest=JSON.parse(fs.readFileSync(path.join(root,'storefront/states.json'),'utf8'));
-for(const [name,manifest] of Object.entries({routes:routeManifest,catalog:catalogManifest,states:stateManifest})){if(manifest.version!=='0.7.0-dev'){console.error(`Expected v0.7 development ${name} manifest, received ${manifest.version}`);process.exit(1);}}
+for(const [name,manifest] of Object.entries({routes:routeManifest,catalog:catalogManifest,states:stateManifest})){if(manifest.version!=='0.7.0'){console.error(`Expected stable v0.7.0 ${name} manifest, received ${manifest.version}`);process.exit(1);}}
 
 const routePaths=routeManifest.routes.map(route=>route.path);
 for(const route of ['/','/products','/product/soft','/pricing','/cart','/checkout','/order/success','/account','/account/license/:id','/components']){if(!routePaths.includes(route)){console.error(`Production route contract missing: ${route}`);process.exit(1);}}
 for(const file of storefrontRoutes){
   const html=fs.readFileSync(path.join(root,file),'utf8');
   if(!html.includes('data-commerce-page')||!html.includes('storefront/store.css')||!html.includes('storefront/store.js')){console.error(`Production route shell contract missing: ${file}`);process.exit(1);}
+  if(!html.includes('COMMERCE v0.7')){console.error(`Production route has stale Commerce version chrome: ${file}`);process.exit(1);}
   for(const match of html.matchAll(/<td\b([^>]*)>/g)){if(!/\bdata-label=/.test(match[1])){console.error(`Responsive table cell missing data-label: ${file}`);process.exit(1);}}
 }
 
@@ -87,9 +88,9 @@ if((soft.licenses||[]).map(license=>license.id).join(',')!=='individual,team,age
 for(const capability of ['plan-changes','transfers','gifts','subscriptions','invoice-history','ownership-history']){if(!(soft.ownershipCapabilities||[]).includes(capability)){console.error(`Soft ownership capability missing: ${capability}`);process.exit(1);}}
 
 const runtime=fs.readFileSync(path.join(root,'src/contracts/runtime.js'),'utf8');
-for(const marker of ['OWNERSHIP_OPERATION_STATES','SUBSCRIPTION_STATES','invoiceHistory','subscriptions','planChanges','transfers','ownershipHistory','createCommerceAdapter','createLicensingAdapter','composeCommerceRuntime',"version:'0.7.0-dev'"]){if(!runtime.includes(marker)){console.error(`v0.7 runtime contract missing: ${marker}`);process.exit(1);}}
+for(const marker of ['OWNERSHIP_OPERATION_STATES','SUBSCRIPTION_STATES','invoiceHistory','subscriptions','planChanges','transfers','ownershipHistory','createCommerceAdapter','createLicensingAdapter','composeCommerceRuntime',"version:'0.7.0'"]){if(!runtime.includes(marker)){console.error(`v0.7 runtime contract missing: ${marker}`);process.exit(1);}}
 const declarations=fs.readFileSync(path.join(root,'src/contracts/index.d.ts'),'utf8');
-for(const marker of ['interface PlanChangeQuoteView','interface OwnershipTransferView','interface OwnershipEventView','interface SubscriptionView','interface InvoiceView','planChanges:boolean','transfers:boolean','ownershipHistory:boolean',"readonly version:'0.7.0-dev'"]){if(!declarations.includes(marker)){console.error(`v0.7 type contract missing: ${marker}`);process.exit(1);}}
+for(const marker of ['interface PlanChangeQuoteView','interface OwnershipTransferView','interface OwnershipEventView','interface SubscriptionView','interface InvoiceView','planChanges:boolean','transfers:boolean','ownershipHistory:boolean',"readonly version:'0.7.0'"]){if(!declarations.includes(marker)){console.error(`v0.7 type contract missing: ${marker}`);process.exit(1);}}
 const actions=fs.readFileSync(path.join(root,'src/actions/runtime.js'),'utf8');
 for(const marker of ['license.change.quote','license.change.submit','license.transfer.create','license.transfer.cancel','license.history.list','subscription.cancel','subscription.resume','invoice.list']){if(!actions.includes(marker)){console.error(`Ownership action contract missing: ${marker}`);process.exit(1);}}
 const bridge=fs.readFileSync(path.join(root,'src/adapters/licensing-bridge.js'),'utf8');
@@ -110,4 +111,8 @@ if(!browserWorkflow.includes('chromium firefox webkit')){console.error('v0.7 bro
 const v07=fs.readFileSync(path.join(root,'tests/commerce-v07.spec.mjs'),'utf8');
 for(const marker of ['keyboard operable','reduced-motion','forced-colors','responsive matrix','layout-shift','visual baseline candidates']){if(!v07.includes(marker)){console.error(`v0.7 quality suite missing: ${marker}`);process.exit(1);}}
 
-console.log(`NeoBrutal Commerce v0.7-dev checks passed · ${(totalBytes/1024).toFixed(1)} KiB CSS · ${components.length} component stylesheets · ${storefrontRoutes.length} production routes · Chromium/Firefox/WebKit + accessibility/performance hardening`);
+for(const file of ['package.json','src/contracts/runtime.js','src/contracts/index.d.ts','storefront/catalog.json','storefront/routes.json','storefront/states.json','README.md','tests/contracts-v05.test.mjs','tests/reference-adapter-v05.test.mjs','tests/ownership-v06.test.mjs']){
+  if(fs.readFileSync(path.join(root,file),'utf8').includes('0.7.0-dev')){console.error(`Stable v0.7 release file still contains dev version: ${file}`);process.exit(1);}
+}
+
+console.log(`NeoBrutal Commerce v0.7.0 checks passed · ${(totalBytes/1024).toFixed(1)} KiB CSS · ${components.length} component stylesheets · ${storefrontRoutes.length} production routes · Chromium/Firefox/WebKit + accessibility/performance hardening`);

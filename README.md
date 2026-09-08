@@ -6,7 +6,7 @@ Commerce is a flavor of the NeoBrutalism family. It shares the same tactile inte
 
 ## Status
 
-`0.7.0-dev` — stable v0.6 ownership lifecycle plus release-grade accessibility, browser, responsive, visual and performance hardening.
+`0.7.0` — stable ownership lifecycle plus release-grade accessibility, browser, responsive, visual and performance hardening.
 
 ## Production surface
 
@@ -21,7 +21,7 @@ Commerce is a flavor of the NeoBrutalism family. It shares the same tactile inte
 - dependency-free headless renderers plus optional React/action bindings
 - EDD transaction bridge and replaceable licensing-provider bridge
 - ownership lifecycle: upgrade/downgrade quote/apply, gift/transfer records, subscription cancel/resume, invoice history and ownership audit timeline
-- **v0.7 hardening:** strict Axe AA checks, keyboard journeys, reduced-motion/forced-colors assertions, Chromium/Firefox/WebKit coverage, responsive matrix, CLS and static payload budgets, and visual-regression baselines
+- **v0.7 hardening:** strict Axe AA checks, keyboard journeys, reduced-motion/forced-colors assertions, Chromium/Firefox/WebKit coverage, responsive matrix, CLS and static payload budgets, and committed visual-regression baselines
 
 ## Production routes
 
@@ -138,7 +138,7 @@ See `docs/EDD-MAPPING.md` and `docs/OWNERSHIP-LIFECYCLE.md`.
 
 `npm run check` enforces static conformance, contract/action/adapter regressions and payload budgets. Browser QA runs the production journeys in desktop Chromium, mobile Chromium, desktop Firefox and desktop WebKit/Safari-class rendering.
 
-The v0.7 browser gate adds:
+The v0.7 browser gate includes:
 
 - WCAG A/AA Axe checks including color contrast on every production route
 - keyboard-only purchase and ownership actions with visible focus
@@ -146,7 +146,7 @@ The v0.7 browser gate adds:
 - viewport and touch-target checks from 320px through 1440px
 - history/state resilience and delayed-hydration readability
 - critical-route cumulative layout shift budget
-- reviewed visual baseline candidates, followed by committed screenshot regression baselines
+- committed screenshot regression baselines for critical storefront and ownership surfaces
 
 No known failing commerce journey is accepted for merge.
 
