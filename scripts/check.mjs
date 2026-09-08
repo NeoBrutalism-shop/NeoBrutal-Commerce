@@ -2,12 +2,13 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 const root=process.cwd();
-const components=['button.css','product.css','cart.css','product-detail.css','pricing.css','checkout.css','account.css','license.css','table.css','review.css','media.css','state.css','lifecycle.css'];
+const components=['button.css','product.css','cart.css','product-detail.css','pricing.css','checkout.css','account.css','license.css','table.css','review.css','media.css','state.css','lifecycle.css','summary.css'];
 const storefrontRoutes=['index.html','products/index.html','product/soft/index.html','pricing/index.html','cart/index.html','checkout/index.html','order/success/index.html','account/index.html','account/license/demo-soft-team/index.html','components/index.html'];
 const contractFiles=[
   'src/contracts/runtime.js','src/contracts/index.d.ts','src/contracts/README.md',
   'src/adapters/reference.js','src/adapters/reference.d.ts',
-  'tests/contracts-v05.test.mjs','tests/reference-adapter-v05.test.mjs'
+  'src/renderers/headless.js','src/renderers/headless.d.ts','src/renderers/react.js','src/renderers/react.d.ts','src/renderers/README.md',
+  'tests/contracts-v05.test.mjs','tests/reference-adapter-v05.test.mjs','tests/renderers-v05.test.mjs'
 ];
 const required=[
   'src/tokens.css','src/base.css','src/index.css',
@@ -80,8 +81,22 @@ if(referenceExport?.types!=='./src/adapters/reference.d.ts'||referenceExport?.de
   console.error('Package ./adapters/reference export must expose the v0.5 reference adapter declarations and runtime');
   process.exit(1);
 }
+const headlessExport=packageManifest.exports?.['./renderers/headless'];
+if(headlessExport?.types!=='./src/renderers/headless.d.ts'||headlessExport?.default!=='./src/renderers/headless.js'){
+  console.error('Package ./renderers/headless export must expose the v0.5 headless renderer');
+  process.exit(1);
+}
+const reactExport=packageManifest.exports?.['./renderers/react'];
+if(reactExport?.types!=='./src/renderers/react.d.ts'||reactExport?.default!=='./src/renderers/react.js'){
+  console.error('Package ./renderers/react export must expose the v0.5 React bindings');
+  process.exit(1);
+}
 if(packageManifest.scripts?.['test:contracts']!=='node --test tests/contracts-v05.test.mjs tests/reference-adapter-v05.test.mjs'){
   console.error('v0.5 contract/reference test script is missing or changed unexpectedly');
+  process.exit(1);
+}
+if(packageManifest.scripts?.['test:renderers']!=='node --test tests/renderers-v05.test.mjs'){
+  console.error('v0.5 renderer test script is missing or changed unexpectedly');
   process.exit(1);
 }
 
@@ -175,5 +190,19 @@ for(const marker of ['createReferenceCommerceAdapter','createReferenceLicensingA
     process.exit(1);
   }
 }
+const headlessRenderer=fs.readFileSync(path.join(root,'src/renderers/headless.js'),'utf8');
+for(const marker of ['createProductCardSpec','createOrderSummarySpec','createSystemStateSpec','createLicenseCardSpec','createSeatAssignmentSpec','createActivationListSpec','renderSpecToHtml']){
+  if(!headlessRenderer.includes(marker)){
+    console.error(`v0.5 headless renderer missing: ${marker}`);
+    process.exit(1);
+  }
+}
+const reactRenderer=fs.readFileSync(path.join(root,'src/renderers/react.js'),'utf8');
+for(const marker of ['renderSpecWithReact','createReactBindings','ProductCard','OrderSummary','SystemState','LicenseCard','SeatAssignment','ActivationList']){
+  if(!reactRenderer.includes(marker)){
+    console.error(`v0.5 React renderer missing: ${marker}`);
+    process.exit(1);
+  }
+}
 
-console.log(`NeoBrutal Commerce checks passed · ${(totalBytes/1024).toFixed(1)} KiB CSS · ${components.length} component stylesheets · ${storefrontRoutes.length} production routes · v0.5 typed + reference adapter contract`);
+console.log(`NeoBrutal Commerce checks passed · ${(totalBytes/1024).toFixed(1)} KiB CSS · ${components.length} component stylesheets · ${storefrontRoutes.length} production routes · v0.5 typed adapters + renderer layer`);
