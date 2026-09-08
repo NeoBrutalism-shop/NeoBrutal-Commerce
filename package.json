@@ -1,11 +1,21 @@
 {
   "name": "@neobrutal/commerce",
-  "version": "0.4.0-dev",
+  "version": "0.5.0-dev",
   "private": true,
   "type": "module",
   "description": "Expressive Neo-Brutalism for digital-product and software commerce.",
+  "exports": {
+    ".": "./src/index.css",
+    "./styles.css": "./src/index.css",
+    "./contracts": {
+      "types": "./src/contracts/index.d.ts",
+      "default": "./src/contracts/runtime.js"
+    }
+  },
   "scripts": {
-    "check": "node scripts/check.mjs",
+    "check": "npm run check:static && npm run test:contracts",
+    "check:static": "node scripts/check.mjs",
+    "test:contracts": "node --test tests/contracts-v05.test.mjs",
     "test:browser": "playwright test"
   },
   "devDependencies": {
