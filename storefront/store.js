@@ -4,7 +4,7 @@ const $=(selector,scope=document)=>scope.querySelector(selector);
 const cartKey='nbc-commerce-v03-cart';
 const themeKey='nbc-commerce-theme';
 const orderKey='nbc-commerce-v03-order';
-const plans={individual:{label:'Individual',sites:'1 production site',price:49},team:{label:'Team',sites:'5 production sites',price:99},agency:{label:'Agency',sites:'25 production sites',price:179}};
+const plans={individual:{label:'Individual',sites:'1 production site',siteLimit:1,seatLimit:1,price:49},team:{label:'Team',sites:'5 production sites',siteLimit:5,seatLimit:5,price:99},agency:{label:'Agency',sites:'25 production sites',siteLimit:25,seatLimit:25,price:179}};
 
 function money(value){return `$${Number(value).toFixed(2)}`}
 function readCart(){try{return JSON.parse(localStorage.getItem(cartKey))||null}catch{return null}}
@@ -21,5 +21,24 @@ function initCheckout(){syncCart();const cart=readCart();const gate=$('[data-che
 function initOrder(){let order=null;try{order=JSON.parse(localStorage.getItem(orderKey))}catch{}if(!order)return;const plan=plans[order.plan]||plans.individual;$('[data-order-id]')&&( $('[data-order-id]').textContent=order.id );$('[data-order-plan]')&&( $('[data-order-plan]').textContent=plan.label );$('[data-order-total]')&&( $('[data-order-total]').textContent=money(order.total) )}
 function initCopy(){$$('[data-copy]').forEach(button=>button.addEventListener('click',async()=>{const value=button.dataset.copy||'';try{await navigator.clipboard.writeText(value);button.textContent='COPIED ✓'}catch{button.textContent='COPY UNAVAILABLE'}setTimeout(()=>button.textContent='COPY',1200)}))}
 function initCurrentNav(){const page=document.body.dataset.page;$$('[data-nav]').forEach(link=>{if(link.dataset.nav===page)link.setAttribute('aria-current','page')})}
+function appendOwnershipEvent(summary){const timeline=$('[data-ownership-timeline]');if(!timeline)return;const item=document.createElement('li');const strong=document.createElement('strong');strong.textContent=summary;const small=document.createElement('small');small.textContent='Just now · demo account';item.append(strong,small);timeline.prepend(item)}
+function setLifecycleBadge(node,state,label=state){if(!node)return;node.dataset.state=state;node.textContent=String(label).replaceAll('_',' ').toUpperCase()}
+function initPlanChange(){
+  const form=$('[data-plan-change-form]');if(!form)return;
+  const target=$('[data-plan-target]',form),effective=$('[data-plan-effective]',form),result=$('[data-plan-result]'),state=$('[data-plan-state]'),apply=$('[data-plan-apply]');
+  let quote=null;
+  form.addEventListener('submit',event=>{event.preventDefault();const from=plans.team,to=plans[target.value]||plans.agency;const direction=to.price>from.price?'upgrade':to.price<from.price?'downgrade':'lateral';const blocked=direction==='downgrade'&&effective.value==='immediate'&&(2>to.siteLimit||2>to.seatLimit);quote={target:target.value,effective:effective.value,direction,blocked,adjustment:to.price-from.price};result.hidden=false;setLifecycleBadge(state,'quoted');$('[data-plan-title]').textContent=`${direction.toUpperCase()} · ${from.label} → ${to.label}`;$('[data-plan-adjustment]').textContent=`Price adjustment: ${quote.adjustment>=0?'+':''}${money(quote.adjustment)} · next term ${money(to.price)}`;$('[data-plan-message]').textContent=blocked?'Current usage exceeds the target plan. Remove excess sites/seats or choose next renewal term.':quote.effective==='next_term'?'The plan change will be scheduled for the next renewal term.':'The quoted change can be applied immediately.';apply.disabled=blocked});
+  apply?.addEventListener('click',()=>{if(!quote||quote.blocked)return;setLifecycleBadge(state,'complete');$('[data-plan-title]').textContent=quote.effective==='next_term'?'CHANGE SCHEDULED':'PLAN CHANGED';apply.disabled=true;apply.textContent='APPLIED ✓';appendOwnershipEvent(`${plans.team.label} → ${plans[quote.target].label} ${quote.effective==='next_term'?'scheduled':'applied'}`)});
+}
+function initTransfer(){
+  const form=$('[data-transfer-form]');if(!form)return;const result=$('[data-transfer-result]'),state=$('[data-transfer-state]'),cancel=$('[data-transfer-cancel]');let active=false;
+  form.addEventListener('submit',event=>{event.preventDefault();const email=$('[data-transfer-email]',form).value.trim();const kind=$('[data-transfer-kind]',form).value;if(!email)return;active=true;result.hidden=false;setLifecycleBadge(state,'pending');$('[data-transfer-message]').textContent=`${kind==='gift'?'Gift':'Transfer'} invitation created for ${email}. Ownership has not moved yet.`;appendOwnershipEvent(`${kind==='gift'?'Gift':'Transfer'} invitation created`)});
+  cancel?.addEventListener('click',()=>{if(!active)return;active=false;setLifecycleBadge(state,'cancelled');$('[data-transfer-message]').textContent='Invitation cancelled. Ownership remains with the current account.';cancel.disabled=true;appendOwnershipEvent('Ownership invitation cancelled')});
+}
+function initSubscription(){
+  const shell=$('[data-commerce-component="subscription-management"]');if(!shell)return;const badge=$('[data-subscription-badge]',shell),cancel=$('[data-subscription-cancel]',shell),resume=$('[data-subscription-resume]',shell),note=$('[data-subscription-note]',shell);
+  cancel?.addEventListener('click',()=>{shell.dataset.subscriptionState='cancel_at_period_end';setLifecycleBadge(badge,'cancel_at_period_end','Cancel at period end');cancel.hidden=true;resume.hidden=false;note.textContent='Future renewal is cancelled. Access continues through 08 Sep 2027; the current license is not revoked.';appendOwnershipEvent('Future subscription renewal cancelled')});
+  resume?.addEventListener('click',()=>{shell.dataset.subscriptionState='active';setLifecycleBadge(badge,'active');resume.hidden=true;cancel.hidden=false;note.textContent='Renewal resumed. The next provider-authoritative billing date remains 08 Sep 2027.';appendOwnershipEvent('Annual subscription renewal resumed')});
+}
 
-initTheme();initCurrentNav();initProduct();initMedia();initCart();initInvoice();initCheckoutState();initCheckout();initOrder();initCopy();syncCart();
+initTheme();initCurrentNav();initProduct();initMedia();initCart();initInvoice();initCheckoutState();initCheckout();initOrder();initCopy();initPlanChange();initTransfer();initSubscription();syncCart();
