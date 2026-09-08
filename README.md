@@ -6,7 +6,7 @@ Commerce is a flavor of the NeoBrutalism family. It shares the same tactile inte
 
 ## Status
 
-`0.8.0` — stable Commerce runtime plus release-grade quality hardening and a complete human/agent adoption layer.
+`0.9.0-rc.1` — release candidate with the public Commerce contract frozen from stable v0.8, connected production-store stress coverage, and fresh canonical visual review before v1.0.
 
 ## Start here
 
@@ -19,6 +19,7 @@ Commerce is a flavor of the NeoBrutalism family. It shares the same tactile inte
 - `docs/MIGRATION.md` — version-safe migration guidance
 - `docs/EDD-MAPPING.md` — deeper EDD transaction mapping contract
 - `docs/OWNERSHIP-LIFECYCLE.md` — ownership, billing and entitlement semantics
+- `docs/RELEASE-CANDIDATE.md` — v0.9 freeze, stress and final merge gates
 
 ### Coding agents / LLMs
 
@@ -48,7 +49,8 @@ Do not infer Commerce meaning from provider payloads or demo copy. Normalized co
 - EDD transaction bridge and replaceable licensing-provider bridge
 - ownership lifecycle: upgrade/downgrade quote/apply, gift/transfer records, subscription cancel/resume, invoice history and ownership audit timeline
 - strict Axe AA, keyboard, reduced-motion, forced-colors, Chromium/Firefox/WebKit, responsive, CLS/static-payload and visual-fingerprint release gates
-- v0.8 machine-readable component/adoption contract for humans and agents
+- machine-readable component/adoption contract for humans and agents
+- v0.9 public API freeze and connected production storefront stress contract
 
 ## Production routes
 
@@ -130,6 +132,7 @@ React is injected by the consuming application; Commerce does not bundle or pin 
 - `storefront/routes.json` — route intent and required components/states
 - `storefront/components.json` — component models, actions, states and agent rules
 - `storefront/states.json` — checkout/system/ownership/operation/subscription/media taxonomy
+- `tests/public-api-v09.json` — v0.9 RC freeze snapshot
 - `src/contracts/` — normalized runtime + TypeScript model interfaces
 - `src/actions/` — canonical commands, lifecycle events and DOM bindings
 - `src/renderers/` — headless, React, action and ownership renderers
@@ -141,7 +144,7 @@ npm run check
 npm run test:browser
 ```
 
-`npm run check` enforces static conformance, docs/component-registry consistency, contract/action/adapter regressions and payload budgets. Browser QA runs desktop Chromium, mobile Chromium, Firefox and WebKit and includes strict WCAG A/AA Axe checks, keyboard journeys, reduced-motion, forced-colors, 320–1440px responsive checks, state resilience, CLS and canonical visual fingerprints.
+`npm run check` enforces static conformance, documentation/component-registry consistency, the v0.9 public API freeze, contract/action/adapter regressions and payload budgets. Browser QA runs desktop Chromium, mobile Chromium, Firefox and WebKit and includes strict WCAG A/AA Axe checks, keyboard journeys, reduced-motion, forced-colors, 320–1440px responsive checks, connected production-store stress, CLS and canonical visual regression.
 
 No known failing commerce journey is accepted for merge.
 

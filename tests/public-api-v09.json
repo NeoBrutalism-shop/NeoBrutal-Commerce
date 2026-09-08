@@ -1,7 +1,7 @@
 {
   "schema": "neobrutal-commerce/public-api-freeze@1",
   "frozenFrom": "0.8.0",
-  "candidate": "0.9.0-rc",
+  "candidate": "0.9.0-rc.1",
   "packageExports": [
     ".",
     "./styles.css",

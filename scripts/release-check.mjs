@@ -14,6 +14,7 @@ const same=(label,actual,expected)=>{
   const a=sorted(actual),e=sorted(expected);
   if(JSON.stringify(a)!==JSON.stringify(e))fail(`${label} drifted\nactual: ${a.join(', ')}\nexpected: ${e.join(', ')}`);
 };
+const rcVersion='0.9.0-rc.1';
 
 const snapshot=json('tests/public-api-v09.json');
 const pkg=json('package.json');
@@ -24,7 +25,8 @@ const tokens=read('src/tokens.css');
 
 if(snapshot.schema!=='neobrutal-commerce/public-api-freeze@1')fail('unexpected API freeze schema');
 if(snapshot.frozenFrom!=='0.8.0')fail(`freeze baseline must remain v0.8.0, received ${snapshot.frozenFrom}`);
-if(pkg.version!=='0.8.0'&&!/^0\.9\.0-rc\.\d+$/.test(pkg.version))fail(`unexpected RC development version ${pkg.version}`);
+if(snapshot.candidate!==rcVersion)fail(`freeze candidate must be ${rcVersion}, received ${snapshot.candidate}`);
+if(pkg.version!==rcVersion)fail(`expected exact RC version ${rcVersion}, received ${pkg.version}`);
 if(pkg.private!==true)fail('pre-v1 package must remain private to prevent accidental npm publication');
 if(pkg.license!=='UNLICENSED')fail('pre-v1 licensing status changed without an explicit packaging decision');
 
@@ -46,12 +48,12 @@ for(const marker of snapshot.typeMarkers){
   if(!declarations.includes(`interface ${marker}`))fail(`normalized type marker missing: ${marker}`);
 }
 
-for(const file of ['CHANGELOG.md','CONTRIBUTING.md','SECURITY.md','docs/RELEASE-CANDIDATE.md']){
+for(const file of ['CHANGELOG.md','CONTRIBUTING.md','SECURITY.md','docs/RELEASE-CANDIDATE.md','tests/commerce-v09.spec.mjs','tests/commerce-v09-visual.spec.mjs']){
   if(!fs.existsSync(path.join(root,file)))fail(`missing release-candidate repo file: ${file}`);
 }
 const release=read('docs/RELEASE-CANDIDATE.md');
-for(const marker of ['API freeze','production storefront stress','visual regression','v1.0','UNLICENSED']){
+for(const marker of ['API freeze','production storefront stress','visual regression','v1.0','UNLICENSED',rcVersion]){
   if(!release.includes(marker))fail(`release-candidate guide missing marker: ${marker}`);
 }
 
-console.log(`NeoBrutal Commerce v0.9 API freeze passed · ${snapshot.packageExports.length} exports · ${snapshot.actionTypes.length} actions · ${snapshot.componentIds.length} components · ${snapshot.semanticTokens.length} semantic tokens`);
+console.log(`NeoBrutal Commerce ${rcVersion} API freeze passed · ${snapshot.packageExports.length} exports · ${snapshot.actionTypes.length} actions · ${snapshot.componentIds.length} components · ${snapshot.semanticTokens.length} semantic tokens`);

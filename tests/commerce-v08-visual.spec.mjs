@@ -3,6 +3,7 @@ import {createHash} from 'node:crypto';
 import {test,expect} from '@playwright/test';
 
 const baseline=JSON.parse(fs.readFileSync(new URL('./visual-baselines-v08.json',import.meta.url),'utf8'));
+const packageManifest=JSON.parse(fs.readFileSync(new URL('../package.json',import.meta.url),'utf8'));
 const canonicalSurfaceIds=['home','product','checkout','account','ownership'];
 
 function pngSize(buffer){
@@ -11,6 +12,7 @@ function pngSize(buffer){
 }
 
 test('v0.8 canonical visual fingerprints remain stable',async({page},testInfo)=>{
+  test.skip(packageManifest.version!=='0.8.0','Historical v0.8 fingerprints only run against the v0.8 package identity.');
   expect(baseline.version).toBe('0.8.0');
   expect(baseline.surfaces.map(surface=>surface.id)).toEqual(canonicalSurfaceIds);
   test.skip(process.platform!==baseline.platform,`Canonical v0.8 fingerprints are ${baseline.platform} CI baselines.`);

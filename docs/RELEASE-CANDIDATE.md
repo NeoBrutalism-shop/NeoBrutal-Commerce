@@ -4,7 +4,7 @@ v0.9 is the freeze-and-prove milestone before NeoBrutal Commerce v1.0. It does n
 
 ## Release posture
 
-The candidate version is `0.9.0-rc.1` once promotion is complete. Until the final promotion commit, the branch may temporarily retain the stable v0.8.0 runtime while release gates are introduced and validated.
+The current candidate version is `0.9.0-rc.1`. Package, normalized runtime, manifests and visible storefront chrome move together so a human or agent never has to infer which contract is active.
 
 The package remains `private` and `UNLICENSED` during RC. This prevents accidental npm publication or an unintended licensing grant while the v1.0 public/commercial packaging decision is finalized.
 
@@ -42,7 +42,7 @@ These laws remain enforced by the static and browser hardening suites carried fo
 
 ## Production storefront stress
 
-`tests/commerce-v09.spec.mjs` exercises the real storefront as a connected product rather than isolated routes. It verifies that purchase/recovery context survives reloads and that plan change, transfer/gift and subscription operations remain isolated from activation capacity and other ownership concepts.
+`tests/commerce-v09.spec.mjs` exercises the real storefront as a connected product rather than isolated routes. It covers home, pricing, catalog, product/license selection, cart, payment failure/recovery, order completion, account downloads/invoices and license ownership. It separately verifies safe upgrade/downgrade, gift cancellation and subscription cancel/resume while activation capacity remains isolated.
 
 The RC must retain the existing ten-route journey:
 
@@ -52,7 +52,7 @@ No known failing commerce journey is accepted.
 
 ## Visual regression
 
-The reviewed v0.8 visual baseline remains enforced while v0.9 release infrastructure is introduced. During final RC promotion, v0.8 becomes historical provenance and the v0.9 RC storefront receives its own reviewed desktop/mobile Chromium visual regression fingerprints. Firefox and WebKit remain behavioral/accessibility engines rather than byte-level pixel surfaces.
+The reviewed v0.8 visual baseline remains immutable historical provenance. `tests/commerce-v08-visual.spec.mjs` runs only against the v0.8 package identity. The v0.9 RC uses a separate canonical candidate over home, product, checkout, account and ownership; after review, exact Linux CI dimensions and SHA-256 fingerprints are locked for desktop Chromium and mobile Chromium. Firefox and WebKit remain behavioral/accessibility engines rather than byte-level pixel surfaces.
 
 ## RC merge gates
 

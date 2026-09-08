@@ -31,10 +31,10 @@ test('reference licensing adapter keeps activation seat renewal and download beh
   assert.equal((await licensing.removeSeat({licenseId:license.id,seatId:assigned.id})).items.length,2);
   assert.equal((await licensing.renewUpdates({licenseId:license.id})).updatesThrough,'2028-09-08T00:00:00.000Z');
   const source=(await licensing.listEntitlements({licenseId:license.id})).items.find(item=>item.kind==='source-files');
-  const signed=await licensing.createSignedDownload({entitlementId:source.id,releaseId:'v0.8.0'});assert.match(signed.url,/v0\.8\.0/);assert.equal(signed.releaseId,'v0.8.0');
+  const signed=await licensing.createSignedDownload({entitlementId:source.id,releaseId:'v0.9.0-rc.1'});assert.match(signed.url,/v0\.9\.0-rc\.1/);assert.equal(signed.releaseId,'v0.9.0-rc.1');
 });
 
 test('reference runtime composes replaceable commerce and licensing adapters',async()=>{
-  const runtime=createReferenceRuntime();assert.equal(runtime.version,'0.8.0');assert.equal(runtime.commerce.kind,'commerce');assert.equal(runtime.licensing.kind,'licensing');
+  const runtime=createReferenceRuntime();assert.equal(runtime.version,'0.9.0-rc.1');assert.equal(runtime.commerce.kind,'commerce');assert.equal(runtime.licensing.kind,'licensing');
   const product=await runtime.commerce.getProduct('soft');const license=await runtime.licensing.getLicense('license-reference-team');assert.equal(product.id,'soft');assert.equal(license.productId,product.id);
 });

@@ -9,9 +9,12 @@ All notable NeoBrutal Commerce changes are recorded here. Pre-1.0 releases may s
 
 ## [0.9.0-rc.1] — Release Candidate
 
-- Freeze candidate for package exports, normalized models, canonical actions/states, route IDs, component IDs and semantic tokens.
-- Production storefront stress tests across the complete purchase and ownership lifecycle.
-- Release-candidate checklist, repo contribution/security guidance and final release-note discipline.
+- Froze package exports, normalized models, canonical actions/states, route IDs, component IDs and semantic tokens against the stable v0.8 contract.
+- Promoted package, runtime, TypeScript declarations, manifests and production route chrome to exact `0.9.0-rc.1` / v0.9 RC identity.
+- Added connected production storefront stress from pricing/catalog through purchase recovery, account downloads/invoices and ownership management.
+- Added explicit upgrade/downgrade, gift cancellation and subscription lifecycle stress while preserving activation isolation.
+- Preserved the v0.8 visual lock as historical provenance and introduced a separate v0.9 RC canonical visual candidate for review and fingerprint locking.
+- Added release-candidate checklist, repo contribution/security guidance and final release-note discipline.
 - No planned feature architecture additions; fixes should preserve the frozen contract unless a release-blocking issue requires an explicit change.
 
 ## [0.8.0] — Docs & Adoption

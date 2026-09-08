@@ -1,4 +1,4 @@
-# Commerce Migration Guide — v0.8
+# Commerce Migration Guide — v0.9 RC
 
 Use this guide when moving an integration forward without breaking the normalized Commerce boundary.
 
@@ -63,6 +63,21 @@ New adoption surfaces include:
 - documentation conformance through `npm run check`
 
 The main migration task is removing undocumented local assumptions. Route components, states, actions and model meaning should resolve through the machine-readable manifests and normalized declarations.
+
+## v0.8 → v0.9
+
+v0.9 is a release-candidate freeze, not a new feature architecture. There are no intentional breaking changes to normalized models, adapter boundaries, renderer APIs, canonical actions, component IDs or state taxonomy from stable v0.8.
+
+Adopters should:
+
+- move package/runtime/types/manifests together to `0.9.0-rc.1`;
+- compare against `tests/public-api-v09.json` before changing any public identifier;
+- preserve the provider → adapter → normalized model → renderer read path;
+- preserve the UI/agent → canonical action → normalized runtime → adapter write path;
+- run the connected production storefront stress in addition to existing route/browser coverage;
+- treat the v0.8 visual fingerprint file as historical provenance and use the reviewed v0.9 RC visual lock for current pixels.
+
+A failure against the freeze is a release-blocking contract decision, not permission to rename the API casually.
 
 ## Copied component migration
 
