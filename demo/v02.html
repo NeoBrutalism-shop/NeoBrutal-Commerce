@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="theme-color" content="#fff7e8" />
+  <meta name="description" content="NeoBrutal Commerce v0.2 — product, cart, checkout, account, download and license workflows." />
+  <title>NeoBrutal Commerce — Full Storefront Workflows v0.2</title>
+  <link rel="stylesheet" href="../src/index.css" />
+  <link rel="stylesheet" href="./v02.css" />
+  <script type="module" src="./v02.js"></script>
+</head>
+<body>
+  <a class="nbc-button" href="#main" style="position:absolute;left:-9999px;top:1rem" onfocus="this.style.left='1rem'" onblur="this.style.left='-9999px'">Skip to content</a>
+  <header class="demo-header">
+    <a class="demo-brand" href="./v02.html"><span class="demo-mark" aria-hidden="true">C.</span><span>NEOBRUTAL COMMERCE</span></a>
+    <nav class="demo-nav" aria-label="Storefront preview">
+      <a href="#product">Product</a><a href="#plans">Plans</a><a href="#checkout">Checkout</a><a href="#account">Account</a>
+    </nav>
+    <div class="v02-nav-actions">
+      <button class="demo-theme nbc-tactile" id="themeToggle" type="button" aria-pressed="false">◐ Dark</button>
+      <button class="nbc-button nbc-tactile v02-cart-button" id="openCart" type="button" aria-haspopup="dialog">Cart <span class="v02-cart-count" id="cartCount">0</span></button>
+    </div>
+  </header>
+
+  <section class="promo-band" aria-label="Store promotion">
+    <div class="promo-track" aria-hidden="true"><div class="promo-group"><span>SOFTWARE LICENSES</span><b>●</b><span>INSTANT DOWNLOADS</span><b>●</b><span>RENEWAL TERMS UP FRONT</span><b>●</b><span>NO DARK PATTERNS</span><b>●</b></div><div class="promo-group"><span>SOFTWARE LICENSES</span><b>●</b><span>INSTANT DOWNLOADS</span><b>●</b><span>RENEWAL TERMS UP FRONT</span><b>●</b><span>NO DARK PATTERNS</span><b>●</b></div></div>
+    <button class="promo-toggle" id="promoToggle" type="button" aria-pressed="false">PAUSE ‖</button>
+  </section>
+
+  <main id="main">
+    <div class="nbc-shell v02-breadcrumbs" aria-label="Breadcrumb"><a href="#">Store</a><span aria-hidden="true">/</span><a href="#">Design systems</a><span aria-hidden="true">/</span><span aria-current="page">NeoBrutal Soft</span></div>
+
+    <section class="nbc-shell v02-product" id="product" aria-labelledby="product-title">
+      <div class="nbc-product-detail">
+        <div class="nbc-gallery">
+          <div class="nbc-gallery-stage v02-gallery-tone-sky" id="galleryStage"><strong>SOFT.</strong><span id="galleryLabel">Dashboard kit</span></div>
+          <div class="nbc-gallery-thumbs" aria-label="Product gallery">
+            <button class="nbc-gallery-thumb nbc-tactile" type="button" data-gallery="sky" aria-pressed="true">Dashboard</button>
+            <button class="nbc-gallery-thumb nbc-tactile" type="button" data-gallery="coral" aria-pressed="false">Components</button>
+            <button class="nbc-gallery-thumb nbc-tactile" type="button" data-gallery="lime" aria-pressed="false">Agent UI</button>
+          </div>
+        </div>
+
+        <aside class="nbc-product-buybox" aria-labelledby="product-title">
+          <div class="nbc-product-title"><p class="nbc-eyebrow">PRODUCTION DESIGN SYSTEM</p><h1 id="product-title">NeoBrutal Soft</h1><p>Refined Neo-Brutalism for serious SaaS, admin and AI interfaces.</p></div>
+          <div class="nbc-meta-row"><span class="nbc-meta-pill">v0.7</span><span class="nbc-meta-pill">LIGHT + DARK</span><span class="nbc-meta-pill">CSS + REACT</span></div>
+          <div class="nbc-price"><strong id="productPrice">$49</strong><span>one year of updates</span></div>
+
+          <fieldset class="nbc-license-selector"><legend class="nbc-eyebrow">Choose your license</legend>
+            <label class="nbc-license-option"><input type="radio" name="license" value="individual" checked><span><strong>Individual</strong><small>1 production site</small></span><span class="price">$49</span></label>
+            <label class="nbc-license-option"><input type="radio" name="license" value="team"><span><strong>Team</strong><small>5 production sites</small></span><span class="price">$99</span></label>
+            <label class="nbc-license-option"><input type="radio" name="license" value="agency"><span><strong>Agency</strong><small>25 production sites</small></span><span class="price">$179</span></label>
+          </fieldset>
+
+          <div class="nbc-renewal-note"><strong>Renewal is optional.</strong>Your license keeps working. Renew after 12 months only to keep new downloads, updates and support.</div>
+          <ul class="nbc-feature-list"><li>Complete CSS token + component system</li><li>React primitives and registry metadata</li><li>Interactive examples and agent guidance</li><li>Commercial use for the selected site allowance</li></ul>
+          <div class="nbc-purchase-actions"><button class="nbc-button nbc-button--primary nbc-tactile" id="addToCart" type="button">ADD TO CART →</button><a class="nbc-button nbc-tactile" href="#plans">COMPARE LICENSES ↓</a></div>
+        </aside>
+      </div>
+    </section>
+
+    <section class="nbc-shell v02-section" id="plans" aria-labelledby="plans-title">
+      <div class="v02-section-heading"><div><p class="v02-kicker">PRICING WITHOUT SURPRISES</p><h2 id="plans-title">Buy for the way you actually ship.</h2></div><p>Site limits and renewal behavior are visible before checkout. Higher tiers add capacity, not artificial feature locks.</p></div>
+      <div class="nbc-plan-grid">
+        <article class="nbc-plan-card"><h3>Individual</h3><div class="nbc-price"><strong>$49</strong><span>/ year updates</span></div><ul class="nbc-feature-list"><li>1 production site</li><li>All Soft components</li><li>Commercial projects</li></ul><button class="nbc-button nbc-tactile" type="button" data-select-plan="individual">CHOOSE INDIVIDUAL</button></article>
+        <article class="nbc-plan-card" data-featured="true"><span class="nbc-plan-ribbon">MOST PRACTICAL</span><h3>Team</h3><div class="nbc-price"><strong>$99</strong><span>/ year updates</span></div><ul class="nbc-feature-list"><li>5 production sites</li><li>Same complete system</li><li>Team/client work</li></ul><button class="nbc-button nbc-tactile" type="button" data-select-plan="team">CHOOSE TEAM</button></article>
+        <article class="nbc-plan-card"><h3>Agency</h3><div class="nbc-price"><strong>$179</strong><span>/ year updates</span></div><ul class="nbc-feature-list"><li>25 production sites</li><li>Same complete system</li><li>Agency deployment capacity</li></ul><button class="nbc-button nbc-tactile" type="button" data-select-plan="agency">CHOOSE AGENCY</button></article>
+      </div>
+
+      <div class="v02-section" style="padding-bottom:0"><div class="nbc-compare-wrap" tabindex="0" role="region" aria-label="License comparison table"><table class="nbc-compare"><thead><tr><th scope="col">License</th><th scope="col">Production sites</th><th scope="col">Updates</th><th scope="col">Support</th><th scope="col">System access</th></tr></thead><tbody><tr><th scope="row">Individual</th><td>1</td><td>12 months</td><td>12 months</td><td class="nbc-yes">Complete</td></tr><tr><th scope="row">Team</th><td>5</td><td>12 months</td><td>12 months</td><td class="nbc-yes">Complete</td></tr><tr><th scope="row">Agency</th><td>25</td><td>12 months</td><td>12 months</td><td class="nbc-yes">Complete</td></tr></tbody></table></div></div>
+    </section>
+
+    <section class="nbc-shell v02-section" aria-labelledby="bundle-title">
+      <div class="v02-section-heading"><div><p class="v02-kicker">OPTIONAL BUNDLE</p><h2 id="bundle-title">Add what helps. Skip what doesn’t.</h2></div><p>No preselected upsells. Bundle items are off by default and the price updates before anything enters the cart.</p></div>
+      <div class="nbc-bundle"><label class="nbc-bundle-option"><input type="checkbox" data-bundle value="29"><span><strong>Soft Figma library</strong><small>Editable design source</small></span><strong>+$29</strong></label><label class="nbc-bundle-option"><input type="checkbox" data-bundle value="39"><span><strong>SaaS page templates</strong><small>Dashboard + settings + billing</small></span><strong>+$39</strong></label><div class="nbc-bundle-total"><span>Optional extras</span><strong id="bundleTotal">$0</strong></div></div>
+    </section>
+
+    <section class="nbc-shell v02-section" id="checkout" aria-labelledby="checkout-title">
+      <div class="v02-section-heading"><div><p class="v02-kicker">CHECKOUT</p><h2 id="checkout-title">Know the total before you pay.</h2></div><p>This is a UI workflow demo. No payment is processed. It is shaped for a future EDD handoff.</p></div>
+      <div class="nbc-checkout-shell">
+        <form class="nbc-checkout-card" id="checkoutForm">
+          <div class="nbc-checkout-steps" aria-label="Checkout progress"><div class="nbc-checkout-step" aria-current="step"><span>01</span>Details</div><div class="nbc-checkout-step"><span>02</span>Payment</div><div class="nbc-checkout-step"><span>03</span>Download</div></div>
+          <div class="v02-checkout-fields"><label class="nbc-checkout-field"><span>Email</span><input required type="email" value="buyer@example.com" autocomplete="email"></label><label class="nbc-checkout-field"><span>Name</span><input required value="Alex Rivera" autocomplete="name"></label><label class="nbc-checkout-field full"><span>Company <small>(optional)</small></span><input autocomplete="organization"></label></div>
+          <fieldset class="nbc-payment-list"><legend class="nbc-eyebrow">Payment method</legend><label class="nbc-payment-method"><input type="radio" name="payment" checked><span><strong>Card</strong><small>Secure provider handoff</small></span></label><label class="nbc-payment-method"><input type="radio" name="payment"><span><strong>PayPal</strong><small>Continue to PayPal</small></span></label></fieldset>
+          <p class="nbc-terms">By placing this demo order you would accept the license terms shown above. Renewal is not required for the software already downloaded.</p>
+          <button class="nbc-button nbc-button--primary nbc-tactile" type="submit">PLACE DEMO ORDER →</button>
+        </form>
+
+        <aside class="nbc-order-summary v02-summary-sticky" aria-label="Order summary"><h3>Your order</h3><div class="v02-cart-lines"><div class="v02-cart-line"><span><strong>NeoBrutal Soft</strong><small id="summaryLicense">Individual · 1 site</small></span><strong id="summaryProduct">$49.00</strong></div><div class="v02-cart-line" id="summaryExtrasRow" hidden><span><strong>Optional extras</strong><small>Selected bundle items</small></span><strong id="summaryExtras">$0.00</strong></div></div><form class="nbc-coupon" id="couponForm"><label for="couponInput" class="nbc-eyebrow">Coupon</label><input id="couponInput" autocomplete="off" placeholder="Try FOUNDRY10"><button class="nbc-button nbc-tactile" type="submit">APPLY</button><p class="nbc-coupon-status" id="couponStatus" aria-live="polite"></p></form><div class="v02-total"><span>Subtotal</span><strong id="checkoutSubtotal">$49.00</strong></div><div class="v02-total" id="discountRow" hidden><span>Discount</span><strong id="discountAmount">−$0.00</strong></div><div class="v02-total v02-total--grand"><span>Total</span><strong id="checkoutTotal">$49.00</strong></div><p class="v02-note">Taxes, if applicable, would be calculated by the commerce backend before payment.</p></aside>
+      </div>
+      <div class="nbc-order-success" id="orderSuccess" hidden tabindex="-1"><p class="nbc-eyebrow">ORDER COMPLETE</p><h2>Your download is ready.</h2><p>Demo order <span class="nbc-order-number">#NBC-2048</span> created. In production this is where EDD purchase data hands entitlement creation to NeoLicenser.</p><div class="nbc-receipt-grid"><div><span>LICENSE</span><strong id="successLicense">Individual</strong></div><div><span>PAID</span><strong id="successTotal">$49.00</strong></div><div><span>UPDATE WINDOW</span><strong>12 months</strong></div></div><div class="v02-inline-actions"><a class="nbc-button nbc-tactile" href="#account">OPEN ACCOUNT ↓</a><button class="nbc-button nbc-tactile" id="downloadDemo" type="button">DOWNLOAD ZIP ↓</button></div></div>
+    </section>
+
+    <section class="v02-account-wrap" id="account" aria-labelledby="account-title">
+      <div class="nbc-shell"><div class="v02-section-heading"><div><p class="v02-kicker">CUSTOMER ACCOUNT</p><h2 id="account-title">Purchase → download → license.</h2></div><p>The ownership layer is intentionally calmer than the storefront. Once someone pays, clarity matters more than conversion.</p></div>
+        <div class="nbc-account"><div class="nbc-account-nav" role="tablist" aria-label="Customer account"><button class="nbc-account-tab" role="tab" aria-selected="true" aria-controls="downloadsPanel" id="downloadsTab"><span>Downloads</span><span>2</span></button><button class="nbc-account-tab" role="tab" aria-selected="false" aria-controls="purchasesPanel" id="purchasesTab"><span>Purchases</span><span>1</span></button><button class="nbc-account-tab" role="tab" aria-selected="false" aria-controls="licensesPanel" id="licensesTab"><span>Licenses</span><span>1</span></button></div>
+          <div class="v02-account-panels">
+            <section class="nbc-account-panel" role="tabpanel" id="downloadsPanel" aria-labelledby="downloadsTab"><div class="nbc-account-header"><div><p class="v02-kicker">DOWNLOADS</p><h2>Files you own</h2></div></div><div class="nbc-download-row"><div class="nbc-download-meta"><strong>NeoBrutal Soft</strong><small>Production package · ZIP</small></div><span class="nbc-download-version">v0.7</span><button class="nbc-button nbc-tactile" type="button" data-download>DOWNLOAD ↓</button></div><div class="nbc-download-row"><div class="nbc-download-meta"><strong>Soft documentation bundle</strong><small>LLM + human reference</small></div><span class="nbc-download-version">latest</span><button class="nbc-button nbc-tactile" type="button" data-download>DOWNLOAD ↓</button></div></section>
+            <section class="nbc-account-panel" role="tabpanel" id="purchasesPanel" aria-labelledby="purchasesTab" hidden><div class="nbc-account-header"><div><p class="v02-kicker">PURCHASE HISTORY</p><h2>Your orders</h2></div></div><div class="nbc-history-row"><div class="nbc-history-meta"><strong>#NBC-2048 · NeoBrutal Soft</strong><small>Sep 8, 2026 · Paid</small></div><strong id="historyTotal">$49.00</strong><button class="nbc-button nbc-tactile" type="button">RECEIPT →</button></div></section>
+            <section class="nbc-account-panel" role="tabpanel" id="licensesPanel" aria-labelledby="licensesTab" hidden><article class="nbc-license-card"><div class="nbc-license-head"><div><p class="v02-kicker">SOFTWARE LICENSE</p><h3>NeoBrutal Soft</h3></div><span class="nbc-license-status">ACTIVE</span></div><div class="nbc-license-key"><span>NEO-SFT-••••-••••-7Q2M</span><button class="nbc-button nbc-tactile" id="copyLicense" type="button">COPY ID</button></div><div class="nbc-license-grid"><div class="nbc-license-stat"><span>PLAN</span><strong id="licensePlan">Individual</strong></div><div class="nbc-license-stat"><span>ACTIVATIONS</span><strong>1 / 1</strong></div><div class="nbc-license-stat"><span>UPDATES UNTIL</span><strong>Sep 8, 2027</strong></div></div><div class="nbc-site-list"><div class="nbc-site-row"><code>app.example.com</code><span class="nbc-license-status">ACTIVE</span></div></div><div class="nbc-update-card" data-eligible="true"><div><strong>v0.7 update available</strong><small>Your entitlement includes this release.</small></div><button class="nbc-button nbc-tactile" type="button" data-download>DOWNLOAD ↓</button></div><p class="nbc-entitlement-note">If the update window expires, the existing product keeps working. Renewing restores access to future downloads and support.</p></article></section>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div class="nbc-mini-cart-backdrop" id="cartBackdrop" hidden><aside class="nbc-mini-cart" role="dialog" aria-modal="true" aria-labelledby="cartTitle"><div class="nbc-mini-cart-header"><div><p class="v02-kicker">YOUR CART</p><h2 id="cartTitle">Ready when you are.</h2></div><button class="nbc-icon-button nbc-tactile" id="closeCart" type="button" aria-label="Close cart">×</button></div><div class="v02-stack"><div class="nbc-cart-item"><div><strong>NeoBrutal Soft</strong><small id="cartLicense">Individual · 1 site</small></div><strong id="cartProductPrice">$49.00</strong></div><div class="v02-cart-line" id="cartExtrasRow" hidden><span><strong>Optional extras</strong><small>Bundle</small></span><strong id="cartExtras">$0.00</strong></div></div><div class="v02-stack"><div class="v02-total v02-total--grand"><span>Cart total</span><strong id="cartTotal">$49.00</strong></div><a class="nbc-button nbc-button--primary nbc-tactile" id="goCheckout" href="#checkout">CHECKOUT →</a></div></aside></div>
+  <div class="v02-toast" id="toast" role="status" aria-live="polite" hidden></div>
+</body>
+</html>

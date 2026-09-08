@@ -1,11 +1,16 @@
 {
   "name": "@neobrutal/commerce",
-  "version": "0.1.0-dev",
+  "version": "0.2.0-dev",
   "private": true,
   "type": "module",
   "description": "Expressive Neo-Brutalism for digital-product and software commerce.",
   "scripts": {
-    "check": "node scripts/check.mjs"
+    "check": "node scripts/check.mjs",
+    "test:browser": "playwright test"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "^4.13.0",
+    "@playwright/test": "^1.63.0"
   },
   "license": "UNLICENSED"
 }

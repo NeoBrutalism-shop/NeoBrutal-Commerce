@@ -1,21 +1,39 @@
 # NeoBrutal Commerce
 
-**Expressive Neo-Brutalism for digital products, software stores and creator commerce.**
+**Expressive Neo-Brutalism for digital-product, software and creator commerce.**
 
-NeoBrutal Commerce is a flavor in the NeoBrutalism design-system family. It shares the family interaction contract—especially **Compress, never float**—while using a louder retail personality for product discovery, pricing, carts, checkout, licenses and customer accounts.
+Commerce is a flavor of the NeoBrutalism family. It shares the same tactile interaction grammar as Soft and Rivet, but uses a louder retail material: stronger price hierarchy, promotional bands, boxed-product surfaces, 6px depth and conversion-oriented workflows.
 
-> Status: foundation work in progress.
+## Status
 
-## Family
+`0.2.0-dev` — full storefront workflow milestone.
 
-- Specification: https://github.com/NeoBrutalism-shop/spec
-- Foundry: https://neobrutalism-shop.github.io/
-- Soft: https://neobrutalism-shop.github.io/soft/
+## v0.2 includes
 
-## Direction
+- light/dark semantic tokens and fluid `clamp()` foundations
+- tactile buttons and retail surfaces — compress, never float
+- product cards and product-detail gallery
+- Individual / Team / Agency license selection
+- pricing tiers and comparison table
+- optional bundle builder with no preselected upsells
+- mini-cart drawer
+- coupon states
+- checkout details + payment-method pattern
+- transparent totals and renewal language
+- order confirmation
+- customer account navigation
+- downloads and purchase history
+- license status, activation/site scope and update eligibility
+- future EDD mapping contract
 
-Commerce is designed for the storefront side of products such as NeoBrutal Soft, Rivet and NeoLicenser. It will remain framework-independent at the CSS/token foundation, with React/shadcn and EDD adapters layered on top rather than baked into the visual system.
+## Demo
+
+Open `demo/v02.html` for the v0.2 storefront workflow lab. `demo/index.html` preserves the original v0.1 foundation demo.
+
+## Architecture
+
+The foundation is CSS-first and framework-independent. React/shadcn wrappers and commerce backends are adapters, not prerequisites. EDD will own transaction lifecycle; NeoLicenser will own licensing/entitlements/releases; Commerce owns the customer-facing interaction language.
 
 ## License
 
-License strategy is intentionally not declared yet while the free/commercial packaging model is being finalized. All rights reserved unless explicitly stated otherwise.
+`UNLICENSED` while the public-core/commercial packaging strategy is finalized.
