@@ -101,7 +101,7 @@ Normalized view models:
 Adapter contracts:
 - `CommerceAdapter` — products, cart, checkout, orders and customer purchase history
 - `LicensingAdapter` — licenses, entitlements and optional activation/seat/renewal/download capabilities
-- `composeCommerceRuntime()` — combines replaceable transaction and licensing adapters for a renderer
+- `composeCommerceRuntime()` — combines replaceable transaction and licensing adapters for a renderer/action layer
 
 Runtime contract helpers:
 - canonical checkout/system/ownership/media state constants
@@ -129,7 +129,32 @@ React package export: `@neobrutal/commerce/renderers/react`
 - same headless specs and `data-commerce-component` anatomy
 - suitable for shadcn-style copy/composition without creating a second data contract
 
-The new `summary.css` primitive gives normalized cart/quote totals a reusable core surface instead of depending on demo-only `.store-*` classes.
+The `summary.css` primitive gives normalized cart/quote totals a reusable core surface instead of depending on demo-only `.store-*` classes.
+
+## v0.5 action contracts
+
+Package export: `@neobrutal/commerce/actions`
+
+Canonical commands:
+- `cart.add`
+- `cart.remove`
+- `checkout.quote`
+- `checkout.submit`
+- `order.refund`
+- `license.activations.list`
+- `license.seats.list`
+- `seat.assign`
+- `seat.remove`
+- `license.renew`
+- `download.create`
+
+Action helpers:
+- `createCommerceAction()` — validates and freezes an intent command
+- `executeCommerceAction()` — executes one command against the normalized runtime
+- `createActionDispatcher()` — adds stable action identity plus `start`, `success` and `error` lifecycle events
+- optional action execution is capability-gated by adapter flags/methods
+
+Reusable UI should dispatch these normalized commands instead of calling provider APIs directly.
 
 ## Machine-readable contracts
 - `storefront/catalog.json` — products, licenses, review/guarantee/renewal metadata
@@ -137,15 +162,23 @@ The new `summary.css` primitive gives normalized cart/quote totals a reusable co
 - `storefront/states.json` — checkout, system, ownership and media state taxonomy
 - `src/contracts/runtime.js` — runtime adapter/state contract
 - `src/contracts/index.d.ts` — TypeScript view models and interfaces
+- `src/actions/runtime.js` — provider-neutral command execution
+- `src/actions/index.d.ts` — typed discriminated action commands
 - `src/renderers/headless.js` — renderer spec builders and HTML serializer
 - `src/renderers/react.js` — React translation of renderer specs
 
-## Renderer rule
+## Renderer/action rule
 
-HTML/static, React/shadcn, WordPress and other UI layers render the normalized models above. They must not accept raw provider objects as component contracts, and equivalent framework outputs should come from the same renderer anatomy.
+HTML/static, React/shadcn, WordPress and other UI layers render normalized models and dispatch normalized Commerce actions. They must not accept raw provider objects as component contracts or call provider APIs directly when a canonical action exists.
+
+Read path:
+`provider → adapter → normalized model → renderer`
+
+Action path:
+`UI/agent → Commerce action → normalized runtime → adapter`
 
 ## Next
-- typed component events/actions for add-to-cart, checkout recovery, seats and activations
+- bind canonical action descriptors into interactive renderer controls
 - real EDD transaction adapter
 - real licensing-provider adapter mapping
 - upgrade/downgrade ownership flows
