@@ -1,4 +1,4 @@
-# Component Surface — v0.3
+# Component Surface — v0.4
 
 ## Foundation
 - tokens
@@ -18,7 +18,11 @@
 - License selector
 - Product detail
 - Product gallery + thumbnails
+- Product media tabs / code / file preview
 - Product metadata
+- Review summary
+- Testimonials
+- Guarantee / trust block
 - Renewal note
 - Responsive data table
 
@@ -36,7 +40,12 @@
 - Coupon input/status
 - Checkout field
 - Checkout steps
+- Invoice details
+- Tax / VAT input
 - Payment method
+- Payment failure
+- Payment processing
+- Payment recovery
 - Trust strip
 - Order confirmation / receipt
 
@@ -49,28 +58,42 @@
 - Masked license key
 - Activation/site rows
 - Update eligibility
+- Renewal lifecycle
+- Team-seat assignment
 - Entitlement note
+- Active / grace / expired / cancelled / refunded states
 
-## v0.3 page patterns
+## System states
+- Empty
+- Loading / skeleton
+- Error
+- Offline
+- Permission denied
+- Unsupported feature/browser
+
+## Production page patterns
 - Storefront/home
 - Product catalog
-- Product detail
+- Product detail + rich media + reviews
 - Pricing/comparison/bundles
 - Full cart
-- Checkout
+- Checkout + invoice/tax + payment recovery
 - Order success
 - Account dashboard
-- License detail
-- Component showcase
+- License detail + activations + seats + renewal
+- Component/state showcase
+
+## Machine-readable contracts
+- `storefront/catalog.json` — products, licenses, review/guarantee/renewal metadata
+- `storefront/routes.json` — route intent, primary components and supported route states
+- `storefront/states.json` — checkout, system, ownership and media state taxonomy
 
 ## Next
-- ratings/testimonials
-- product gallery media variants
-- invoice/tax states
-- failed/abandoned payment recovery
-- refunds/cancellations
-- subscription/renewal management
-- gift/team-seat assignment
+- upgrade/downgrade ownership flows
+- gift/transfer ownership
+- invoice/receipt history and richer tax outcomes
+- subscription management actions
 - React/shadcn wrappers
-- browser/axe/visual regression QA
-- EDD template adapter implementation
+- typed component APIs/events
+- EDD adapter mapping implementation
+- visual regression baselines and broader cross-browser coverage
