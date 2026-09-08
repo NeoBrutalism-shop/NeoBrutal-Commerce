@@ -8,7 +8,7 @@ const required=[
   'src/tokens.css','src/base.css','src/index.css',
   ...components.map(file=>`src/components/${file}`),
   'demo/index.html','demo/demo.css','demo/demo.js','demo/v02.html','demo/v02.css','demo/v02.js',
-  'storefront/store.css','storefront/store-core.css','storefront/store.js','storefront/catalog.json','storefront/routes.json',
+  'storefront/store.css','storefront/store.js','storefront/catalog.json','storefront/routes.json',
   ...storefrontRoutes,
   'tests/commerce-v02.spec.mjs','tests/commerce-v03.spec.mjs',
   'DESIGN.md','LLMS.md','COMPONENTS.md','docs/EDD-MAPPING.md'
@@ -29,6 +29,11 @@ if(/transition\s*:\s*all/i.test(css)){
 }
 if(/:hover[^\{]*\{[^\}]*translate(?:Y)?\(\s*-/i.test(css)){
   console.error('Upward hover lift is prohibited');
+  process.exit(1);
+}
+const storefrontCss=fs.readFileSync(path.join(root,'storefront/store.css'),'utf8');
+if(/@import/i.test(storefrontCss)){
+  console.error('Storefront stylesheet must be self-contained to keep route asset resolution context-stable');
   process.exit(1);
 }
 
