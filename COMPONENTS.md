@@ -1,29 +1,22 @@
-# Component Surface — v0.5
+# Component Surface — v0.6
 
 ## Foundation
 - tokens
 - light/dark themes
-- fluid type and spacing
+- fluid `clamp()` type/spacing
 - tactile depth physics
 - reduced motion
 - forced colors
 
 ## Storefront
-- Button
-- Product card
-- Product action card
-- Product art
-- Badge
-- Price block
-- Feature list
+- Button / action button / action link
+- Product card / product action card
+- Product art / badge / price block / feature list
 - License selector
-- Product detail
-- Product gallery + thumbnails
+- Product detail / gallery / thumbnails
 - Product media tabs / code / file preview
 - Product metadata
-- Review summary
-- Testimonials
-- Guarantee / trust block
+- Review summary / testimonials / guarantee
 - Renewal note
 - Responsive data table
 
@@ -31,189 +24,135 @@
 - Pricing tiers
 - Featured plan treatment
 - Plan comparison table
-- Bundle builder
-- Bundle totals
+- Bundle builder / bundle totals
 
 ## Cart and checkout
-- Cart item
-- Mini-cart drawer
+- Cart item / mini-cart drawer
 - Order summary
 - Coupon input/status
-- Checkout field
-- Checkout steps
-- Invoice details
-- Tax / VAT input
-- Payment method
-- Payment failure
-- Payment processing
-- Payment recovery
+- Checkout fields/steps
+- Invoice details / tax ID
+- Payment method / failure / processing / recovery
 - Trust strip
 - Order confirmation / receipt
 
 ## Account and ownership
-- Account navigation/tabs
+Existing:
+- Account navigation
 - Download row
 - Purchase-history row
-- License card
-- License status
-- Masked license key
-- Activation/site rows
+- License card/status/key
+- Activation rows
 - Update eligibility
 - Renewal lifecycle
 - Team-seat assignment
 - Entitlement note
 - Active / grace / expired / cancelled / refunded states
 
-## System states
-- Empty
-- Loading / skeleton
-- Error
-- Offline
-- Permission denied
-- Unsupported feature/browser
+v0.6 additions:
+- Invoice history
+- Plan-change quote/result
+- Upgrade/downgrade timing
+- Ownership transfer/gift panel
+- Subscription management
+- Ownership timeline / audit trail
+- Ownership operation states: ready / quoted / processing / complete / failed
+- Subscription states: active / cancel-at-period-end / cancelled / past-due
+
+## Runtime/data contracts
+
+Normalized models include v0.5 product/cart/order/license types plus:
+- `InvoiceView`
+- `SubscriptionView`
+- `PlanChangeQuoteView`
+- `OwnershipTransferView`
+- `OwnershipEventView`
+
+Capability additions:
+
+CommerceAdapter:
+- `invoiceHistory`
+- `subscriptions`
+
+LicensingAdapter:
+- `planChanges`
+- `transfers`
+- `ownershipHistory`
+
+Capability flags are authoritative. UI does not infer support from EDD, WordPress, NeoLicenser or any provider name.
+
+## v0.6 actions
+
+In addition to the existing v0.5 commands:
+- `invoice.list`
+- `subscription.get`
+- `subscription.cancel`
+- `subscription.resume`
+- `license.change.quote`
+- `license.change.submit`
+- `license.transfers.list`
+- `license.transfer.create`
+- `license.transfer.cancel`
+- `license.history.list`
+
+Plan change is quote-first. Pending transfer/gift does not mean ownership moved. Subscription cancellation does not silently revoke an already-paid license term.
+
+## Renderers
+
+Existing:
+- `@neobrutal/commerce/renderers/headless`
+- `@neobrutal/commerce/renderers/react`
+- `@neobrutal/commerce/renderers/action-controls`
+- `@neobrutal/commerce/renderers/react-actions`
+
+v0.6:
+- `@neobrutal/commerce/renderers/ownership`
+  - `createPlanChangeSpec()`
+  - `createTransferListSpec()`
+  - `createSubscriptionSpec()`
+  - `createInvoiceHistorySpec()`
+  - `createOwnershipTimelineSpec()`
+- `@neobrutal/commerce/renderers/react-ownership`
+  - the same normalized lifecycle surfaces translated through React
+
+## Provider adapters
+
+- `@neobrutal/commerce/adapters/reference` — deterministic test/runtime fixture including lifecycle operations.
+- `@neobrutal/commerce/adapters/edd` — injected transaction-provider bridge.
+- `@neobrutal/commerce/adapters/licensing-bridge` — injected licensing-provider transport plus normalizers for licenses, entitlements, activations, seats, plan changes, transfers and ownership history.
 
 ## Production page patterns
 - Storefront/home
-- Product catalog
-- Product detail + rich media + reviews
+- Product catalog/detail
 - Pricing/comparison/bundles
 - Full cart
 - Checkout + invoice/tax + payment recovery
 - Order success
-- Account dashboard
-- License detail + activations + seats + renewal
+- Account dashboard + invoice history
+- License lifecycle workspace: activations + seats + plan change + transfer/gift + subscription + renewal + audit timeline
 - Component/state showcase
 
-## v0.5 runtime/data contracts
-
-The component system has a framework-neutral data boundary in `src/contracts/`.
-
-Normalized view models:
-- `ProductView` / `ProductOffer`
-- `CartView` / `CartLineView`
-- `CheckoutQuoteView`
-- `OrderView`
-- `LicenseView`
-- `EntitlementView`
-- `ActivationView`
-- `SeatAssignmentView`
-- `SignedDownloadView`
-
-Adapter contracts:
-- `CommerceAdapter` — products, cart, checkout, orders and customer purchase history
-- `LicensingAdapter` — licenses, entitlements and optional activation/seat/renewal/download capabilities
-- `composeCommerceRuntime()` — combines replaceable transaction and licensing adapters for renderer/action layers
-
-Runtime helpers:
-- canonical checkout/system/ownership/media state constants
-- state type guards
-- adapter method/capability validation
-- package export: `@neobrutal/commerce/contracts`
-
-## v0.5 renderer contracts
-
-Headless package export: `@neobrutal/commerce/renderers/headless`
-
-- immutable semantic renderer specs
-- safe HTML serialization
-- product-card renderer
-- normalized order-summary renderer
-- system-state renderer
-- license-card renderer
-- seat-assignment renderer
-- activation-list renderer
-
-React package export: `@neobrutal/commerce/renderers/react`
-
-- `createReactBindings(React)`
-- no bundled or pinned React runtime
-- same headless specs and `data-commerce-component` anatomy
-- suitable for shadcn-style copy/composition without creating a second data contract
-
-Action-aware renderer exports:
-- `@neobrutal/commerce/renderers/action-controls`
-- `@neobrutal/commerce/renderers/react-actions`
-- canonical action button/link specs
-- product action card
-- dispatcher-bound React controls
-- one normalized action path for HTML/static and React delivery
-
-The `summary.css` primitive gives normalized cart/quote totals a reusable core surface instead of depending on demo-only `.store-*` classes.
-
-## v0.5 action contracts
-
-Package export: `@neobrutal/commerce/actions`
-
-Canonical commands:
-- `cart.add`
-- `cart.remove`
-- `checkout.quote`
-- `checkout.submit`
-- `order.refund`
-- `license.activations.list`
-- `license.seats.list`
-- `seat.assign`
-- `seat.remove`
-- `license.renew`
-- `download.create`
-
-Action helpers:
-- `createCommerceAction()` — validates and freezes an intent command
-- `executeCommerceAction()` — executes one command against the normalized runtime
-- `createActionDispatcher()` — adds stable action identity plus `start`, `success` and `error` lifecycle events
-- optional action execution is capability-gated by adapter flags/methods
-
-Declarative binding export: `@neobrutal/commerce/actions/bindings`
-
-- `createActionAttributes()`
-- `readCommerceAction()`
-- `createActionHandler()`
-- `bindCommerceActions()`
-
-Reusable UI dispatches normalized commands instead of calling provider APIs directly.
-
-## v0.5 provider adapters
-
-Reference adapter:
-- `@neobrutal/commerce/adapters/reference`
-- deterministic backend-free fixture for catalog, cart, quote, order, refund, licenses, seats, activations, renewal and signed downloads
-
-EDD transaction adapter:
-- `@neobrutal/commerce/adapters/edd`
-- injected EDD bridge transport
-- product/download + variable-price normalization
-- cart, checkout quote, order/history and optional refund normalization
-- explicit provider → canonical checkout/order state mapping
-- no hardcoded WordPress URL, authentication or gateway SDK
-
 ## Machine-readable contracts
-- `storefront/catalog.json` — products, licenses, review/guarantee/renewal metadata
-- `storefront/routes.json` — route intent, primary components and supported route states
-- `storefront/states.json` — checkout, system, ownership and media state taxonomy
-- `src/contracts/runtime.js` — runtime adapter/state contract
-- `src/contracts/index.d.ts` — TypeScript view models and interfaces
-- `src/actions/runtime.js` — provider-neutral command execution
-- `src/actions/bindings.js` — declarative command hydration
-- `src/renderers/headless.js` — renderer spec builders and HTML serializer
-- `src/renderers/action-controls.js` — action-aware specs
-- `src/renderers/react.js` — React translation of read-only renderer specs
-- `src/renderers/react-actions.js` — React action delivery
-- `src/adapters/edd.js` — EDD transaction normalization
+- `storefront/catalog.json`
+- `storefront/routes.json`
+- `storefront/states.json`
+- `src/contracts/`
+- `src/actions/`
+- `docs/OWNERSHIP-LIFECYCLE.md`
 
-## Renderer/action rule
+## Delivery rule
 
 HTML/static, React/shadcn, WordPress and other UI layers render normalized models and dispatch normalized Commerce actions. They must not accept raw provider objects as component contracts or call provider APIs directly when a canonical action exists.
 
 Read path:
-`provider → adapter → normalized model → renderer`
+`provider → adapter/normalizer → normalized model → renderer`
 
 Action path:
-`UI/agent → Commerce action → normalized runtime → adapter`
+`UI/agent → Commerce action → normalized runtime → adapter → provider`
 
-## Next after v0.5
-- real licensing-provider adapter implementation
-- upgrade/downgrade ownership flows
-- gift/transfer ownership
-- invoice/receipt history and richer tax outcomes
-- subscription management actions
-- visual regression baselines and broader cross-browser coverage
+## Next after v0.6
+- provider-specific NeoLicenser implementation on top of the licensing bridge, when that project is intentionally in scope
+- transfer acceptance / recipient-side workflow
+- subscription payment-method replacement and billing recovery UI
+- richer jurisdictional tax outcomes
+- snapshot visual baselines and WebKit coverage
