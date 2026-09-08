@@ -1,0 +1,32 @@
+{
+  "version": "0.7.0",
+  "platform": "linux",
+  "source": {
+    "workflowRun": 34256735656,
+    "headSha": "2b5a0d7af6ff8d8c9affe57af90174f834d92ef0",
+    "artifactId": 10068304798
+  },
+  "surfaces": [
+    {"id":"home","route":"/"},
+    {"id":"product","route":"/product/soft/"},
+    {"id":"checkout","route":"/checkout/"},
+    {"id":"account","route":"/account/"},
+    {"id":"ownership","route":"/account/license/demo-soft-team/"}
+  ],
+  "projects": {
+    "chromium": {
+      "home": {"sha256":"90e5c1a33fc7f6adf496c03ac52e3c16b844ba8c2dcbe7c03a7f3e7e28fbced8","width":1280,"height":2911},
+      "product": {"sha256":"7e8a2987347de9d4f6bf7645b48e5f55b441c577ee1c472ccede606127591eeb","width":1280,"height":3124},
+      "checkout": {"sha256":"bd52b2c4364246fc782abe5090e4cbea97e86edffea2c1a49cc75786a6504c94","width":1280,"height":2143},
+      "account": {"sha256":"e65f80cf63f8c50c35235897c515ee40ffdde162140e2a95e7f451d2b3eb2476","width":1280,"height":2914},
+      "ownership": {"sha256":"83073b7c890d9e9394dd90a00240b48c37409c207ffd3cf124016e81fede3d20","width":1280,"height":4812}
+    },
+    "mobile-chromium": {
+      "home": {"sha256":"c4c0d78842095c49ec7e79bf4021edf84368fdc27539601b7e0addf42049cf7e","width":1082,"height":9896},
+      "product": {"sha256":"53be979fd6669ef43911935381036a7158e338a6832e7ce3159ee1739157f4b5","width":1082,"height":11227},
+      "checkout": {"sha256":"416d21bb24a05799ae58fa421df9dc281e70dc070948b7b13cce6dc3de8d5e39","width":1082,"height":7870},
+      "account": {"sha256":"ac9696a53c797bfc655010f70d5f1b9ca64d072391ca434aedce379e3b6cc2a7","width":1082,"height":10143},
+      "ownership": {"sha256":"7eea84439aa84b943f27b8ac4d8a9c3d8b10fec481c46faf195ff60fc858eaa3","width":1082,"height":18299}
+    }
+  }
+}

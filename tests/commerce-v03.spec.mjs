@@ -9,7 +9,7 @@ for(const route of routes){
     page.on('response',response=>{if(response.status()>=400)failures.push(`${response.status()} ${response.url()}`)});
     await page.goto(route);
     await expect(page.locator('body')).toHaveAttribute('data-commerce-page',/.+/);
-    const results=await new AxeBuilder({page}).disableRules(['color-contrast']).analyze();
+    const results=await new AxeBuilder({page}).withTags(['wcag2a','wcag2aa','wcag21aa','wcag22aa']).analyze();
     expect(results.violations.filter(v=>['critical','serious'].includes(v.impact||''))).toEqual([]);
     expect(failures).toEqual([]);
     const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-window.innerWidth);

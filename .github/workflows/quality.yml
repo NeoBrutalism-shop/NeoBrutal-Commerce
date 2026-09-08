@@ -16,7 +16,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - name: Conformance + contract tests
+      - name: Conformance + contract + performance tests
         run: npm run check
       - name: JavaScript syntax
         run: |
@@ -35,6 +35,7 @@ jobs:
           node --check src/renderers/react-actions.js
           node --check src/renderers/ownership.js
           node --check src/renderers/react-ownership.js
+          node --check scripts/performance.mjs
           node --check tests/contracts-v05.test.mjs
           node --check tests/reference-adapter-v05.test.mjs
           node --check tests/renderers-v05.test.mjs
@@ -44,6 +45,7 @@ jobs:
           node --check tests/ownership-v06.test.mjs
           node --check tests/edd-lifecycle-v06.test.mjs
           node --check tests/commerce-v06.spec.mjs
+          node --check tests/commerce-v07.spec.mjs
       - name: Serve static production routes
         shell: bash
         run: |
