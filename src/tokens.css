@@ -1,0 +1,55 @@
+:root {
+  color-scheme: light;
+  --nbc-bg: #fff7e8;
+  --nbc-surface: #fffdf8;
+  --nbc-surface-2: #f5ead5;
+  --nbc-text: #151515;
+  --nbc-muted: #625a4f;
+  --nbc-border: #151515;
+  --nbc-shadow: #151515;
+  --nbc-yellow: #ffd84d;
+  --nbc-coral: #ff7a66;
+  --nbc-lime: #b9ec63;
+  --nbc-sky: #82b4ff;
+  --nbc-pink: #ff9fc8;
+  --nbc-success: #2f8a56;
+  --nbc-danger: #c83f3f;
+  --nbc-focus: #255fc0;
+  --nbc-radius-sm: .45rem;
+  --nbc-radius-md: .8rem;
+  --nbc-radius-lg: 1.1rem;
+  --nbc-border-w: 2px;
+  --nbc-depth: 6px;
+  --nbc-press-hover: 3px;
+  --nbc-press-active: 6px;
+  --nbc-ease-press: cubic-bezier(.2,.7,.2,1);
+  --nbc-ease-release: cubic-bezier(.16,1,.3,1);
+  --nbc-motion-fast: 100ms;
+  --nbc-motion-standard: 180ms;
+  --nbc-space-1: clamp(.35rem, .3rem + .2vw, .5rem);
+  --nbc-space-2: clamp(.55rem, .48rem + .3vw, .8rem);
+  --nbc-space-3: clamp(.8rem, .68rem + .45vw, 1.15rem);
+  --nbc-space-4: clamp(1.05rem, .9rem + .7vw, 1.6rem);
+  --nbc-space-5: clamp(1.5rem, 1.15rem + 1vw, 2.3rem);
+  --nbc-space-6: clamp(2.1rem, 1.5rem + 1.8vw, 3.5rem);
+  --nbc-space-7: clamp(3rem, 2rem + 3.5vw, 6rem);
+  --nbc-text-xs: clamp(.72rem, .69rem + .1vw, .8rem);
+  --nbc-text-sm: clamp(.82rem, .78rem + .16vw, .92rem);
+  --nbc-text-md: clamp(.96rem, .9rem + .24vw, 1.08rem);
+  --nbc-text-lg: clamp(1.15rem, 1rem + .5vw, 1.4rem);
+  --nbc-text-xl: clamp(1.45rem, 1.15rem + 1vw, 2rem);
+  --nbc-text-2xl: clamp(2rem, 1.4rem + 2vw, 3.1rem);
+  --nbc-text-display: clamp(3.4rem, 2rem + 6vw, 7.5rem);
+}
+
+[data-theme="dark"] {
+  color-scheme: dark;
+  --nbc-bg: #171614;
+  --nbc-surface: #24211d;
+  --nbc-surface-2: #312c26;
+  --nbc-text: #fff7e8;
+  --nbc-muted: #cbbfae;
+  --nbc-border: #fff7e8;
+  --nbc-shadow: #060606;
+  --nbc-focus: #9ec0ff;
+}
