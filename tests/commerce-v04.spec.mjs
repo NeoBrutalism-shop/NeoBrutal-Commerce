@@ -28,16 +28,18 @@ test('v0.4 checkout exposes invoice and recoverable payment states',async({page}
 
   await page.goto('/checkout/?state=failed');
   await expect(page.locator('body')).toHaveAttribute('data-checkout-state','failed');
-  await expect(page.locator('[data-checkout-state="failed"]')).toBeVisible();
+  await expect(page.locator('[data-commerce-component="payment-failure"]')).toBeVisible();
   await expect(page.locator('[data-checkout-submit]')).toHaveText('RETRY DEMO PAYMENT →');
   await expect(page.locator('[data-checkout-submit]')).toBeEnabled();
 
   await page.goto('/checkout/?state=processing');
-  await expect(page.locator('[data-checkout-state="processing"]')).toBeVisible();
+  await expect(page.locator('body')).toHaveAttribute('data-checkout-state','processing');
+  await expect(page.locator('[data-commerce-component="processing-state"]')).toBeVisible();
   await expect(page.locator('[data-checkout-submit]')).toBeDisabled();
 
   await page.goto('/checkout/?state=recovered');
-  await expect(page.locator('[data-checkout-state="recovered"]')).toBeVisible();
+  await expect(page.locator('body')).toHaveAttribute('data-checkout-state','recovered');
+  await expect(page.locator('[data-commerce-component="payment-recovery"]')).toBeVisible();
   await expect(page.locator('[data-checkout-submit]')).toBeEnabled();
 });
 
@@ -56,7 +58,7 @@ test('v0.4 component showcase covers the full system and ownership state familie
   await expect(page.locator('[data-commerce-component="system-states"] .nbc-state')).toHaveCount(6);
   await expect(page.locator('[data-commerce-component="ownership-lifecycle"] .nbc-lifecycle')).toHaveCount(4);
   const stateNames=await page.locator('[data-commerce-component="system-states"] .nbc-state').evaluateAll(nodes=>nodes.map(node=>node.dataset.state));
-  expect(stateNames).toEqual(['empty','empty','error','offline','permission','unsupported']);
+  expect(stateNames).toEqual(['empty','loading','error','offline','permission','unsupported']);
 });
 
 test('capture v0.4 completeness visual review',async({page},testInfo)=>{
