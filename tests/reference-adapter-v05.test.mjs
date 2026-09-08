@@ -79,7 +79,7 @@ test('reference licensing adapter exercises activations, seats, renewal and sign
 
 test('reference runtime composes replaceable commerce and licensing adapters',async()=>{
   const runtime=createReferenceRuntime();
-  assert.equal(runtime.version,'0.5.0-dev');
+  assert.equal(runtime.version,'0.5.0');
   assert.equal(runtime.commerce.kind,'commerce');
   assert.equal(runtime.licensing.kind,'licensing');
   const product=await runtime.commerce.getProduct('soft');
