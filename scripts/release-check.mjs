@@ -52,7 +52,7 @@ for(const file of ['CHANGELOG.md','CONTRIBUTING.md','SECURITY.md','docs/RELEASE-
   if(!fs.existsSync(path.join(root,file)))fail(`missing release-candidate repo file: ${file}`);
 }
 const release=read('docs/RELEASE-CANDIDATE.md');
-for(const marker of ['API freeze','production storefront stress','visual regression','v1.0','UNLICENSED',rcVersion]){
+for(const marker of ['API freeze','production storefront stress','Visual regression','v1.0','UNLICENSED',rcVersion]){
   if(!release.includes(marker))fail(`release-candidate guide missing marker: ${marker}`);
 }
 
