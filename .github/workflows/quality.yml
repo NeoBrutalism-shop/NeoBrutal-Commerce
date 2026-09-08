@@ -28,16 +28,22 @@ jobs:
           node --check src/actions/bindings.js
           node --check src/adapters/reference.js
           node --check src/adapters/edd.js
+          node --check src/adapters/licensing-bridge.js
           node --check src/renderers/headless.js
           node --check src/renderers/react.js
           node --check src/renderers/action-controls.js
           node --check src/renderers/react-actions.js
+          node --check src/renderers/ownership.js
+          node --check src/renderers/react-ownership.js
           node --check tests/contracts-v05.test.mjs
           node --check tests/reference-adapter-v05.test.mjs
           node --check tests/renderers-v05.test.mjs
           node --check tests/actions-v05.test.mjs
           node --check tests/action-bindings-v05.test.mjs
           node --check tests/edd-adapter-v05.test.mjs
+          node --check tests/ownership-v06.test.mjs
+          node --check tests/edd-lifecycle-v06.test.mjs
+          node --check tests/commerce-v06.spec.mjs
       - name: Serve static production routes
         shell: bash
         run: |
@@ -51,6 +57,7 @@ jobs:
           curl --fail --silent http://127.0.0.1:4173/demo/v02.html >/dev/null
           curl --fail --silent http://127.0.0.1:4173/product/soft/ >/dev/null
           curl --fail --silent 'http://127.0.0.1:4173/checkout/?state=failed' >/dev/null
+          curl --fail --silent http://127.0.0.1:4173/account/ >/dev/null
           curl --fail --silent http://127.0.0.1:4173/account/license/demo-soft-team/ >/dev/null
           curl --fail --silent http://127.0.0.1:4173/components/ >/dev/null
           curl --fail --silent http://127.0.0.1:4173/src/index.css >/dev/null
@@ -64,6 +71,8 @@ jobs:
           curl --fail --silent http://127.0.0.1:4173/src/adapters/reference.d.ts >/dev/null
           curl --fail --silent http://127.0.0.1:4173/src/adapters/edd.js >/dev/null
           curl --fail --silent http://127.0.0.1:4173/src/adapters/edd.d.ts >/dev/null
+          curl --fail --silent http://127.0.0.1:4173/src/adapters/licensing-bridge.js >/dev/null
+          curl --fail --silent http://127.0.0.1:4173/src/adapters/licensing-bridge.d.ts >/dev/null
           curl --fail --silent http://127.0.0.1:4173/src/renderers/headless.js >/dev/null
           curl --fail --silent http://127.0.0.1:4173/src/renderers/headless.d.ts >/dev/null
           curl --fail --silent http://127.0.0.1:4173/src/renderers/react.js >/dev/null
@@ -72,5 +81,9 @@ jobs:
           curl --fail --silent http://127.0.0.1:4173/src/renderers/action-controls.d.ts >/dev/null
           curl --fail --silent http://127.0.0.1:4173/src/renderers/react-actions.js >/dev/null
           curl --fail --silent http://127.0.0.1:4173/src/renderers/react-actions.d.ts >/dev/null
+          curl --fail --silent http://127.0.0.1:4173/src/renderers/ownership.js >/dev/null
+          curl --fail --silent http://127.0.0.1:4173/src/renderers/ownership.d.ts >/dev/null
+          curl --fail --silent http://127.0.0.1:4173/src/renderers/react-ownership.js >/dev/null
+          curl --fail --silent http://127.0.0.1:4173/src/renderers/react-ownership.d.ts >/dev/null
           curl --fail --silent http://127.0.0.1:4173/storefront/store.js >/dev/null
           curl --fail --silent http://127.0.0.1:4173/storefront/states.json >/dev/null

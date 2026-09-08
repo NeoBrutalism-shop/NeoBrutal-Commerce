@@ -13,169 +13,137 @@ Use this file when an agent generates commerce UI or integration code with this 
 - Show actual price and billing/renewal period together.
 - Expose renewal behavior before checkout.
 - State license scope in concrete terms: sites, seats, domains, activations, support or update window.
-- Discounts must show the resulting price and the discount amount.
+- Discounts must show resulting price and discount amount.
 - Cart and checkout totals remain inspectable before purchase.
 - Optional extras are off by default.
-- Do not create fake urgency, fake scarcity or hidden fees.
-- Reviews must carry useful context and must not be fabricated by adapters or generated UI.
-- Guarantees/refund promises are policy data from the commerce adapter; never invent them.
+- Do not create fake urgency, scarcity or hidden fees.
+- Reviews and guarantees are adapter/policy data; never fabricate them.
 
-## Workflow contract
-A software purchase should read as:
+## Boundary rule
 
-`product → scope/license → optional extras → cart → checkout → confirmation → account → download/license`
+Never pass raw EDD, WordPress, gateway, database-row or licensing-provider objects into Commerce components.
 
-Do not collapse ownership and purchasing into the same mental model. Storefront surfaces may be expressive; post-purchase account/license surfaces should become calmer and operational.
+Read path:
+`provider → adapter/normalizer → normalized Commerce model → renderer → HTML / React`
 
-## v0.5 data boundary
-
-When generating application code, import the normalized contract from `@neobrutal/commerce/contracts` or follow the declarations in `src/contracts/index.d.ts`.
-
-The read path is:
-
-`provider data/event → provider adapter → normalized Commerce model → renderer spec → framework/HTML`
-
-Never pass raw EDD, WordPress, gateway SDK, database-row or licensing-provider objects directly into Commerce components.
+Write path:
+`UI / agent → Commerce action → normalized runtime → adapter → provider`
 
 - Transaction data implements `CommerceAdapter`.
-- Licensing/entitlement data implements `LicensingAdapter`.
-- Use `createCommerceAdapter()` and `createLicensingAdapter()` to validate runtime surfaces.
-- Use `composeCommerceRuntime()` when one renderer/action layer needs both boundaries.
-- Capability flags decide whether optional tax/refund/invoice/activation/seat/renewal/download actions exist. Never infer capabilities from a provider or plugin name.
-- `quoteCheckout()` and final order output are authoritative for money arithmetic. Do not independently reconstruct tax, discount or total calculations in the renderer.
+- Licensing data implements `LicensingAdapter`.
+- Use runtime capability flags instead of provider-name assumptions.
+- Provider quote/order/invoice output is authoritative for commercial arithmetic.
+- A renderer may add presentation state but must not change commercial/ownership meaning.
 
-## Normalized view models
+## Normalized models
 
-Prefer these stable types rather than provider-shaped objects:
-- `ProductView` / `ProductOffer`
-- `CartView` / `CartLineView`
-- `CheckoutQuoteView`
-- `OrderView`
-- `LicenseView`
-- `EntitlementView`
-- `ActivationView`
-- `SeatAssignmentView`
+Use the declarations in `src/contracts/index.d.ts` / `@neobrutal/commerce/contracts`.
+
+Core models include:
+- `ProductView`, `CartView`, `CheckoutQuoteView`, `OrderView`
+- `LicenseView`, `EntitlementView`, `ActivationView`, `SeatAssignmentView`
 - `SignedDownloadView`
 
-A renderer may add local presentation state, but must not mutate the meaning of normalized commercial or ownership data.
+v0.6 adds:
+- `InvoiceView`
+- `SubscriptionView`
+- `PlanChangeQuoteView`
+- `OwnershipTransferView`
+- `OwnershipEventView`
 
-## Action contract
+## Ownership lifecycle semantics
 
-Use `@neobrutal/commerce/actions` for user/application intent. The action path is:
-
-`UI/agent intent → Commerce action → normalized runtime → provider adapter`
-
-Canonical action names are:
-- `cart.add`
-- `cart.remove`
-- `checkout.quote`
-- `checkout.submit`
-- `order.refund`
-- `license.activations.list`
-- `license.seats.list`
-- `seat.assign`
-- `seat.remove`
-- `license.renew`
-- `download.create`
+Keep these concepts separate:
+- Order = transaction.
+- Invoice/receipt = billing record.
+- License = owned scope.
+- Entitlement = current download/update/use rights.
+- Subscription = future recurring billing state.
+- Seat = person assignment.
+- Activation = site/domain/device scope.
+- Transfer/gift = ownership movement workflow.
+- Ownership event = auditable provider-returned history.
 
 Rules:
-- Use `createCommerceAction()` instead of inventing provider-specific command names.
-- Use `createActionDispatcher()` when UI needs `start`, `success` and `error` lifecycle events.
-- Optional commands are capability-gated. Never expose an action merely because a provider is known to support something in general.
-- Do not call adapter methods directly from reusable components when an equivalent Commerce action exists.
-- Preserve action metadata such as `id`, `source` or `correlationId` for UI status and telemetry; do not use metadata to change commercial meaning.
-- UI loading/error state may follow dispatcher lifecycle, but authoritative result data still comes from the normalized adapter result.
+- Quote plan changes before applying them.
+- Never apply an immediate downgrade that would silently strand current usage above the target capacity.
+- A next-term downgrade can preserve the paid term until renewal.
+- `cancel_at_period_end` is not immediate license revocation.
+- A transfer/gift invitation with status `pending` does not mean ownership has moved.
+- Refund effects on entitlements are provider/policy driven; render the returned result instead of assuming revocation.
+- Ownership history comes from the adapter; do not fabricate missing historical events from current state.
 
-## Action binding rule
+See `docs/OWNERSHIP-LIFECYCLE.md`.
 
-For static/server-rendered controls, use `@neobrutal/commerce/actions/bindings` and `@neobrutal/commerce/renderers/action-controls`.
+## Canonical actions
 
-- `createActionAttributes()` serializes a canonical action into stable `data-commerce-action`, `data-commerce-payload` and optional `data-commerce-meta` attributes.
-- `bindCommerceActions()` hydrates declarative controls through an `ActionDispatcher`.
-- `createProductActionCardSpec()` emits one primary commerce action rather than combining competing view/add CTAs.
-- Do not hand-build action JSON attributes when a helper can create them.
-- Do not serialize functions, provider clients or secrets into action attributes.
-- Treat action payloads as intent, not authority; the adapter/provider still validates prices, capability, ownership and payment state.
+Use `@neobrutal/commerce/actions` and `createActionDispatcher()` instead of provider callbacks.
 
-For React, use `@neobrutal/commerce/renderers/react-actions` with the same dispatcher. Do not create a React-only command taxonomy.
+v0.5 commands remain valid:
+`cart.add`, `cart.remove`, `checkout.quote`, `checkout.submit`, `order.refund`, `license.activations.list`, `license.seats.list`, `seat.assign`, `seat.remove`, `license.renew`, `download.create`.
+
+v0.6 adds:
+- `invoice.list`
+- `subscription.get`
+- `subscription.cancel`
+- `subscription.resume`
+- `license.change.quote`
+- `license.change.submit`
+- `license.transfers.list`
+- `license.transfer.create`
+- `license.transfer.cancel`
+- `license.history.list`
+
+Action rules:
+- Use canonical command names; do not invent provider-specific verbs.
+- Optional commands are capability-gated.
+- Preserve action metadata such as `id`, `source` and `correlationId` for status/telemetry only.
+- Loading/error UI may follow dispatcher lifecycle, but authoritative results come from adapters.
+- Static controls may use `@neobrutal/commerce/actions/bindings`; React controls may use `@neobrutal/commerce/renderers/react-actions`.
 
 ## State contract
-Use `storefront/states.json` or the state constants from `@neobrutal/commerce/contracts` instead of inventing new state names.
+
+Use `storefront/states.json` / runtime constants. Do not invent synonyms when a canonical state exists.
 
 - Checkout: `ready`, `processing`, `failed`, `recovered`.
 - System: `empty`, `loading`, `error`, `offline`, `permission`, `unsupported`.
 - Ownership: `active`, `grace`, `expired`, `cancelled`, `refunded`.
-- Product media: `preview`, `code`, `files`.
+- Ownership operation: `ready`, `quoted`, `processing`, `complete`, `failed`.
+- Subscription: `active`, `cancel_at_period_end`, `cancelled`, `past_due`.
+- Media: `preview`, `code`, `files`.
 
-A failure state must preserve the information needed to recover. Loading must respect reduced motion. Offline UI must not discard local cart or ownership context. Permission and unsupported states must explain the missing capability and expose a safe alternate path when one exists.
-
-Do not invent synonyms such as `declined`, `busy`, `paused` or `disabled-license` when a canonical state already expresses the intent.
-
-## Ownership semantics
-- A purchase is not a license.
-- A license is not an entitlement.
-- Downloads should reflect entitlement/update eligibility.
-- Expired update access should not imply the installed product stops working.
-- Mask secrets/keys by default.
-- Show activation/site capacity explicitly.
-- Team seats and activation sites are separate capacity concepts unless an adapter explicitly maps them together.
-- Cancellation of future renewal does not automatically mean loss of already licensed versions.
-- Refund behavior is adapter/policy driven; UI must render the returned entitlement result rather than assume it.
-
-## Component contracts
-Prefer stable `data-commerce-component` anatomy and the shared component CSS exported by `src/index.css`.
-
-Current production components include:
-- `product-card`
-- `order-summary`
-- `product-media`
-- `review-summary`
-- `testimonials`
-- `guarantee`
-- `invoice-details`
-- `payment-failure`
-- `processing-state`
-- `payment-recovery`
-- `license-card`
-- `seat-assignment`
-- `activation-list`
-- `renewal-state`
-- `system-state`
-- `system-states`
-- `ownership-lifecycle`
-
-Complete route/component intent lives in `storefront/routes.json`. Product/license commercial metadata lives in `storefront/catalog.json`. Runtime adapter/type intent lives in `src/contracts/`. Action intent lives in `src/actions/`.
+A failure must preserve enough context to recover. `past_due` must expose billing recovery rather than silently hiding ownership. Loading must respect reduced motion.
 
 ## Renderer rule
 
-Use `@neobrutal/commerce/renderers/headless` when generating framework-neutral or server-rendered output. Use `@neobrutal/commerce/renderers/react` for read-only React delivery, and `@neobrutal/commerce/renderers/react-actions` for dispatcher-backed controls.
+Use:
+- `@neobrutal/commerce/renderers/headless` for framework-neutral read surfaces.
+- `@neobrutal/commerce/renderers/react` for React read surfaces.
+- `@neobrutal/commerce/renderers/action-controls` / `react-actions` for canonical commands.
+- `@neobrutal/commerce/renderers/ownership` / `react-ownership` for v0.6 lifecycle surfaces.
 
-- Headless builders produce immutable semantic renderer specs.
-- `renderSpecToHtml()` is the supported HTML serializer and escapes model-provided text/attributes.
-- React is injected by the consuming application; do not make React types or provider data part of the core contract.
-- Preserve renderer-produced `data-commerce-component`, `data-state`, product/license IDs and semantic elements.
-- Wire interactions to Commerce actions rather than provider callbacks.
-- Do not fork separate HTML and React anatomy for the same Commerce component; both should consume the same normalized model/spec contract.
+Preserve renderer-produced `data-commerce-component`, `data-state`, IDs and semantic elements. Do not fork a provider-shaped React model separate from the headless model.
 
-CSS, HTML, React/shadcn, WordPress templates and future renderers are all consumers of the same normalized contract. A renderer must not create a new provider-specific model layer that contradicts the core declarations.
+## Provider adapters
 
-## EDD adapter rule
+### EDD
+Use `@neobrutal/commerce/adapters/edd` for transaction-provider normalization. The host supplies transport/auth/session behavior. Unknown gateway states must be mapped deliberately or rejected.
 
-Use `@neobrutal/commerce/adapters/edd` when the transaction provider is Easy Digital Downloads.
+### Licensing bridge
+Use `@neobrutal/commerce/adapters/licensing-bridge` for a replaceable licensing provider. The host supplies transport methods and normalizers. Capabilities determine whether activation/seat/renewal/download/plan-change/transfer/history methods exist.
 
-- The host supplies the EDD bridge transport; Commerce does not invent endpoint URLs, authentication or WordPress session rules.
-- `createEddCommerceAdapter()` normalizes EDD-style product, variable-price, cart, quote, order and refund responses.
-- Explicitly configure `taxes`, `discounts`, `invoices` and `refunds` capabilities.
-- Unknown EDD/gateway state names must be normalized deliberately or rejected. Do not create a component-only synonym.
-- The adapter normalizes money shape but does not recalculate provider totals.
-- EDD purchase/order data does not substitute for licensing/entitlement data.
+Do not change Commerce component contracts to match a specific licensing provider.
 
-See `docs/EDD-MAPPING.md` for the supported bridge contract.
+## Component anatomy
 
-## Backend boundary
-Commerce owns presentation and customer-facing interaction. Easy Digital Downloads or another commerce adapter can own order/payment transaction state. A licensing provider can own products, licenses, entitlements, activations, releases and signed-download authorization. Keep adapters replaceable.
+Prefer stable `data-commerce-component` anatomy exported by the core CSS. v0.6 ownership components include:
+- `invoice-history`
+- `plan-change`
+- `ownership-transfer`
+- `subscription-management`
+- `ownership-timeline`
 
-Do not switch component contracts to a specific licensing provider merely because an EDD deployment uses one.
+Existing product, cart, checkout, license, seat, activation, renewal and system-state components remain supported.
 
 ## Theme contract
 Set `data-theme="light"` or `data-theme="dark"` on the document root. Prefer semantic tokens over raw theme colors.

@@ -1,5 +1,5 @@
 {
-  "version": "0.5.0",
+  "version": "0.6.0",
   "checkout": [
     {"id":"ready","intent":"payment-ready","preservesOrderContext":true},
     {"id":"processing","intent":"payment-processing","blocksSubmit":true,"preservesOrderContext":true},
@@ -20,6 +20,19 @@
     {"id":"expired","intent":"updates-expired"},
     {"id":"cancelled","intent":"future-renewal-cancelled"},
     {"id":"refunded","intent":"purchase-refunded"}
+  ],
+  "ownershipOperation": [
+    {"id":"ready","intent":"ownership-operation-ready"},
+    {"id":"quoted","intent":"ownership-operation-quoted","mustExposeConsequences":true},
+    {"id":"processing","intent":"ownership-operation-processing","blocksRepeatSubmit":true},
+    {"id":"complete","intent":"ownership-operation-complete","mustExposeResult":true},
+    {"id":"failed","intent":"ownership-operation-failed","mustPreserveContext":true}
+  ],
+  "subscription": [
+    {"id":"active","intent":"future-renewal-active"},
+    {"id":"cancel_at_period_end","intent":"future-renewal-cancelled","preservesPaidTerm":true},
+    {"id":"cancelled","intent":"subscription-ended"},
+    {"id":"past_due","intent":"billing-recovery-required","mustExposeRecovery":true}
   ],
   "media": [
     {"id":"preview","intent":"visual-product-preview"},

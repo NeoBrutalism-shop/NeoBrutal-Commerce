@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "currency": "USD",
   "products": [
     {
@@ -10,29 +10,18 @@
       "summary": "Refined Neo-Brutalism for SaaS, admin and AI product interfaces.",
       "route": "product/soft/",
       "licenses": [
-        {"id":"individual","label":"Individual","sites":1,"price":49},
-        {"id":"team","label":"Team","sites":5,"price":99},
-        {"id":"agency","label":"Agency","sites":25,"price":179}
+        {"id":"individual","label":"Individual","sites":1,"seats":1,"price":49},
+        {"id":"team","label":"Team","sites":5,"seats":5,"price":99},
+        {"id":"agency","label":"Agency","sites":25,"seats":25,"price":179}
       ],
       "entitlements": ["source-files","12-month-updates","commercial-use"],
       "reviewSummary": {"rating":4.9,"count":38,"source":"verified-buyers"},
       "guarantee": {"days":30,"policySource":"commerce-adapter"},
-      "renewal": {"updateEligibilityMonths":12,"existingLicensedVersionsRemainOwned":true},
+      "renewal": {"updateEligibilityMonths":12,"existingLicensedVersionsRemainOwned":true,"autoRenewal":true,"interval":"year"},
+      "ownershipCapabilities": ["plan-changes","transfers","gifts","subscriptions","invoice-history","ownership-history"],
       "media": ["preview","code","files"]
     },
-    {
-      "id": "rivet",
-      "name": "NeoBrutal Rivet",
-      "kind": "component-system",
-      "summary": "Dense, structural Neo-Brutal components for technical products.",
-      "status": "catalog-example"
-    },
-    {
-      "id": "commerce",
-      "name": "NeoBrutal Commerce",
-      "kind": "commerce-flavor",
-      "summary": "Storefront, checkout, account and ownership patterns for digital products.",
-      "status": "catalog-example"
-    }
+    {"id":"rivet","name":"NeoBrutal Rivet","kind":"component-system","summary":"Dense, structural Neo-Brutal components for technical products.","status":"catalog-example"},
+    {"id":"commerce","name":"NeoBrutal Commerce","kind":"commerce-flavor","summary":"Storefront, checkout, account and ownership patterns for digital products.","status":"catalog-example"}
   ]
 }
