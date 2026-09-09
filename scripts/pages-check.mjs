@@ -1,0 +1,73 @@
+import fs from 'node:fs';
+import path from 'node:path';
+
+const root=process.cwd();
+const read=file=>fs.readFileSync(path.join(root,file),'utf8');
+const json=file=>JSON.parse(read(file));
+const fail=message=>{console.error(`v1.2 pages: ${message}`);process.exit(1)};
+const unique=(values,label)=>{if(new Set(values).size!==values.length)fail(`${label} contains duplicate ids`)};
+const sorted=values=>[...values].sort((a,b)=>a.localeCompare(b));
+const exactIds=(label,actual,expected)=>{
+  const a=sorted(actual),e=sorted(expected);
+  if(JSON.stringify(a)!==JSON.stringify(e))fail(`${label} drifted\nactual: ${a.join(', ')}\nexpected: ${e.join(', ')}`);
+};
+const requiredText=(value,label)=>{if(typeof value!=='string'||!value.trim())fail(`${label} must be a non-empty string`)};
+
+const expectedCommerce='1.0.0';
+const expectedPageLibrary='1.2.0';
+const routes=json('storefront/routes.json');
+const blocks=json('storefront/blocks.json');
+const pages=json('storefront/pages.json');
+const lab=read('demo/v10.js');
+const html=read('demo/v10.html');
+
+if(routes.version!==expectedCommerce)fail(`frozen route manifest must remain ${expectedCommerce}`);
+if(blocks.commerceVersion!==expectedCommerce)fail(`blocks must target frozen Commerce ${expectedCommerce}`);
+if(pages.schema!=='neobrutal-commerce/pages@1')fail(`unexpected page library schema: ${pages.schema}`);
+if(pages.commerceVersion!==expectedCommerce)fail(`pages must target frozen Commerce ${expectedCommerce}`);
+if(pages.pageLibraryVersion!==expectedPageLibrary)fail(`page library must use exact ${expectedPageLibrary}`);
+
+const routeIds=(routes.routes||[]).map(route=>route.id);
+const blockIds=(blocks.blocks||[]).map(block=>block.id);
+const pageDocs=pages.pages||[];
+const pageIds=pageDocs.map(page=>page.id);
+if(routeIds.length!==10)fail(`expected exactly 10 frozen production routes, received ${routeIds.length}`);
+if(pageIds.length!==10)fail(`expected exactly 10 page contracts, received ${pageIds.length}`);
+if(blockIds.length!==18)fail(`expected exactly 18 reusable block contracts, received ${blockIds.length}`);
+unique(routeIds,'route manifest');
+unique(blockIds,'block manifest');
+unique(pageIds,'page library');
+exactIds('page ids',pageIds,routeIds);
+
+const knownBlocks=new Set(blockIds);
+const usedBlocks=new Set();
+for(const page of pageDocs){
+  requiredText(page.title,`page ${page.id} title`);
+  requiredText(page.description,`page ${page.id} description`);
+  if(!Array.isArray(page.blocks)||page.blocks.length===0)fail(`page ${page.id} must compose at least one block`);
+  unique(page.blocks,`page ${page.id} block composition`);
+  for(const blockId of page.blocks){
+    if(!knownBlocks.has(blockId))fail(`page ${page.id} references unknown block ${blockId}`);
+    usedBlocks.add(blockId);
+  }
+}
+exactIds('Blocks → Pages coverage',[...usedBlocks],blockIds);
+
+if(/\bconst\s+ROUTES\s*=\s*\[/.test(lab))fail('Page Lab must not hard-code a duplicate route catalog');
+for(const marker of [
+  "fetchJson('../storefront/routes.json')",
+  "fetchJson('../storefront/pages.json')",
+  "fetchJson('../storefront/blocks.json')",
+  "pageLibrary.schema==='neobrutal-commerce/pages@1'",
+  "dataset.pageLibraryReady='true'",
+  'data-page-id',
+  'data-page-block',
+  'LEGACY_ROUTE_ALIASES',
+  'page library ids drifted from frozen routes',
+  'page library must compose all 18 documented blocks'
+])if(!lab.includes(marker))fail(`Page Lab runtime contract missing marker: ${marker}`);
+try{new Function(lab)}catch(error){fail(`demo/v10.js syntax error: ${error.message}`)}
+
+for(const marker of ['PAGE LAB v1.2','id="currentIntent"','id="currentBlocks"','id="pageCountBadge"'])if(!html.includes(marker))fail(`Page Lab HTML missing v1.2 marker: ${marker}`);
+
+console.log(`NeoBrutal Commerce Pages v${expectedPageLibrary} passed · 10/10 page contracts · 18/18 Blocks → Pages coverage · Page Lab derives frozen routes`);
