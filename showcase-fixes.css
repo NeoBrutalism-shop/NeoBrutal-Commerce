@@ -11,12 +11,23 @@
 .store-section--pink .store-route code{color:var(--nbc-text)}
 .store-section--pink .store-route span{color:var(--nbc-muted)}
 
+/* The explorer's generic anchor inheritance is intentionally broad for docs
+   links, but it must not override component-local contrast on accent buttons. */
+.cx-page a.nbc-button--primary,
+.cx-page a.nbc-button--coral{color:#151515}
+.cx-page a.nbc-button--dark{color:#fff7e8}
+
+/* Receipt cells intentionally use a fixed light surface in the frozen
+   component CSS. Keep their foreground fixed as well when the explorer shell
+   switches to dark mode. */
+:is(.cx-preview,.cx-block-preview) .nbc-receipt-grid > div{color:#151515}
+
 /* Primary + helper copy must read as two deliberate lines, never one fused
-   label. This covers component previews and reusable block previews. */
+   label. Do not recolor helper text here: checked license/payment controls own
+   their accent-surface foreground and must remain the contrast authority. */
 :is(.cx-preview,.cx-block-preview) strong + small{
   display:block;
   margin-top:.22rem;
-  color:var(--nbc-muted);
   line-height:1.35;
 }
 .cx-mini-row > span{
