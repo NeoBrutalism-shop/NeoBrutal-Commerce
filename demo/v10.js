@@ -1,7 +1,19 @@
 const EXPECTED_PAGE_LIBRARY_VERSION='1.2.0';
 const EXPECTED_COMMERCE_VERSION='1.0.0';
 const VIEWPORTS={desktop:{label:'1280px preview'},tablet:{label:'834px preview'},mobile:{label:'390px preview'}};
-const LEGACY_ROUTE_ALIASES={product:'product-soft',success:'order-success',ownership:'account-license',system:'components'};
+const FROZEN_V10_ROUTE_IDS=[
+  {id:'home',canonical:'home'},
+  {id:'products',canonical:'products'},
+  {id:'product',canonical:'product-soft'},
+  {id:'pricing',canonical:'pricing'},
+  {id:'cart',canonical:'cart'},
+  {id:'checkout',canonical:'checkout'},
+  {id:'success',canonical:'order-success'},
+  {id:'account',canonical:'account'},
+  {id:'ownership',canonical:'account-license'},
+  {id:'system',canonical:'components'}
+];
+const LEGACY_ROUTE_ALIASES=Object.fromEntries(FROZEN_V10_ROUTE_IDS.map(route=>[route.id,route.canonical]));
 const qs=(selector,scope=document)=>scope.querySelector(selector);
 const qsa=(selector,scope=document)=>[...scope.querySelectorAll(selector)];
 let ROUTES=[];
