@@ -11,6 +11,7 @@ for(const route of showcaseRoutes){
     page.on('pageerror',error=>runtimeFailures.push(error.message));
     page.on('console',message=>{if(message.type()==='error')runtimeFailures.push(message.text())});
     await page.goto(route,{waitUntil:'networkidle'});
+    if(route==='/components.html')await expect(page.locator('[data-component-card]')).toHaveCount(47);
     const results=await new AxeBuilder({page}).withTags(['wcag2a','wcag2aa','wcag21a','wcag21aa']).analyze();
     expect(results.violations,`${route} WCAG A/AA violations`).toEqual([]);
     expect(httpFailures,`${route} HTTP failures`).toEqual([]);
@@ -45,12 +46,12 @@ test('v1.0 component explorer search, categories, theme, and live source interac
   await expect(visible).toHaveCount(1);
   await expect(visible).toHaveAttribute('data-component-id','subscription-management');
   await search.fill('');
-  await page.locator('[data-category="product"]').click();
+  await page.locator('#categoryNav button[data-category="product"]').click();
   await expect(page.locator('[data-component-card]:visible')).toHaveCount(8);
   const theme=page.locator('#themeToggle');
   await theme.click();
   await expect(page.locator('html')).toHaveAttribute('data-theme','dark');
-  await page.locator('[data-category="all"]').click();
+  await page.locator('#categoryNav button[data-category="all"]').click();
   const subscription=page.locator('[data-component-id="subscription-management"]');
   const action=subscription.locator('[data-demo-action="subscription"]');
   await action.click();
@@ -61,12 +62,13 @@ test('v1.0 application lab frames all ten real production routes with viewport a
   await page.goto('/demo/v10.html?route=checkout&viewport=mobile',{waitUntil:'networkidle'});
   await expect(page.locator('.lab-route-button')).toHaveCount(10);
   await expect(page.locator('#labStage')).toHaveAttribute('data-viewport','mobile');
+  await expect(page.locator('#labStage')).not.toHaveAttribute('aria-pressed',/.+/);
   await expect(page.locator('#currentPath')).toHaveText('/checkout');
   await expect(page.locator('#labFrame')).toHaveAttribute('src','../checkout/');
   await expect(page.frameLocator('#labFrame').locator('[data-commerce-page="checkout"]')).toBeVisible();
   await page.getByRole('button',{name:/Tablet/}).click();
   await expect(page.locator('#labStage')).toHaveAttribute('data-viewport','tablet');
-  await page.locator('#routeSelect').selectOption('ownership');
+  await page.locator('.lab-route-button[data-route="ownership"]').click();
   await expect(page.locator('#currentPath')).toHaveText('/account/license/:id');
   await expect(page.frameLocator('#labFrame').locator('[data-commerce-page="license-detail"]')).toBeVisible();
   await page.locator('#labTheme').click();
