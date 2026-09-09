@@ -19,6 +19,8 @@ jobs:
         with:
           node-version: 24
           package-manager-cache: false
+      - name: Patch promoter generator syntax
+        run: node scripts/fix-promoter.mjs
       - name: Promote all release identities and packaging
         run: node scripts/promote-v10.mjs
       - name: Generate exact dependency lock
