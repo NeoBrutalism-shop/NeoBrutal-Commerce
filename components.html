@@ -5,12 +5,14 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <meta name="color-scheme" content="light dark" />
   <meta name="theme-color" content="#fff7e8" />
-  <meta name="description" content="NeoBrutal Commerce v1.0 interactive component and block explorer — 47 frozen component contracts, reusable commerce blocks, real states, and live route links." />
+  <meta name="description" content="NeoBrutal Commerce v1.1 interactive component and block explorer — 47 frozen Commerce v1.0 component contracts, 18 reusable blocks, real states, and implementation guidance." />
   <title>Components + Blocks — NeoBrutal Commerce</title>
   <link rel="stylesheet" href="./src/index.css" />
   <link rel="stylesheet" href="./storefront/store.css" />
   <link rel="stylesheet" href="./component-explorer.css" />
+  <link rel="stylesheet" href="./component-showcase.css" />
   <script type="module" src="./component-explorer.js"></script>
+  <script type="module" src="./component-showcase.js"></script>
   <script type="module">
     let demoControlId=0;
     function normalizePreviewSemantics(){
@@ -69,17 +71,17 @@
         <button type="button" data-category="system">System + foundation <span>4</span></button>
       </nav>
       <div class="cx-sidebar-note">
-        <span class="nbc-badge nbc-badge--lime">LIVE SOURCE</span>
-        <p>Every card is driven by <code>storefront/components.json</code> and rendered with the actual Commerce CSS. No screenshot-only catalog.</p>
+        <span class="nbc-badge nbc-badge--lime">LIVE CONTRACTS</span>
+        <p>Execution comes from <code>storefront/components.json</code>. v1.1 design guidance comes from <code>component-showcase.json</code> and <code>blocks.json</code>. CI keeps all three aligned.</p>
       </div>
     </aside>
 
     <main class="cx-main" id="content">
       <section class="cx-hero">
         <div class="cx-hero-copy">
-          <p class="cx-kicker">PUBLIC EXPLORER · COMMERCE v1.0</p>
+          <p class="cx-kicker">PUBLIC EXPLORER · SHOWCASE v1.1 · COMMERCE v1.0</p>
           <h1>47 contracts.<br /><span>Real pixels.</span></h1>
-          <p>Learn Commerce by touching it. Browse every frozen component, inspect its normalized model/action/state contract, then jump into reusable blocks and the real ten-route storefront lab.</p>
+          <p>Learn Commerce by touching it. Browse every frozen component, inspect normalized model/action/state contracts plus variants, responsive rules, theming, and accessibility guidance, then jump into reusable blocks and the real ten-route storefront lab.</p>
           <div class="cx-hero-actions"><a class="nbc-button nbc-button--primary nbc-tactile" href="#componentsPanel">BROWSE COMPONENTS</a><a class="nbc-button nbc-tactile" href="./demo/v10.html">OPEN PAGE LAB →</a></div>
         </div>
         <div class="cx-stats" aria-label="Explorer coverage">
@@ -93,21 +95,21 @@
       <section class="cx-panel" id="componentsPanel" role="tabpanel" aria-labelledby="componentsTab">
         <div class="cx-section-head">
           <div><p class="cx-kicker">COMPONENTS</p><h2>Every public Commerce pattern.</h2></div>
-          <p>Search by name, model, action, state, or category. Each card shows the machine contract beside a working visual sample.</p>
+          <p>Search by name, model, action, state, variant, accessibility rule, responsive mode, or category. Each card shows the machine contract beside a working visual sample.</p>
         </div>
         <div class="cx-result-meta" aria-live="polite"><strong id="resultCount">47 components</strong><span id="resultHint">Showing the complete frozen registry.</span></div>
-        <div class="cx-component-grid" id="componentGrid"><div class="cx-loading">Loading the v1.0 registry…</div></div>
-        <div class="cx-empty" id="componentEmpty" hidden><strong>No matching component.</strong><span>Try a component ID, model such as “SubscriptionView”, or action such as “checkout.submit”.</span></div>
+        <div class="cx-component-grid" id="componentGrid"><div class="cx-loading">Loading the Commerce v1.0 registry + v1.1 showcase contracts…</div></div>
+        <div class="cx-empty" id="componentEmpty" hidden><strong>No matching component.</strong><span>Try a component ID, model such as “SubscriptionView”, action such as “checkout.submit”, or rule such as “reduced-motion”.</span></div>
       </section>
 
       <section class="cx-panel" id="blocksPanel" role="tabpanel" aria-labelledby="blocksTab" hidden>
         <div class="cx-section-head">
           <div><p class="cx-kicker">BLOCKS</p><h2>Compose faster without inventing structure.</h2></div>
-          <p>Blocks combine frozen components into reusable commerce sections. They are examples, not a second API layer: the underlying component contracts remain authoritative.</p>
+          <p>Blocks combine frozen components into reusable commerce sections. Their v1.1 manifest documents composition, responsive behavior, theme behavior, and accessibility expectations without creating a second runtime API.</p>
         </div>
         <div class="cx-result-meta" aria-live="polite"><strong id="blockCount">18 blocks</strong><span>Each block links to the production route where the pattern is exercised.</span></div>
         <div class="cx-block-grid" id="blockGrid"></div>
-        <div class="cx-empty" id="blockEmpty" hidden><strong>No matching block.</strong><span>Try “pricing”, “checkout”, “ownership”, “trust”, or “account”.</span></div>
+        <div class="cx-empty" id="blockEmpty" hidden><strong>No matching block.</strong><span>Try “pricing”, “checkout”, “ownership”, “trust”, “account”, or an accessibility rule.</span></div>
       </section>
 
       <section class="cx-route-strip" aria-labelledby="pages-title">
@@ -128,6 +130,6 @@
     </main>
   </div>
 
-  <footer class="cx-footer"><strong>NEOBRUTAL COMMERCE</strong><span>Permanent GitHub Pages surface · components + blocks · v1.0</span><a href="https://github.com/NeoBrutalism-shop/NeoBrutal-Commerce">View source ↗</a></footer>
+  <footer class="cx-footer"><strong>NEOBRUTAL COMMERCE</strong><span>Permanent GitHub Pages surface · components + blocks · Showcase v1.1 / Commerce v1.0</span><a href="https://github.com/NeoBrutalism-shop/NeoBrutal-Commerce">View source ↗</a></footer>
 </body>
 </html>
