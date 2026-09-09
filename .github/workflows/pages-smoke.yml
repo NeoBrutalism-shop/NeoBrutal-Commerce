@@ -1,0 +1,67 @@
+name: Pages public smoke
+
+on:
+  push:
+    branches:
+      - main
+      - chore/pages-public-smoke
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify-public-pages:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Verify permanent GitHub Pages surfaces and production routes
+        env:
+          BASE_URL: https://neobrutalism-shop.github.io/NeoBrutal-Commerce
+        run: |
+          node --input-type=module <<'NODE'
+          import { readFile } from 'node:fs/promises';
+
+          const base = process.env.BASE_URL.replace(/\/$/, '');
+          const manifest = JSON.parse(await readFile('storefront/routes.json', 'utf8'));
+          const routePaths = manifest.routes.map((route) => route.example || route.path);
+          const paths = [...new Set([
+            '/',
+            '/components.html',
+            '/demo/v10.html',
+            ...routePaths,
+          ])];
+
+          const failures = [];
+          for (const path of paths) {
+            const url = `${base}${path}`;
+            try {
+              const response = await fetch(url, { redirect: 'follow' });
+              const html = await response.text();
+              const contentType = response.headers.get('content-type') || '';
+              const validHtml = /<html[\s>]/i.test(html) && !/Page not found/i.test(html);
+              const stayedOnProjectSite = response.url.startsWith(`${base}/`) || response.url === `${base}/`;
+
+              if (!response.ok || !contentType.includes('text/html') || !validHtml || !stayedOnProjectSite) {
+                failures.push(`${path} -> ${response.status} ${response.url} (${contentType || 'no content-type'})`);
+                continue;
+              }
+
+              console.log(`OK ${response.status} ${path} -> ${response.url}`);
+            } catch (error) {
+              failures.push(`${path} -> ${error.message}`);
+            }
+          }
+
+          if (failures.length) {
+            console.error('\nPublic Pages smoke failures:');
+            for (const failure of failures) console.error(`- ${failure}`);
+            process.exit(1);
+          }
+
+          console.log(`\nVerified ${paths.length} public GitHub Pages URLs.`);
+          NODE
