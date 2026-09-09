@@ -45,10 +45,11 @@ function designDetails(doc,contract){
   const responsive=contract.responsiveModes[doc.responsiveMode];
   const theme=contract.themeModes[doc.themeMode];
   const a11y=doc.a11y.map(code=>({code,text:contract.a11yRules[code]}));
+  const variants=Array.isArray(doc.variants)&&doc.variants.length?doc.variants:['composition'];
   return `<details class="cx-doc" data-doc-complete>
     <summary>Design + implementation contract</summary>
     <dl class="cx-doc-grid">
-      ${chipRow('Variants',doc.variants)}
+      ${chipRow('Variants',variants)}
       <div class="cx-doc-row"><dt>Responsive</dt><dd><code>${escapeHtml(doc.responsiveMode)}</code><span>${escapeHtml(responsive)}</span></dd></div>
       <div class="cx-doc-row"><dt>Theme</dt><dd><code>${escapeHtml(doc.themeMode)}</code><span>${escapeHtml(theme)}</span></dd></div>
       <div class="cx-doc-row"><dt>Accessibility</dt><dd>${a11y.map(rule=>`<span class="cx-doc-rule"><code>${escapeHtml(rule.code)}</code>${escapeHtml(rule.text)}</span>`).join('')}</dd></div>
