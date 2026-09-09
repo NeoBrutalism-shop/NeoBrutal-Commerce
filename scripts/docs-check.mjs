@@ -8,11 +8,14 @@ const required=[
   'AGENTS.md','LLMS.md','COMPONENTS.md',
   'docs/ADOPTION.md','docs/AGENT-PLAYBOOK.md','docs/AI-COMPONENT-NOTES.md',
   'docs/RECIPES.md','docs/THEMING.md','docs/MIGRATION.md','docs/PROVIDER-EXAMPLES.md','docs/RELEASE-CANDIDATE.md','docs/PUBLIC-RELEASE.md',
-  'storefront/components.json'
+  'storefront/components.json','storefront/component-showcase.json','storefront/component-states.json','storefront/blocks.json'
 ];
 for(const file of required){if(!fs.existsSync(path.join(root,file))){console.error(`Missing adoption file: ${file}`);process.exit(1);}}
 
 const manifest=json('storefront/components.json');
+const showcase=json('storefront/component-showcase.json');
+const stateExamples=json('storefront/component-states.json');
+const blocks=json('storefront/blocks.json');
 const packageManifest=json('package.json');
 const routes=json('storefront/routes.json');
 const states=json('storefront/states.json');
@@ -23,6 +26,10 @@ const ids=manifest.components.map(component=>component.id);
 if(new Set(ids).size!==ids.length){console.error('Duplicate component id in storefront/components.json');process.exit(1);}
 const known=new Set(ids);
 for(const route of routes.routes){for(const id of route.primaryComponents||[]){if(!known.has(id)){console.error(`Route ${route.path} references undocumented component ${id}`);process.exit(1);}}}
+
+if(showcase.schema!=='neobrutal-commerce/component-showcase@1'||showcase.showcaseVersion!=='1.1.0'||showcase.commerceVersion!==packageManifest.version){console.error('v1.1 component showcase contract is missing or version-inconsistent');process.exit(1);}
+if(stateExamples.schema!=='neobrutal-commerce/component-states@1'||stateExamples.showcaseVersion!=='1.1.0'||stateExamples.commerceVersion!==packageManifest.version){console.error('v1.1 component state showcase contract is missing or version-inconsistent');process.exit(1);}
+if(blocks.schema!=='neobrutal-commerce/blocks@1'||blocks.showcaseVersion!=='1.1.0'||blocks.commerceVersion!==packageManifest.version){console.error('v1.1 blocks showcase contract is missing or version-inconsistent');process.exit(1);}
 
 const canonicalActions=new Set(manifest.canonicalActions||[]);
 const actionRuntime=read('src/actions/runtime.js');
@@ -35,6 +42,8 @@ for(const component of manifest.components){
   for(const state of component.states){if(!canonicalStates.has(state)){console.error(`${component.id} uses unknown state ${state}`);process.exit(1);}}
 }
 
+const componentsDoc=read('COMPONENTS.md');
+for(const marker of ['Showcase v1.1 / Commerce v1.0','47 / 47','18 / 18','42 / 42','storefront/component-showcase.json','storefront/component-states.json','storefront/blocks.json','scripts/showcase-check.mjs']){if(!componentsDoc.includes(marker)){console.error(`COMPONENTS.md missing v1.1 showcase marker: ${marker}`);process.exit(1);}}
 const agents=read('AGENTS.md');
 for(const marker of ['storefront/components.json','docs/AGENT-PLAYBOOK.md','docs/AI-COMPONENT-NOTES.md','Read before write','Do not guess']){if(!agents.includes(marker)){console.error(`AGENTS.md missing adoption marker: ${marker}`);process.exit(1);}}
 const adoption=read('docs/ADOPTION.md');
@@ -52,4 +61,5 @@ for(const marker of ['v0.5 → v0.6','v0.6 → v0.7','v0.7 → v0.8','v0.8 → v
 const providers=read('docs/PROVIDER-EXAMPLES.md');
 for(const marker of ['createEddCommerceAdapter','createLicensingBridgeAdapter','capabilities','normalize','cancel_at_period_end']){if(!providers.includes(marker)){console.error(`PROVIDER-EXAMPLES.md missing marker: ${marker}`);process.exit(1);}}
 
-console.log(`NeoBrutal Commerce v1.0 adoption docs passed · ${manifest.components.length} machine-readable components · ${routes.routes.length} production routes · recipes/theming/migration/provider examples verified`);
+const documentedStates=stateExamples.components.reduce((sum,component)=>sum+component.states.length,0);
+console.log(`NeoBrutal Commerce v1.0 adoption docs + Showcase v1.1 passed · ${manifest.components.length} components · ${blocks.blocks.length} blocks · ${documentedStates} live states · ${routes.routes.length} production routes`);
