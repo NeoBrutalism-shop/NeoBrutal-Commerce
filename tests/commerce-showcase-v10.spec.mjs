@@ -7,6 +7,7 @@ const waitForShowcaseContracts=async page=>{
   await expect(page.locator('html')).toHaveAttribute('data-showcase-version','1.1.0');
   await expect(page.locator('html')).toHaveAttribute('data-showcase-state-examples','42');
 };
+const gridTrackCount=async locator=>locator.evaluate(node=>getComputedStyle(node).gridTemplateColumns.trim().split(/\s+/).filter(Boolean).length);
 
 for(const route of showcaseRoutes){
   test(`v1.0 GitHub Pages showcase is accessible ${route}`,async({page})=>{
@@ -22,6 +23,7 @@ for(const route of showcaseRoutes){
       await expect(page.locator('[data-component-card] [data-doc-complete]')).toHaveCount(47);
       await expect(page.locator('[data-state-matrix]')).toHaveCount(12);
       await expect(page.locator('[data-showcase-state]')).toHaveCount(42);
+      await expect(page.locator('[data-block-preview-for]')).toHaveCount(18);
     }
     const results=await new AxeBuilder({page}).withTags(['wcag2a','wcag2aa','wcag21a','wcag21aa']).analyze();
     expect(results.violations,`${route} WCAG A/AA violations`).toEqual([]);
@@ -58,13 +60,37 @@ test('v1.1 component explorer renders complete frozen components and documented 
   await page.getByRole('tab',{name:/Blocks/}).click();
   await expect(page.locator('[data-block-card]')).toHaveCount(18);
   await expect(page.locator('[data-block-id]')).toHaveCount(18);
+  await expect(page.locator('[data-block-preview-for]')).toHaveCount(18);
   await expect(page.locator('[data-block-card] [data-doc-complete]')).toHaveCount(18);
+  const blockIds=await page.locator('[data-block-id]').evaluateAll(nodes=>nodes.map(node=>node.dataset.blockId).sort());
+  const blockPreviewIds=await page.locator('[data-block-preview-for]').evaluateAll(nodes=>nodes.map(node=>node.dataset.blockPreviewFor).sort());
+  expect(new Set(blockPreviewIds).size).toBe(18);
+  expect(blockPreviewIds).toEqual(blockIds);
   await expect(page.locator('[data-block-id="checkout-shell"]')).toBeVisible();
   await expect(page.locator('[data-block-id="ownership-operations"]')).toBeVisible();
   const checkoutBlock=page.locator('[data-block-id="checkout-shell"]');
   await checkoutBlock.locator('.cx-doc summary').click();
   await expect(checkoutBlock.locator('.cx-doc')).toContainText('grid-to-stack');
   await expect(checkoutBlock.locator('.cx-doc')).toContainText('current-location');
+
+  const mediaBlock=page.locator('[data-block-id="product-media"]');
+  const mediaPreview=mediaBlock.locator('[data-block-preview-for="product-media"]');
+  await expect(mediaPreview).toHaveAttribute('data-block-current-state','preview');
+  await mediaBlock.locator('[data-block-media-state="code"]').click();
+  await expect(mediaBlock.locator('[data-block-media-state="code"]')).toHaveAttribute('aria-pressed','true');
+  await expect(mediaBlock.locator('[data-block-media-state="preview"]')).toHaveAttribute('aria-pressed','false');
+  await expect(mediaPreview).toHaveAttribute('data-block-current-state','code');
+  await expect(mediaBlock.locator('[data-block-media-panel]')).toContainText('Implementation code view is active.');
+
+  const licenseBlock=page.locator('[data-block-id="license-purchase"]');
+  const teamLicense=licenseBlock.getByRole('radio',{name:/Team/});
+  await teamLicense.click();
+  await expect(teamLicense).toBeChecked();
+
+  const bundleBlock=page.locator('[data-block-id="bundle-builder"]');
+  const figmaSource=bundleBlock.getByRole('checkbox',{name:/Figma source/});
+  await figmaSource.click();
+  await expect(figmaSource).toBeChecked();
 });
 
 test('v1.1 live canonical state matrices expose and switch real registry states',async({page})=>{
@@ -160,12 +186,47 @@ test('v1.1 showcase surfaces do not introduce horizontal overflow',async({page})
   }
 });
 
+test('v1.1 block previews prove grid-to-stack and contained-scroll behavior',async({page},testInfo)=>{
+  test.skip(!new Set(['chromium','mobile-chromium']).has(testInfo.project.name),'Canonical responsive block proof uses Chromium desktop/mobile.');
+  await page.goto('/components.html',{waitUntil:'networkidle'});
+  await waitForShowcaseContracts(page);
+  await page.getByRole('tab',{name:/Blocks/}).click();
+  const mobile=testInfo.project.name==='mobile-chromium';
+  const checkoutCard=page.locator('[data-block-id="checkout-shell"]');
+  const checkoutShell=checkoutCard.locator('.nbc-checkout-shell');
+  const pricingGrid=page.locator('[data-block-id="pricing-trio"] .nbc-plan-grid');
+  const blockCardTracks=await gridTrackCount(checkoutCard);
+  const checkoutTracks=await gridTrackCount(checkoutShell);
+  const pricingTracks=await gridTrackCount(pricingGrid);
+  if(mobile){
+    expect(blockCardTracks,'mobile block card should stack copy and preview').toBe(1);
+    expect(checkoutTracks,'checkout split should stack on mobile').toBe(1);
+    expect(pricingTracks,'pricing trio should stack on mobile').toBe(1);
+    const compare=page.locator('[data-block-id="plan-comparison"] .nbc-compare-wrap');
+    await compare.focus();
+    await expect(compare).toBeFocused();
+    const before=await compare.evaluate(node=>({clientWidth:node.clientWidth,scrollWidth:node.scrollWidth,scrollLeft:node.scrollLeft}));
+    expect(before.scrollWidth,'plan comparison should overflow only inside its local container').toBeGreaterThan(before.clientWidth);
+    await compare.evaluate(node=>{node.scrollLeft=node.scrollWidth-node.clientWidth});
+    const after=await compare.evaluate(node=>node.scrollLeft);
+    expect(after,'keyboard-focusable comparison container should be horizontally scrollable').toBeGreaterThan(0);
+  }else{
+    expect(blockCardTracks,'desktop block card should keep copy and preview columns').toBe(2);
+    expect(checkoutTracks,'checkout split should retain two desktop columns').toBe(2);
+    expect(pricingTracks,'pricing trio should retain three desktop columns').toBe(3);
+  }
+  const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth);
+  expect(overflow,'Blocks tab horizontal overflow').toBeLessThanOrEqual(1);
+});
+
 test('capture v1.1 permanent showcase review surfaces',async({page},testInfo)=>{
   test.skip(!new Set(['chromium','mobile-chromium']).has(testInfo.project.name),'Canonical showcase review captures use Chromium desktop/mobile.');
   test.setTimeout(120_000);
-  for(const [name,route] of [['explorer','/components.html'],['lab','/demo/v10.html?route=product']]){
-    await page.goto(route,{waitUntil:'networkidle'});
-    if(route==='/components.html')await waitForShowcaseContracts(page);
-    await page.screenshot({path:testInfo.outputPath(`commerce-v11-showcase-${name}-${testInfo.project.name}.png`),fullPage:true});
-  }
+  await page.goto('/components.html',{waitUntil:'networkidle'});
+  await waitForShowcaseContracts(page);
+  await page.screenshot({path:testInfo.outputPath(`commerce-v11-showcase-explorer-${testInfo.project.name}.png`),fullPage:true});
+  await page.getByRole('tab',{name:/Blocks/}).click();
+  await page.screenshot({path:testInfo.outputPath(`commerce-v11-showcase-blocks-${testInfo.project.name}.png`),fullPage:true});
+  await page.goto('/demo/v10.html?route=product',{waitUntil:'networkidle'});
+  await page.screenshot({path:testInfo.outputPath(`commerce-v11-showcase-lab-${testInfo.project.name}.png`),fullPage:true});
 });
