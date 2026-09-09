@@ -16,13 +16,15 @@ const requiredText=(value,label)=>{if(typeof value!=='string'||!value.trim())fai
 const expectedCommerce='1.0.0';
 const expectedShowcase='1.1.0';
 const expectedCategories=['storefront','product','pricing','checkout','account','system'];
+const allowedStateTones=['neutral','info','warning','danger','success'];
 
-for(const file of ['storefront/components.json','storefront/component-showcase.json','storefront/blocks.json','component-explorer.js','component-showcase.js','component-showcase.css','components.html']){
+for(const file of ['storefront/components.json','storefront/component-showcase.json','storefront/component-states.json','storefront/blocks.json','component-explorer.js','component-showcase.js','component-showcase.css','components.html']){
   if(!exists(file))fail(`missing showcase file: ${file}`);
 }
 
 const registry=json('storefront/components.json');
 const showcase=json('storefront/component-showcase.json');
+const stateExamples=json('storefront/component-states.json');
 const blocks=json('storefront/blocks.json');
 const explorer=read('component-explorer.js');
 const showcaseClient=read('component-showcase.js');
@@ -31,21 +33,46 @@ const components=registry.components||[];
 const componentIds=components.map(component=>component.id);
 const docs=showcase.components||[];
 const docIds=docs.map(component=>component.id);
+const statefulComponents=components.filter(component=>Array.isArray(component.states)&&component.states.length>0);
+const stateDocs=stateExamples.components||[];
 const blockDocs=blocks.blocks||[];
 const blockIds=blockDocs.map(block=>block.id);
 
 if(registry.commerceVersion!==expectedCommerce)fail(`expected Commerce ${expectedCommerce} registry`);
 if(showcase.schema!=='neobrutal-commerce/component-showcase@1')fail(`unexpected component showcase schema: ${showcase.schema}`);
+if(stateExamples.schema!=='neobrutal-commerce/component-states@1')fail(`unexpected component states schema: ${stateExamples.schema}`);
 if(blocks.schema!=='neobrutal-commerce/blocks@1')fail(`unexpected blocks schema: ${blocks.schema}`);
-if(showcase.commerceVersion!==expectedCommerce||blocks.commerceVersion!==expectedCommerce)fail('showcase manifests must target the frozen Commerce v1.0 runtime');
-if(showcase.showcaseVersion!==expectedShowcase||blocks.showcaseVersion!==expectedShowcase)fail(`showcase manifests must use exact v${expectedShowcase}`);
+for(const [label,manifest] of [['component showcase',showcase],['component states',stateExamples],['blocks',blocks]]){
+  if(manifest.commerceVersion!==expectedCommerce)fail(`${label} must target frozen Commerce ${expectedCommerce}`);
+  if(manifest.showcaseVersion!==expectedShowcase)fail(`${label} must use exact Showcase ${expectedShowcase}`);
+}
 if(componentIds.length!==47)fail(`expected exactly 47 registered components, received ${componentIds.length}`);
 if(docIds.length!==47)fail(`expected exactly 47 component showcase docs, received ${docIds.length}`);
 if(blockIds.length!==18)fail(`expected exactly 18 block showcase docs, received ${blockIds.length}`);
 unique(componentIds,'component registry');
 unique(docIds,'component showcase');
+unique(stateDocs.map(component=>component.id),'component states showcase');
 unique(blockIds,'block showcase');
 exactIds('component showcase ids',docIds,componentIds);
+exactIds('stateful component ids',stateDocs.map(component=>component.id),statefulComponents.map(component=>component.id));
+
+const stateRegistry=new Map(statefulComponents.map(component=>[component.id,component.states]));
+let totalStateExamples=0;
+for(const component of stateDocs){
+  const expected=stateRegistry.get(component.id);
+  if(!expected)fail(`state examples reference non-stateful component: ${component.id}`);
+  if(!Array.isArray(component.states)||component.states.length===0)fail(`state examples missing for ${component.id}`);
+  const ids=component.states.map(state=>state.id);
+  unique(ids,`${component.id} state examples`);
+  exactIds(`${component.id} canonical states`,ids,expected);
+  for(const state of component.states){
+    requiredText(state.title,`${component.id}:${state.id} title`);
+    requiredText(state.consequence,`${component.id}:${state.id} consequence`);
+    if(!allowedStateTones.includes(state.tone))fail(`${component.id}:${state.id} has unknown state tone ${state.tone}`);
+  }
+  totalStateExamples+=component.states.length;
+}
+if(totalStateExamples!==42)fail(`expected exactly 42 canonical live state examples, received ${totalStateExamples}`);
 
 const categoryIds=(showcase.categories||[]).map(category=>category.id);
 exactIds('showcase categories',categoryIds,expectedCategories);
@@ -109,9 +136,13 @@ if(renderedBlockIds.length!==18)fail(`expected exactly 18 rendered block definit
 for(const marker of [
   "fetchJson('./storefront/components.json')",
   "fetchJson('./storefront/component-showcase.json')",
+  "fetchJson('./storefront/component-states.json')",
   "fetchJson('./storefront/blocks.json')",
   "dataset.showcaseReady='true'",
   'data-doc-complete',
+  'data-state-matrix',
+  'data-showcase-state',
+  'live state component ids drifted from frozen registry',
   'component showcase ids drifted from frozen registry'
 ])if(!showcaseClient.includes(marker))fail(`showcase runtime contract missing marker: ${marker}`);
 try{new Function(showcaseClient)}catch(error){fail(`component-showcase.js syntax error: ${error.message}`)}
@@ -120,4 +151,4 @@ for(const marker of ['./component-showcase.css','./component-showcase.js','SHOWC
 const categoryCounts=Object.fromEntries(expectedCategories.map(category=>[category,docs.filter(doc=>doc.category===category).length]));
 if(Object.values(categoryCounts).reduce((sum,count)=>sum+count,0)!==47)fail('component category counts do not sum to 47');
 
-console.log(`NeoBrutal Commerce v${expectedShowcase} showcase contracts passed · 47/47 component previews · 47/47 documented components · 18/18 documented blocks`);
+console.log(`NeoBrutal Commerce v${expectedShowcase} showcase contracts passed · 47/47 component previews · 47/47 documented components · 18/18 documented blocks · ${statefulComponents.length} stateful components / ${totalStateExamples} live canonical states`);
