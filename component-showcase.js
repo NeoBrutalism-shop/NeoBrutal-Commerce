@@ -145,7 +145,7 @@ function decorateComponents(contract,registry,stateExamples){
     if(component.states?.length){
       assert(stateDoc,`stateful component missing live state contract: ${id}`);
       preview.insertAdjacentHTML('afterend',stateMatrix(component,stateDoc));
-      preview.dataset.showcaseState=stateDoc.states[0].id;
+      preview.dataset.showcaseCurrentState=stateDoc.states[0].id;
     }
     const contractPanel=card.querySelector('.cx-contract');
     contractPanel.querySelector('.cx-doc')?.remove();
@@ -211,7 +211,7 @@ function wireStateMatrices(stateExamples){
     matrix.querySelectorAll('[data-showcase-state]').forEach(item=>item.setAttribute('aria-pressed',String(item===button)));
     matrix.querySelector('[data-state-result]').innerHTML=stateResult(state);
     const preview=matrix.closest('[data-component-card]')?.querySelector('.cx-preview');
-    if(preview)preview.dataset.showcaseState=state.id;
+    if(preview)preview.dataset.showcaseCurrentState=state.id;
   });
 }
 
