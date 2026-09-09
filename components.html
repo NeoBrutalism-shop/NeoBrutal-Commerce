@@ -11,6 +11,30 @@
   <link rel="stylesheet" href="./storefront/store.css" />
   <link rel="stylesheet" href="./component-explorer.css" />
   <script type="module" src="./component-explorer.js"></script>
+  <script type="module">
+    let demoControlId=0;
+    function normalizePreviewSemantics(){
+      document.querySelectorAll('.nbc-account-nav .nbc-account-tab[aria-selected]').forEach(button=>{
+        const selected=button.getAttribute('aria-selected');
+        button.removeAttribute('aria-selected');
+        button.setAttribute('aria-pressed',selected);
+      });
+      document.querySelectorAll('.cx-preview .cx-mini-field, .cx-block-preview .cx-mini-field').forEach(field=>{
+        const label=field.querySelector(':scope > label');
+        const control=field.querySelector(':scope > input, :scope > select, :scope > textarea');
+        if(!label||!control||label.contains(control))return;
+        if(!control.id){
+          let candidate;
+          do{candidate=`cx-demo-control-${++demoControlId}`}while(document.getElementById(candidate));
+          control.id=candidate;
+        }
+        if(!label.htmlFor)label.htmlFor=control.id;
+      });
+    }
+    const previewObserver=new MutationObserver(normalizePreviewSemantics);
+    previewObserver.observe(document.documentElement,{subtree:true,childList:true});
+    queueMicrotask(normalizePreviewSemantics);
+  </script>
 </head>
 <body class="cx-page">
   <a class="cx-skip" href="#content">Skip to explorer</a>
