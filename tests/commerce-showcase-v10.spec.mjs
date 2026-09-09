@@ -2,6 +2,10 @@ import {test,expect} from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 
 const showcaseRoutes=['/components.html','/demo/v10.html'];
+const waitForShowcaseContracts=async page=>{
+  await expect(page.locator('html')).toHaveAttribute('data-showcase-ready','true');
+  await expect(page.locator('html')).toHaveAttribute('data-showcase-version','1.1.0');
+};
 
 for(const route of showcaseRoutes){
   test(`v1.0 GitHub Pages showcase is accessible ${route}`,async({page})=>{
@@ -11,7 +15,11 @@ for(const route of showcaseRoutes){
     page.on('pageerror',error=>runtimeFailures.push(error.message));
     page.on('console',message=>{if(message.type()==='error')runtimeFailures.push(message.text())});
     await page.goto(route,{waitUntil:'networkidle'});
-    if(route==='/components.html')await expect(page.locator('[data-component-card]')).toHaveCount(47);
+    if(route==='/components.html'){
+      await waitForShowcaseContracts(page);
+      await expect(page.locator('[data-component-card]')).toHaveCount(47);
+      await expect(page.locator('[data-doc-complete]')).toHaveCount(47);
+    }
     const results=await new AxeBuilder({page}).withTags(['wcag2a','wcag2aa','wcag21a','wcag21aa']).analyze();
     expect(results.violations,`${route} WCAG A/AA violations`).toEqual([]);
     expect(httpFailures,`${route} HTTP failures`).toEqual([]);
@@ -27,35 +35,56 @@ test('v1.0 flagship connects to permanent component explorer without visual-layo
   await expect(links.last()).toContainText('EXPLORE COMPONENTS');
 });
 
-test('v1.1 component explorer renders 47 dedicated previews and reusable blocks',async({page})=>{
+test('v1.1 component explorer renders complete frozen components and documented reusable blocks',async({page})=>{
   await page.goto('/components.html',{waitUntil:'networkidle'});
+  await waitForShowcaseContracts(page);
   await expect(page.locator('[data-component-card]')).toHaveCount(47);
-  const previews=page.locator('[data-preview-for]');
-  await expect(previews).toHaveCount(47);
-  await expect(previews.filter({hasText:'Contract registered. Open the live route for full context.'})).toHaveCount(0);
+  await expect(page.locator('[data-preview-for]')).toHaveCount(47);
+  await expect(page.locator('[data-doc-complete]')).toHaveCount(47);
+  await expect(page.locator('[data-preview-for]').filter({hasText:'Contract registered. Open the live route for full context.'})).toHaveCount(0);
   await expect(page.locator('[data-component-id="subscription-management"]')).toBeVisible();
   await expect(page.locator('[data-component-id="product-media"]')).toBeVisible();
+
+  const comparison=page.locator('[data-component-id="plan-comparison"]');
+  await expect(comparison.locator('.cx-component-description')).toContainText('Semantic comparison table');
+  await comparison.locator('.cx-doc summary').click();
+  await expect(comparison.locator('.cx-doc')).toContainText('contained-scroll');
+  await expect(comparison.locator('.cx-doc')).toContainText('table-semantics');
+  await expect(comparison.locator('.cx-doc')).toContainText('Wide semantic content scrolls only inside a keyboard-reachable local container.');
+
   await page.getByRole('tab',{name:/Blocks/}).click();
   await expect(page.locator('[data-block-card]')).toHaveCount(18);
-  await expect(page.getByRole('heading',{name:'Checkout split'})).toBeVisible();
-  await expect(page.getByRole('heading',{name:'Ownership operations'})).toBeVisible();
+  await expect(page.locator('[data-block-id]')).toHaveCount(18);
+  await expect(page.locator('[data-block-id="checkout-shell"]')).toBeVisible();
+  await expect(page.locator('[data-block-id="ownership-operations"]')).toBeVisible();
+  const checkoutBlock=page.locator('[data-block-id="checkout-shell"]');
+  await checkoutBlock.locator('.cx-doc summary').click();
+  await expect(checkoutBlock.locator('.cx-doc')).toContainText('grid-to-stack');
+  await expect(checkoutBlock.locator('.cx-doc')).toContainText('current-location');
 });
 
-test('v1.0 component explorer search, categories, theme, and live source interactions work',async({page})=>{
+test('v1.1 component explorer search, categories, theme, manifest metadata, and live source interactions work',async({page})=>{
   await page.goto('/components.html',{waitUntil:'networkidle'});
+  await waitForShowcaseContracts(page);
   const search=page.locator('#componentSearch');
   await search.fill('subscription.cancel');
   const visible=page.locator('[data-component-card]:visible');
   await expect(visible).toHaveCount(1);
   await expect(visible).toHaveAttribute('data-component-id','subscription-management');
   await search.fill('');
+  await search.fill('reduced-motion');
+  await expect(page.locator('[data-component-card]:visible')).toHaveCount(1);
+  await expect(page.locator('[data-component-card]:visible')).toHaveAttribute('data-component-id','processing-state');
+  await search.fill('');
   await page.locator('#categoryNav button[data-category="product"]').click();
   await expect(page.locator('[data-component-card]:visible')).toHaveCount(8);
+  await expect(page.locator('#categoryNav button[data-category="product"] span')).toHaveText('8');
   const theme=page.locator('#themeToggle');
   await theme.click();
   await expect(page.locator('html')).toHaveAttribute('data-theme','dark');
   await page.locator('#categoryNav button[data-category="all"]').click();
   const subscription=page.locator('[data-component-id="subscription-management"]');
+  await expect(subscription.locator('.cx-component-description')).toContainText('Subscription billing controls');
   const action=subscription.locator('[data-demo-action="subscription"]');
   await action.click();
   await expect(action).toHaveText('RESUME RENEWAL');
@@ -91,19 +120,21 @@ test('v1.0 application lab frames all ten real production routes with viewport a
   await expect(page.frameLocator('#labFrame').locator('html')).toHaveAttribute('data-theme','dark');
 });
 
-test('v1.0 showcase surfaces do not introduce horizontal overflow',async({page})=>{
+test('v1.1 showcase surfaces do not introduce horizontal overflow',async({page})=>{
   for(const route of showcaseRoutes){
     await page.goto(route,{waitUntil:'networkidle'});
+    if(route==='/components.html')await waitForShowcaseContracts(page);
     const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth);
     expect(overflow,`${route} horizontal overflow`).toBeLessThanOrEqual(1);
   }
 });
 
-test('capture v1.0 permanent showcase review surfaces',async({page},testInfo)=>{
+test('capture v1.1 permanent showcase review surfaces',async({page},testInfo)=>{
   test.skip(!new Set(['chromium','mobile-chromium']).has(testInfo.project.name),'Canonical showcase review captures use Chromium desktop/mobile.');
   test.setTimeout(120_000);
   for(const [name,route] of [['explorer','/components.html'],['lab','/demo/v10.html?route=product']]){
     await page.goto(route,{waitUntil:'networkidle'});
-    await page.screenshot({path:testInfo.outputPath(`commerce-v10-showcase-${name}-${testInfo.project.name}.png`),fullPage:true});
+    if(route==='/components.html')await waitForShowcaseContracts(page);
+    await page.screenshot({path:testInfo.outputPath(`commerce-v11-showcase-${name}-${testInfo.project.name}.png`),fullPage:true});
   }
 });
