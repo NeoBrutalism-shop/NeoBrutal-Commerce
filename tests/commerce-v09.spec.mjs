@@ -8,15 +8,6 @@ function captureRuntimeFailures(page){
   return failures;
 }
 
-async function clickAfterTactileHoverSettles(locator){
-  await locator.hover();
-  await locator.evaluate(async element=>{
-    const animations=element.getAnimations();
-    await Promise.all(animations.map(animation=>animation.finished.catch(()=>undefined)));
-  });
-  await locator.click();
-}
-
 test('v0.9 production storefront stress preserves purchase, recovery and ownership context across the selling flow',async({page})=>{
   const failures=captureRuntimeFailures(page);
   await page.goto('/');
@@ -115,7 +106,7 @@ test('v0.9 production storefront stress keeps ownership operations isolated and 
   await expect(subscription).toHaveAttribute('data-subscription-state','cancel_at_period_end');
   await expect(cancelRenewal).toBeHidden();
   await expect(resumeRenewal).toBeVisible();
-  await clickAfterTactileHoverSettles(resumeRenewal);
+  await resumeRenewal.click();
   await expect(subscription).toHaveAttribute('data-subscription-state','active');
 
   await expect(activationRows).toHaveCount(activationCount);

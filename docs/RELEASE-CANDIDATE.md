@@ -30,13 +30,15 @@ Breaking a frozen identifier requires an explicit release-blocking reason and a 
 The RC keeps the NeoBrutal family interaction grammar intact:
 
 - no upward hover lift for normal controls
-- hover compresses tactile depth
-- active press seats the control
+- hover compresses tactile depth downward
+- active press consumes the remaining shadow without moving the pointer hit target during activation
 - visible keyboard focus remains first class
 - reduced motion preserves state meaning
 - forced-colors remains legible
 - light/dark use semantic tokens rather than duplicated component logic
 - responsive density remains fluid and bounded
+
+The stable-hit-target active rule is explicitly covered because Safari/WebKit can drop activation when the pressed element moves under the pointer. The product primitive, not the test harness, owns that compatibility guarantee.
 
 These laws remain enforced by the static and browser hardening suites carried forward from v0.7.
 
@@ -52,7 +54,9 @@ No known failing commerce journey is accepted.
 
 ## Visual regression
 
-The reviewed v0.8 visual baseline remains immutable historical provenance. `tests/commerce-v08-visual.spec.mjs` runs only against the v0.8 package identity. The v0.9 RC uses a separate canonical candidate over home, product, checkout, account and ownership; after review, exact Linux CI dimensions and SHA-256 fingerprints are locked for desktop Chromium and mobile Chromium. Firefox and WebKit remain behavioral/accessibility engines rather than byte-level pixel surfaces.
+The reviewed v0.8 visual baseline remains immutable historical provenance and only runs against the v0.8 package identity. The reviewed v0.9 RC baseline is locked separately in `tests/visual-baselines-v09.json` for home, product, checkout, account and ownership. Its exact Linux CI dimensions and SHA-256 fingerprints came from successful Browser QA run `34286822589` on source head `d2d7c7a6c64d77914d3c79b8b37f609760ad9df7`, artifact `10079901742`.
+
+`tests/commerce-v09-visual.spec.mjs` now enforces those exact fingerprints on desktop Chromium and mobile Chromium. Firefox and WebKit remain behavioral/accessibility engines rather than byte-level pixel surfaces.
 
 ## RC merge gates
 
@@ -62,7 +66,7 @@ Before v0.9 can merge:
 2. Browser QA passes on desktop Chromium, mobile Chromium, Firefox and WebKit.
 3. Strict WCAG A/AA route scans remain clean.
 4. The production storefront stress tests pass across browser projects.
-5. Fresh RC visual candidates are reviewed and locked.
+5. Reviewed v0.9 RC visual fingerprints pass exactly on Linux CI.
 6. Package/runtime/types/manifests and visible route chrome agree on `0.9.0-rc.1` / v0.9 RC.
 7. CHANGELOG and release notes describe every intentional freeze change.
 

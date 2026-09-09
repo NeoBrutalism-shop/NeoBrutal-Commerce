@@ -24,7 +24,7 @@ const required=[
   'demo/index.html','demo/demo.css','demo/demo.js','demo/v02.html','demo/v02.css','demo/v02.js',
   'storefront/store.css','storefront/store.js','storefront/catalog.json','storefront/routes.json','storefront/states.json','storefront/components.json',...storefrontRoutes,
   'tests/contracts-v05.test.mjs','tests/reference-adapter-v05.test.mjs','tests/renderers-v05.test.mjs','tests/actions-v05.test.mjs','tests/action-bindings-v05.test.mjs','tests/edd-adapter-v05.test.mjs','tests/ownership-v06.test.mjs','tests/edd-lifecycle-v06.test.mjs',
-  'tests/commerce-v02.spec.mjs','tests/commerce-v03.spec.mjs','tests/commerce-v04.spec.mjs','tests/commerce-v06.spec.mjs','tests/commerce-v07.spec.mjs','tests/commerce-v08-visual.spec.mjs','tests/commerce-v09.spec.mjs','tests/commerce-v09-visual.spec.mjs','tests/visual-baselines-v07.json','tests/visual-baselines-v08.json','tests/public-api-v09.json',
+  'tests/commerce-v02.spec.mjs','tests/commerce-v03.spec.mjs','tests/commerce-v04.spec.mjs','tests/commerce-v06.spec.mjs','tests/commerce-v07.spec.mjs','tests/commerce-v08-visual.spec.mjs','tests/commerce-v09.spec.mjs','tests/commerce-v09-visual.spec.mjs','tests/visual-baselines-v07.json','tests/visual-baselines-v08.json','tests/visual-baselines-v09.json','tests/public-api-v09.json',
   'scripts/performance.mjs','scripts/docs-check.mjs','scripts/release-check.mjs','DESIGN.md','docs/EDD-MAPPING.md','docs/OWNERSHIP-LIFECYCLE.md','CHANGELOG.md','CONTRIBUTING.md','SECURITY.md',...adoptionFiles,
   'package.json','playwright.config.mjs','.github/workflows/browser-qa.yml'
 ];
@@ -34,6 +34,9 @@ const cssFiles=required.filter(file=>file.endsWith('.css'));
 const css=cssFiles.map(read).join('\n');
 if(/transition\s*:\s*all/i.test(css))fail('transition: all is prohibited');
 if(/:hover[^\{]*\{[^\}]*translate(?:Y)?\(\s*-/i.test(css))fail('Upward hover lift is prohibited');
+const baseCss=read('src/base.css');
+if(!baseCss.includes('.nbc-tactile:active{transform:translate(0,0);box-shadow:0 0 0 var(--nbc-shadow)}'))fail('Touch/coarse tactile active state must consume shadow without moving its hit target');
+if(!baseCss.includes('.nbc-tactile:active{transform:translate(var(--nbc-press-hover),var(--nbc-press-hover));box-shadow:0 0 0 var(--nbc-shadow)}'))fail('Fine-pointer tactile active state must stay at the hover-compressed hit position while consuming shadow');
 if(/@import/i.test(read('storefront/store.css')))fail('Storefront stylesheet must be self-contained');
 const entry=read('src/index.css');
 for(const component of components)if(!entry.includes(component))fail(`Component stylesheet not exported: ${component}`);
@@ -112,8 +115,16 @@ const v07=read('tests/commerce-v07.spec.mjs');
 for(const marker of ['strict accessibility','keyboard operable','reduced-motion','forced-colors','responsive matrix','layout-shift'])if(!v07.includes(marker))fail(`v0.7 hardening regression missing: ${marker}`);
 const v08Visual=read('tests/commerce-v08-visual.spec.mjs');
 for(const marker of ['Historical v0.8 fingerprints','visual-baselines-v08.json','home','product','checkout','account','ownership'])if(!v08Visual.includes(marker))fail(`v0.8 historical visual provenance missing: ${marker}`);
+const v09Baseline=json('tests/visual-baselines-v09.json');
+if(v09Baseline.version!==rcVersion||v09Baseline.platform!=='linux')fail('v0.9 RC visual baseline identity/platform must be exact');
+if(v09Baseline.source?.workflowRun!==34286822589||v09Baseline.source?.headSha!=='d2d7c7a6c64d77914d3c79b8b37f609760ad9df7'||v09Baseline.source?.artifactId!==10079901742)fail('v0.9 RC visual baseline provenance drifted from reviewed Browser QA #94 artifact');
+if(v09Baseline.surfaces.map(surface=>surface.id).join(',')!=='home,product,checkout,account,ownership')fail('v0.9 RC visual baseline surfaces are incomplete or reordered');
+for(const project of ['chromium','mobile-chromium'])for(const surface of ['home','product','checkout','account','ownership']){
+  const entry=v09Baseline.projects?.[project]?.[surface];
+  if(!entry||!/^[a-f0-9]{64}$/.test(entry.sha256)||!Number.isInteger(entry.width)||!Number.isInteger(entry.height))fail(`v0.9 RC visual fingerprint missing or invalid: ${project}/${surface}`);
+}
 const v09Visual=read('tests/commerce-v09-visual.spec.mjs');
-for(const marker of ['v0.9 RC','home','product','checkout','account','ownership','chromium','mobile-chromium'])if(!v09Visual.includes(marker))fail(`v0.9 RC visual candidate missing: ${marker}`);
+for(const marker of ['v0.9 RC','visual-baselines-v09.json','createHash','home','product','checkout','account','ownership','chromium','mobile-chromium','pixels drifted from reviewed v0.9 RC baseline'])if(!v09Visual.includes(marker))fail(`v0.9 RC exact visual lock missing: ${marker}`);
 const v09Stress=read('tests/commerce-v09.spec.mjs');
 for(const marker of ['plan-comparison','download-row','invoice-history','Agency applied','Individual scheduled'])if(!v09Stress.includes(marker))fail(`v0.9 production stress coverage missing: ${marker}`);
 

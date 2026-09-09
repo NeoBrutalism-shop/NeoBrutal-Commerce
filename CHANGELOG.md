@@ -13,7 +13,8 @@ All notable NeoBrutal Commerce changes are recorded here. Pre-1.0 releases may s
 - Promoted package, runtime, TypeScript declarations, manifests and production route chrome to exact `0.9.0-rc.1` / v0.9 RC identity.
 - Added connected production storefront stress from pricing/catalog through purchase recovery, account downloads/invoices and ownership management.
 - Added explicit upgrade/downgrade, gift cancellation and subscription lifecycle stress while preserving activation isolation.
-- Preserved the v0.8 visual lock as historical provenance and introduced a separate v0.9 RC canonical visual candidate for review and fingerprint locking.
+- Preserved the v0.8 visual lock as historical provenance and locked a separate reviewed v0.9 RC Linux baseline for home, product, checkout, account and ownership across desktop Chromium and mobile Chromium.
+- Hardened tactile activation for Safari/WebKit: hover still compresses downward, while active press consumes shadow depth without moving the pointer hit target during activation.
 - Added release-candidate checklist, repo contribution/security guidance and final release-note discipline.
 - No planned feature architecture additions; fixes should preserve the frozen contract unless a release-blocking issue requires an explicit change.
 
