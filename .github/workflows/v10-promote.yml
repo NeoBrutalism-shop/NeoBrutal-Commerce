@@ -3,6 +3,7 @@ name: Promote Commerce v1.0
 on:
   push:
     branches: [feat/v10-public-release]
+    paths: [scripts/promote-v10-core.mjs]
 
 permissions:
   contents: write
@@ -19,10 +20,8 @@ jobs:
         with:
           node-version: 24
           package-manager-cache: false
-      - name: Patch promoter generator syntax
-        run: node scripts/fix-promoter.mjs
-      - name: Promote all release identities and packaging
-        run: node scripts/promote-v10.mjs
+      - name: Promote existing release identities and package metadata
+        run: node scripts/promote-v10-core.mjs
       - name: Generate exact dependency lock
         run: npm install --package-lock-only --ignore-scripts --no-audit --no-fund
       - name: Validate promoted release
