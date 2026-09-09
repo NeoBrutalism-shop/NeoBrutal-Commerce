@@ -1,0 +1,33 @@
+name: Publish Commerce
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          registry-url: https://registry.npmjs.org
+          package-manager-cache: false
+      - name: Verify release tag
+        run: node -e "const p=require('./package.json');if(process.env.GITHUB_REF_NAME!=='v'+p.version){throw new Error('Release tag must equal v'+p.version)}"
+      - name: Install exact QA dependencies
+        run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Quality and package gates
+        run: npm run check
+      - name: Install Chromium Firefox and WebKit
+        run: npx playwright install --with-deps chromium firefox webkit
+      - name: Browser release gates
+        run: npm run test:browser
+      - name: Publish public package with npm trusted publishing
+        run: npm publish --access public

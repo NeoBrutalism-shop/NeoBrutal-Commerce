@@ -6,7 +6,7 @@ const read=file=>fs.readFileSync(path.join(root,file),'utf8');
 const json=file=>JSON.parse(read(file));
 const exists=file=>fs.existsSync(path.join(root,file));
 const fail=message=>{console.error(message);process.exit(1)};
-const rcVersion='0.9.0-rc.1';
+const releaseVersion='1.0.0';
 
 const components=['button.css','product.css','cart.css','product-detail.css','pricing.css','checkout.css','account.css','license.css','table.css','review.css','media.css','state.css','lifecycle.css','summary.css'];
 const storefrontRoutes=['index.html','products/index.html','product/soft/index.html','pricing/index.html','cart/index.html','checkout/index.html','order/success/index.html','account/index.html','account/license/demo-soft-team/index.html','components/index.html'];
@@ -18,15 +18,15 @@ const contractFiles=[
   'src/renderers/action-controls.js','src/renderers/action-controls.d.ts','src/renderers/react-actions.js','src/renderers/react-actions.d.ts',
   'src/renderers/ownership.js','src/renderers/ownership.d.ts','src/renderers/react-ownership.js','src/renderers/react-ownership.d.ts'
 ];
-const adoptionFiles=['AGENTS.md','LLMS.md','COMPONENTS.md','docs/ADOPTION.md','docs/AGENT-PLAYBOOK.md','docs/AI-COMPONENT-NOTES.md','docs/RECIPES.md','docs/THEMING.md','docs/MIGRATION.md','docs/PROVIDER-EXAMPLES.md','docs/RELEASE-CANDIDATE.md'];
+const adoptionFiles=['AGENTS.md','LLMS.md','COMPONENTS.md','docs/ADOPTION.md','docs/AGENT-PLAYBOOK.md','docs/AI-COMPONENT-NOTES.md','docs/RECIPES.md','docs/THEMING.md','docs/MIGRATION.md','docs/PROVIDER-EXAMPLES.md','docs/RELEASE-CANDIDATE.md','docs/PUBLIC-RELEASE.md'];
 const required=[
   'src/tokens.css','src/base.css','src/index.css',...components.map(file=>`src/components/${file}`),...contractFiles,
   'demo/index.html','demo/demo.css','demo/demo.js','demo/v02.html','demo/v02.css','demo/v02.js',
   'storefront/store.css','storefront/store.js','storefront/catalog.json','storefront/routes.json','storefront/states.json','storefront/components.json',...storefrontRoutes,
   'tests/contracts-v05.test.mjs','tests/reference-adapter-v05.test.mjs','tests/renderers-v05.test.mjs','tests/actions-v05.test.mjs','tests/action-bindings-v05.test.mjs','tests/edd-adapter-v05.test.mjs','tests/ownership-v06.test.mjs','tests/edd-lifecycle-v06.test.mjs',
-  'tests/commerce-v02.spec.mjs','tests/commerce-v03.spec.mjs','tests/commerce-v04.spec.mjs','tests/commerce-v06.spec.mjs','tests/commerce-v07.spec.mjs','tests/commerce-v08-visual.spec.mjs','tests/commerce-v09.spec.mjs','tests/commerce-v09-visual.spec.mjs','tests/visual-baselines-v07.json','tests/visual-baselines-v08.json','tests/visual-baselines-v09.json','tests/public-api-v09.json',
-  'scripts/performance.mjs','scripts/docs-check.mjs','scripts/release-check.mjs','DESIGN.md','docs/EDD-MAPPING.md','docs/OWNERSHIP-LIFECYCLE.md','CHANGELOG.md','CONTRIBUTING.md','SECURITY.md',...adoptionFiles,
-  'package.json','playwright.config.mjs','.github/workflows/browser-qa.yml'
+  'tests/commerce-v02.spec.mjs','tests/commerce-v03.spec.mjs','tests/commerce-v04.spec.mjs','tests/commerce-v06.spec.mjs','tests/commerce-v07.spec.mjs','tests/commerce-v08-visual.spec.mjs','tests/commerce-v09.spec.mjs','tests/commerce-v09-visual.spec.mjs','tests/commerce-v10-visual.spec.mjs','tests/visual-baselines-v07.json','tests/visual-baselines-v08.json','tests/visual-baselines-v09.json','tests/visual-baselines-v10.json','tests/public-api-v09.json','tests/public-api-v10.json',
+  'scripts/performance.mjs','scripts/docs-check.mjs','scripts/package-check.mjs','scripts/release-check.mjs','DESIGN.md','docs/EDD-MAPPING.md','docs/OWNERSHIP-LIFECYCLE.md','CHANGELOG.md','CONTRIBUTING.md','SECURITY.md',...adoptionFiles,
+  'package.json','package-lock.json','LICENSE.md','playwright.config.mjs','.github/workflows/browser-qa.yml','.github/workflows/release.yml'
 ];
 for(const file of required)if(!exists(file))fail(`Missing required file: ${file}`);
 
@@ -44,9 +44,12 @@ const totalBytes=cssFiles.reduce((sum,file)=>sum+fs.statSync(path.join(root,file
 if(totalBytes>116*1024)fail(`CSS budget exceeded: ${(totalBytes/1024).toFixed(1)} KiB / 116 KiB`);
 
 const packageManifest=json('package.json');
-if(packageManifest.version!==rcVersion)fail(`Expected exact v0.9 RC package version ${rcVersion}, received ${packageManifest.version}`);
+if(packageManifest.version!==releaseVersion)fail(`Expected exact v1.0 package version ${releaseVersion}, received ${packageManifest.version}`);
+if(packageManifest.private!==false)fail('v1.0 package must be public');
+if(packageManifest.license!=='PolyForm-Noncommercial-1.0.0')fail('v1.0 package license is not exact');
+if(packageManifest.scripts?.['check:package']!=='node scripts/package-check.mjs')fail('Package tarball conformance script is missing');
 if(packageManifest.scripts?.['check:docs']!=='node scripts/docs-check.mjs')fail('Documentation conformance script is missing');
-if(packageManifest.scripts?.['check:release']!=='node scripts/release-check.mjs')fail('v0.9 release freeze script is missing');
+if(packageManifest.scripts?.['check:release']!=='node scripts/release-check.mjs')fail('v1.0 release freeze script is missing');
 if(packageManifest.scripts?.['test:performance']!=='node scripts/performance.mjs')fail('Performance regression script is missing');
 const expectedExports={
   './contracts':['./src/contracts/index.d.ts','./src/contracts/runtime.js'],
@@ -68,9 +71,9 @@ for(const [key,[types,defaultPath]] of Object.entries(expectedExports)){
 }
 
 const manifests={catalog:json('storefront/catalog.json'),routes:json('storefront/routes.json'),states:json('storefront/states.json')};
-for(const [name,manifest] of Object.entries(manifests))if(manifest.version!==rcVersion)fail(`Expected ${rcVersion} ${name} manifest, received ${manifest.version}`);
+for(const [name,manifest] of Object.entries(manifests))if(manifest.version!==releaseVersion)fail(`Expected ${releaseVersion} ${name} manifest, received ${manifest.version}`);
 const registry=json('storefront/components.json');
-if(registry.commerceVersion!==rcVersion)fail(`Expected ${rcVersion} component registry, received ${registry.commerceVersion}`);
+if(registry.commerceVersion!==releaseVersion)fail(`Expected ${releaseVersion} component registry, received ${registry.commerceVersion}`);
 if(registry.components.length<40)fail('Component registry is incomplete');
 
 const routePaths=manifests.routes.routes.map(route=>route.path);
@@ -78,7 +81,7 @@ for(const route of ['/','/products','/product/soft','/pricing','/cart','/checkou
 for(const file of storefrontRoutes){
   const html=read(file);
   if(!html.includes('data-commerce-page')||!html.includes('storefront/store.css')||!html.includes('storefront/store.js'))fail(`Production route shell contract missing: ${file}`);
-  if(!html.includes('COMMERCE v0.9 RC'))fail(`Production route has stale Commerce RC chrome: ${file}`);
+  if(!html.includes('COMMERCE v1.0'))fail(`Production route has stale Commerce v1.0 chrome: ${file}`);
   for(const match of html.matchAll(/<td\b([^>]*)>/g))if(!/\bdata-label=/.test(match[1]))fail(`Responsive table cell missing data-label: ${file}`);
 }
 
@@ -94,8 +97,8 @@ for(const capability of ['plan-changes','transfers','gifts','subscriptions','inv
 
 const runtime=read('src/contracts/runtime.js');
 const declarations=read('src/contracts/index.d.ts');
-if(!runtime.includes(`version:'${rcVersion}'`))fail('v0.9 RC runtime version contract missing');
-if(!declarations.includes(`readonly version:'${rcVersion}'`))fail('v0.9 RC TypeScript runtime version contract missing');
+if(!runtime.includes(`version:'${releaseVersion}'`))fail('v1.0 runtime version contract missing');
+if(!declarations.includes(`readonly version:'${releaseVersion}'`))fail('v1.0 TypeScript runtime version contract missing');
 for(const marker of ['OWNERSHIP_OPERATION_STATES','SUBSCRIPTION_STATES','createCommerceAdapter','createLicensingAdapter','composeCommerceRuntime'])if(!runtime.includes(marker))fail(`Runtime contract missing: ${marker}`);
 for(const marker of ['interface PlanChangeQuoteView','interface OwnershipTransferView','interface OwnershipEventView','interface SubscriptionView','interface InvoiceView'])if(!declarations.includes(marker))fail(`Type contract missing: ${marker}`);
 
@@ -116,7 +119,7 @@ for(const marker of ['strict accessibility','keyboard operable','reduced-motion'
 const v08Visual=read('tests/commerce-v08-visual.spec.mjs');
 for(const marker of ['Historical v0.8 fingerprints','visual-baselines-v08.json','home','product','checkout','account','ownership'])if(!v08Visual.includes(marker))fail(`v0.8 historical visual provenance missing: ${marker}`);
 const v09Baseline=json('tests/visual-baselines-v09.json');
-if(v09Baseline.version!==rcVersion||v09Baseline.platform!=='linux')fail('v0.9 RC visual baseline identity/platform must be exact');
+if(v09Baseline.version!=='0.9.0-rc.1'||v09Baseline.platform!=='linux')fail('v0.9 RC historical visual baseline identity/platform must remain exact');
 if(v09Baseline.source?.workflowRun!==34286822589||v09Baseline.source?.headSha!=='d2d7c7a6c64d77914d3c79b8b37f609760ad9df7'||v09Baseline.source?.artifactId!==10079901742)fail('v0.9 RC visual baseline provenance drifted from reviewed Browser QA #94 artifact');
 if(v09Baseline.surfaces.map(surface=>surface.id).join(',')!=='home,product,checkout,account,ownership')fail('v0.9 RC visual baseline surfaces are incomplete or reordered');
 for(const project of ['chromium','mobile-chromium'])for(const surface of ['home','product','checkout','account','ownership']){
@@ -125,11 +128,21 @@ for(const project of ['chromium','mobile-chromium'])for(const surface of ['home'
 }
 const v09Visual=read('tests/commerce-v09-visual.spec.mjs');
 for(const marker of ['v0.9 RC','visual-baselines-v09.json','createHash','home','product','checkout','account','ownership','chromium','mobile-chromium','pixels drifted from reviewed v0.9 RC baseline'])if(!v09Visual.includes(marker))fail(`v0.9 RC exact visual lock missing: ${marker}`);
+const v10Baseline=json('tests/visual-baselines-v10.json');
+if(v10Baseline.version!==releaseVersion||v10Baseline.platform!=='linux')fail('v1.0 visual baseline identity/platform must remain exact');
+if(v10Baseline.source?.workflowRun!==34304046291||v10Baseline.source?.headSha!=='b48ee9491999ce1c998314f7b709ccfe1a1becd4'||v10Baseline.source?.artifactId!==10086065314)fail('v1.0 visual baseline provenance drifted from reviewed Browser QA #105 artifact');
+if(v10Baseline.surfaces.map(surface=>surface.id).join(',')!=='home,product,checkout,account,ownership')fail('v1.0 visual baseline surfaces are incomplete or reordered');
+for(const project of ['chromium','mobile-chromium'])for(const surface of ['home','product','checkout','account','ownership']){
+  const entry=v10Baseline.projects?.[project]?.[surface];
+  if(!entry||!/^[a-f0-9]{64}$/.test(entry.sha256)||!Number.isInteger(entry.width)||!Number.isInteger(entry.height))fail(`v1.0 visual fingerprint missing or invalid: ${project}/${surface}`);
+}
+const v10Visual=read('tests/commerce-v10-visual.spec.mjs');
+for(const marker of ['v1.0','visual-baselines-v10.json','createHash','home','product','checkout','account','ownership','chromium','mobile-chromium','pixels drifted from reviewed v1.0 baseline'])if(!v10Visual.includes(marker))fail(`v1.0 exact visual lock missing: ${marker}`);
 const v09Stress=read('tests/commerce-v09.spec.mjs');
 for(const marker of ['plan-comparison','download-row','invoice-history','Agency applied','Individual scheduled'])if(!v09Stress.includes(marker))fail(`v0.9 production stress coverage missing: ${marker}`);
 
 for(const file of ['package.json','src/contracts/runtime.js','src/contracts/index.d.ts','storefront/catalog.json','storefront/routes.json','storefront/states.json','storefront/components.json','README.md','tests/contracts-v05.test.mjs','tests/reference-adapter-v05.test.mjs','tests/ownership-v06.test.mjs']){
-  if(read(file).includes('0.8.0-dev'))fail(`RC release file still contains dev version: ${file}`);
+  if(read(file).includes('0.8.0-dev'))fail(`Release file still contains dev version: ${file}`);
 }
 
-console.log(`NeoBrutal Commerce ${rcVersion} checks passed · ${(totalBytes/1024).toFixed(1)} KiB CSS · ${components.length} component stylesheets · ${storefrontRoutes.length} production routes · ${registry.components.length} agent-readable components`);
+console.log(`NeoBrutal Commerce ${releaseVersion} checks passed · ${(totalBytes/1024).toFixed(1)} KiB CSS · ${components.length} component stylesheets · ${storefrontRoutes.length} production routes · ${registry.components.length} agent-readable components`);

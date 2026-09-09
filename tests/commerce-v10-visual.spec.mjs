@@ -2,7 +2,7 @@ import fs from 'node:fs';
 import {createHash} from 'node:crypto';
 import {test,expect} from '@playwright/test';
 
-const baseline=JSON.parse(fs.readFileSync(new URL('./visual-baselines-v09.json',import.meta.url),'utf8'));
+const baseline=JSON.parse(fs.readFileSync(new URL('./visual-baselines-v10.json',import.meta.url),'utf8'));
 const packageManifest=JSON.parse(fs.readFileSync(new URL('../package.json',import.meta.url),'utf8'));
 const canonicalSurfaceIds=['home','product','checkout','account','ownership'];
 // Canonical Linux pixel projects: chromium and mobile-chromium. Other configured engines remain behavioral/accessibility coverage.
@@ -12,25 +12,25 @@ function pngSize(buffer){
   return {width:buffer.readUInt32BE(16),height:buffer.readUInt32BE(20)};
 }
 
-test('v0.9 RC canonical visual fingerprints remain stable',async({page},testInfo)=>{
-  test.skip(packageManifest.version!=='0.9.0-rc.1','Historical v0.9 RC fingerprints only run against the v0.9 RC package identity.');
-  expect(baseline.version).toBe('0.9.0-rc.1');
+test('v1.0 canonical visual fingerprints remain stable',async({page},testInfo)=>{
+  test.skip(packageManifest.version!=='1.0.0','Historical v1.0 fingerprints only run against the v1.0 package identity.');
+  expect(baseline.version).toBe('1.0.0');
   expect(baseline.surfaces.map(surface=>surface.id)).toEqual(canonicalSurfaceIds);
-  test.skip(process.platform!==baseline.platform,`Canonical v0.9 RC fingerprints are ${baseline.platform} CI baselines.`);
+  test.skip(process.platform!==baseline.platform,`Canonical v1.0 fingerprints are ${baseline.platform} CI baselines.`);
   const expectedProject=baseline.projects[testInfo.project.name];
   test.skip(!expectedProject,`${testInfo.project.name} is behavioral/accessibility coverage, not a canonical pixel surface.`);
 
   for(const surface of baseline.surfaces){
     const expected=expectedProject[surface.id];
-    expect(expected,`Missing ${testInfo.project.name}/${surface.id} v0.9 RC visual baseline`).toBeTruthy();
+    expect(expected,`Missing ${testInfo.project.name}/${surface.id} v1.0 visual baseline`).toBeTruthy();
     await page.goto(surface.route,{waitUntil:'networkidle'});
     const screenshot=await page.screenshot({
-      path:testInfo.outputPath(`commerce-v09-lock-${surface.id}-${testInfo.project.name}.png`),
+      path:testInfo.outputPath(`commerce-v10-lock-${surface.id}-${testInfo.project.name}.png`),
       fullPage:true
     });
     const actualSize=pngSize(screenshot);
     const actualHash=createHash('sha256').update(screenshot).digest('hex');
-    expect(actualSize,`${testInfo.project.name}/${surface.id} dimensions drifted from reviewed v0.9 RC baseline`).toEqual({width:expected.width,height:expected.height});
-    expect(actualHash,`${testInfo.project.name}/${surface.id} pixels drifted from reviewed v0.9 RC baseline`).toBe(expected.sha256);
+    expect(actualSize,`${testInfo.project.name}/${surface.id} dimensions drifted from reviewed v1.0 baseline`).toEqual({width:expected.width,height:expected.height});
+    expect(actualHash,`${testInfo.project.name}/${surface.id} pixels drifted from reviewed v1.0 baseline`).toBe(expected.sha256);
   }
 });

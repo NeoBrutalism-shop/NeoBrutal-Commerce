@@ -1,11 +1,21 @@
 # Changelog
 
-All notable NeoBrutal Commerce changes are recorded here. Pre-1.0 releases may still refine contracts, but v0.9 introduces an explicit public API freeze candidate so any breaking change must be deliberate and documented.
+All notable NeoBrutal Commerce changes are recorded here. v1.0 freezes the public contract that survived the v0.9 release candidate and treats future breaking changes as major-version work.
 
-## [Unreleased] — v1.0
+## [Unreleased]
 
-- Final public packaging/licensing decision.
-- Final acceptance against the v0.9 API freeze and production-store release gates.
+- Post-v1 changes must preserve the public API freeze unless they are explicitly scheduled for a major release.
+
+## [1.0.0] — Public Release
+
+- Promoted package, runtime, TypeScript declarations, manifests and production route chrome to exact `1.0.0` / `COMMERCE v1.0` identity.
+- Made `@neobrutal/commerce` publicly publishable with an explicit package file allowlist and tarball dry-run verification.
+- Adopted `PolyForm-Noncommercial-1.0.0` for the public package; commercial use requires a separate written commercial license.
+- Added npm trusted-publishing/OIDC release automation with provenance-ready public package metadata and no long-lived publish token in the workflow.
+- Added `package-lock.json` and exact top-level QA dependency versions for release/install reproducibility.
+- Froze the v1 public API in `tests/public-api-v10.json` from the reviewed `0.9.0-rc.1` contract with no intentional breaking API change.
+- Preserved v0.9 visual fingerprints as historical provenance and locked a separate reviewed v1.0 Linux baseline for home, product, checkout, account and ownership across desktop Chromium and mobile Chromium from successful Browser QA #105 (`34304046291`), source head `b48ee9491999ce1c998314f7b709ccfe1a1becd4`, artifact `10086065314`.
+- Corrected the carried-forward v0.6 ownership lifecycle browser assertion to validate the promoted `v1.0.0` package identity without reducing coverage.
 
 ## [0.9.0-rc.1] — Release Candidate
 

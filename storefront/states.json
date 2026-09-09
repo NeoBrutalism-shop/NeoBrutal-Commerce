@@ -1,42 +1,142 @@
 {
-  "version": "0.9.0-rc.1",
+  "version": "1.0.0",
   "checkout": [
-    {"id":"ready","intent":"payment-ready","preservesOrderContext":true},
-    {"id":"processing","intent":"payment-processing","blocksSubmit":true,"preservesOrderContext":true},
-    {"id":"failed","intent":"payment-failure","allowsRetry":true,"preservesOrderContext":true},
-    {"id":"recovered","intent":"payment-recovered","allowsRetry":true,"preservesOrderContext":true}
+    {
+      "id": "ready",
+      "intent": "payment-ready",
+      "preservesOrderContext": true
+    },
+    {
+      "id": "processing",
+      "intent": "payment-processing",
+      "blocksSubmit": true,
+      "preservesOrderContext": true
+    },
+    {
+      "id": "failed",
+      "intent": "payment-failure",
+      "allowsRetry": true,
+      "preservesOrderContext": true
+    },
+    {
+      "id": "recovered",
+      "intent": "payment-recovered",
+      "allowsRetry": true,
+      "preservesOrderContext": true
+    }
   ],
   "system": [
-    {"id":"empty","intent":"no-content","mustExposeNextAction":true},
-    {"id":"loading","intent":"pending-content","supportsReducedMotion":true},
-    {"id":"error","intent":"recoverable-error","mustExposeRecovery":true},
-    {"id":"offline","intent":"network-unavailable","mustPreserveLocalState":true},
-    {"id":"permission","intent":"action-not-authorized","mustExplainCapability":true},
-    {"id":"unsupported","intent":"feature-unavailable","mustExposeAlternatePath":true}
+    {
+      "id": "empty",
+      "intent": "no-content",
+      "mustExposeNextAction": true
+    },
+    {
+      "id": "loading",
+      "intent": "pending-content",
+      "supportsReducedMotion": true
+    },
+    {
+      "id": "error",
+      "intent": "recoverable-error",
+      "mustExposeRecovery": true
+    },
+    {
+      "id": "offline",
+      "intent": "network-unavailable",
+      "mustPreserveLocalState": true
+    },
+    {
+      "id": "permission",
+      "intent": "action-not-authorized",
+      "mustExplainCapability": true
+    },
+    {
+      "id": "unsupported",
+      "intent": "feature-unavailable",
+      "mustExposeAlternatePath": true
+    }
   ],
   "ownership": [
-    {"id":"active","intent":"entitlement-active"},
-    {"id":"grace","intent":"renewal-recovery-window"},
-    {"id":"expired","intent":"updates-expired"},
-    {"id":"cancelled","intent":"future-renewal-cancelled"},
-    {"id":"refunded","intent":"purchase-refunded"}
+    {
+      "id": "active",
+      "intent": "entitlement-active"
+    },
+    {
+      "id": "grace",
+      "intent": "renewal-recovery-window"
+    },
+    {
+      "id": "expired",
+      "intent": "updates-expired"
+    },
+    {
+      "id": "cancelled",
+      "intent": "future-renewal-cancelled"
+    },
+    {
+      "id": "refunded",
+      "intent": "purchase-refunded"
+    }
   ],
   "ownershipOperation": [
-    {"id":"ready","intent":"ownership-operation-ready"},
-    {"id":"quoted","intent":"ownership-operation-quoted","mustExposeConsequences":true},
-    {"id":"processing","intent":"ownership-operation-processing","blocksRepeatSubmit":true},
-    {"id":"complete","intent":"ownership-operation-complete","mustExposeResult":true},
-    {"id":"failed","intent":"ownership-operation-failed","mustPreserveContext":true}
+    {
+      "id": "ready",
+      "intent": "ownership-operation-ready"
+    },
+    {
+      "id": "quoted",
+      "intent": "ownership-operation-quoted",
+      "mustExposeConsequences": true
+    },
+    {
+      "id": "processing",
+      "intent": "ownership-operation-processing",
+      "blocksRepeatSubmit": true
+    },
+    {
+      "id": "complete",
+      "intent": "ownership-operation-complete",
+      "mustExposeResult": true
+    },
+    {
+      "id": "failed",
+      "intent": "ownership-operation-failed",
+      "mustPreserveContext": true
+    }
   ],
   "subscription": [
-    {"id":"active","intent":"future-renewal-active"},
-    {"id":"cancel_at_period_end","intent":"future-renewal-cancelled","preservesPaidTerm":true},
-    {"id":"cancelled","intent":"subscription-ended"},
-    {"id":"past_due","intent":"billing-recovery-required","mustExposeRecovery":true}
+    {
+      "id": "active",
+      "intent": "future-renewal-active"
+    },
+    {
+      "id": "cancel_at_period_end",
+      "intent": "future-renewal-cancelled",
+      "preservesPaidTerm": true
+    },
+    {
+      "id": "cancelled",
+      "intent": "subscription-ended"
+    },
+    {
+      "id": "past_due",
+      "intent": "billing-recovery-required",
+      "mustExposeRecovery": true
+    }
   ],
   "media": [
-    {"id":"preview","intent":"visual-product-preview"},
-    {"id":"code","intent":"implementation-preview"},
-    {"id":"files","intent":"download-contents-preview"}
+    {
+      "id": "preview",
+      "intent": "visual-product-preview"
+    },
+    {
+      "id": "code",
+      "intent": "implementation-preview"
+    },
+    {
+      "id": "files",
+      "intent": "download-contents-preview"
+    }
   ]
 }

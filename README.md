@@ -6,7 +6,15 @@ Commerce is a flavor of the NeoBrutalism family. It shares the same tactile inte
 
 ## Status
 
-`0.9.0-rc.1` — release candidate with the public Commerce contract frozen from stable v0.8, connected production-store stress coverage, and fresh canonical visual review before v1.0.
+`1.0.0` — public release with the Commerce API frozen through the reviewed v0.9 RC, public npm packaging, source-available noncommercial licensing, trusted-publishing release automation, and the full production quality/browser contract.
+
+## Install
+
+```bash
+npm install @neobrutal/commerce
+```
+
+The public package is source-available under PolyForm Noncommercial 1.0.0. Commercial use requires a separate written commercial license. See `LICENSE.md` and `docs/PUBLIC-RELEASE.md`.
 
 ## Start here
 
@@ -19,7 +27,8 @@ Commerce is a flavor of the NeoBrutalism family. It shares the same tactile inte
 - `docs/MIGRATION.md` — version-safe migration guidance
 - `docs/EDD-MAPPING.md` — deeper EDD transaction mapping contract
 - `docs/OWNERSHIP-LIFECYCLE.md` — ownership, billing and entitlement semantics
-- `docs/RELEASE-CANDIDATE.md` — v0.9 freeze, stress and final merge gates
+- `docs/RELEASE-CANDIDATE.md` — historical v0.9 freeze, stress and merge gates
+- `docs/PUBLIC-RELEASE.md` — v1.0 public package, licensing and publish contract
 
 ### Coding agents / LLMs
 
@@ -50,7 +59,7 @@ Do not infer Commerce meaning from provider payloads or demo copy. Normalized co
 - ownership lifecycle: upgrade/downgrade quote/apply, gift/transfer records, subscription cancel/resume, invoice history and ownership audit timeline
 - strict Axe AA, keyboard, reduced-motion, forced-colors, Chromium/Firefox/WebKit, responsive, CLS/static-payload and visual-fingerprint release gates
 - machine-readable component/adoption contract for humans and agents
-- v0.9 public API freeze and connected production storefront stress contract
+- v1.0 public API freeze, package tarball contract and connected production storefront stress contract
 
 ## Production routes
 
@@ -132,7 +141,8 @@ React is injected by the consuming application; Commerce does not bundle or pin 
 - `storefront/routes.json` — route intent and required components/states
 - `storefront/components.json` — component models, actions, states and agent rules
 - `storefront/states.json` — checkout/system/ownership/operation/subscription/media taxonomy
-- `tests/public-api-v09.json` — v0.9 RC freeze snapshot
+- `tests/public-api-v09.json` — historical v0.9 RC freeze snapshot
+- `tests/public-api-v10.json` — v1.0 public API freeze snapshot
 - `src/contracts/` — normalized runtime + TypeScript model interfaces
 - `src/actions/` — canonical commands, lifecycle events and DOM bindings
 - `src/renderers/` — headless, React, action and ownership renderers
@@ -144,10 +154,10 @@ npm run check
 npm run test:browser
 ```
 
-`npm run check` enforces static conformance, documentation/component-registry consistency, the v0.9 public API freeze, contract/action/adapter regressions and payload budgets. Browser QA runs desktop Chromium, mobile Chromium, Firefox and WebKit and includes strict WCAG A/AA Axe checks, keyboard journeys, reduced-motion, forced-colors, 320–1440px responsive checks, connected production-store stress, CLS and canonical visual regression.
+`npm run check` enforces static conformance, documentation/component-registry consistency, the v1.0 public API freeze and package tarball contract, contract/action/adapter regressions and payload budgets. Browser QA runs desktop Chromium, mobile Chromium, Firefox and WebKit and includes strict WCAG A/AA Axe checks, keyboard journeys, reduced-motion, forced-colors, 320–1440px responsive checks, connected production-store stress, CLS and canonical visual regression.
 
 No known failing commerce journey is accepted for merge.
 
 ## License
 
-`UNLICENSED` while the public-core/commercial packaging strategy is finalized.
+`PolyForm-Noncommercial-1.0.0` for the public package. See `LICENSE.md` for the canonical terms link and required notice. Commercial use requires a separate written commercial license.

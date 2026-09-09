@@ -12,10 +12,11 @@ jobs:
   quality:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
         with:
-          node-version: 22
+          node-version: 24
+          package-manager-cache: false
       - name: Conformance + contract + performance tests
         run: npm run check
       - name: JavaScript syntax
@@ -36,6 +37,8 @@ jobs:
           node --check src/renderers/ownership.js
           node --check src/renderers/react-ownership.js
           node --check scripts/performance.mjs
+          node --check scripts/package-check.mjs
+          node --check scripts/release-check.mjs
           node --check tests/contracts-v05.test.mjs
           node --check tests/reference-adapter-v05.test.mjs
           node --check tests/renderers-v05.test.mjs
@@ -46,6 +49,9 @@ jobs:
           node --check tests/edd-lifecycle-v06.test.mjs
           node --check tests/commerce-v06.spec.mjs
           node --check tests/commerce-v07.spec.mjs
+          node --check tests/commerce-v09.spec.mjs
+          node --check tests/commerce-v09-visual.spec.mjs
+          node --check tests/commerce-v10-visual.spec.mjs
       - name: Serve static production routes
         shell: bash
         run: |
