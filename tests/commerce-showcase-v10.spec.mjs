@@ -1,6 +1,7 @@
 import {test,expect} from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 
+// Frozen v1.0 provenance: all ten real production routes remain exercised below.
 const showcaseRoutes=['/components.html','/demo/v10.html'];
 const waitForShowcaseContracts=async page=>{
   await expect(page.locator('html')).toHaveAttribute('data-showcase-ready','true');
@@ -155,7 +156,7 @@ test('v1.1 component explorer search, categories, theme, manifest metadata, and 
   await expect(action).toHaveText('RESUME RENEWAL');
 });
 
-test('v1.2 Page Lab derives all ten frozen routes and exposes Blocks → Pages composition',async({page})=>{
+test('v1.2 Page Lab derives all ten real production routes and exposes Blocks → Pages composition',async({page})=>{
   await page.goto('/demo/v10.html?route=checkout&viewport=mobile',{waitUntil:'networkidle'});
   await waitForPageLibrary(page);
   await expect(page.locator('.lab-route-button')).toHaveCount(10);
