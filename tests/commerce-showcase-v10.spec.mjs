@@ -86,6 +86,7 @@ test('v1.0 showcase surfaces do not introduce horizontal overflow',async({page})
 
 test('capture v1.0 permanent showcase review surfaces',async({page},testInfo)=>{
   test.skip(!new Set(['chromium','mobile-chromium']).has(testInfo.project.name),'Canonical showcase review captures use Chromium desktop/mobile.');
+  test.setTimeout(120_000);
   for(const [name,route] of [['explorer','/components.html'],['lab','/demo/v10.html?route=product']]){
     await page.goto(route,{waitUntil:'networkidle'});
     await page.screenshot({path:testInfo.outputPath(`commerce-v10-showcase-${name}-${testInfo.project.name}.png`),fullPage:true});
