@@ -5,6 +5,7 @@ import {test,expect} from '@playwright/test';
 const baseline=JSON.parse(fs.readFileSync(new URL('./visual-baselines-v09.json',import.meta.url),'utf8'));
 const packageManifest=JSON.parse(fs.readFileSync(new URL('../package.json',import.meta.url),'utf8'));
 const canonicalSurfaceIds=['home','product','checkout','account','ownership'];
+// Canonical Linux pixel projects: chromium and mobile-chromium. Other configured engines remain behavioral/accessibility coverage.
 
 function pngSize(buffer){
   if(buffer.length<24||buffer.toString('hex',0,8)!=='89504e470d0a1a0a')throw new Error('Expected Playwright screenshot to be a PNG');
