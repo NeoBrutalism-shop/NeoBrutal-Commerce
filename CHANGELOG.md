@@ -14,7 +14,8 @@ All notable NeoBrutal Commerce changes are recorded here. v1.0 freezes the publi
 - Added npm trusted-publishing/OIDC release automation with provenance-ready public package metadata and no long-lived publish token in the workflow.
 - Added `package-lock.json` and exact top-level QA dependency versions for release/install reproducibility.
 - Froze the v1 public API in `tests/public-api-v10.json` from the reviewed `0.9.0-rc.1` contract with no intentional breaking API change.
-- Preserved v0.9 visual fingerprints as historical provenance and introduced separate v1.0 canonical visual candidates for review and exact fingerprint locking.
+- Preserved v0.9 visual fingerprints as historical provenance and locked a separate reviewed v1.0 Linux baseline for home, product, checkout, account and ownership across desktop Chromium and mobile Chromium from successful Browser QA #105 (`34304046291`), source head `b48ee9491999ce1c998314f7b709ccfe1a1becd4`, artifact `10086065314`.
+- Corrected the carried-forward v0.6 ownership lifecycle browser assertion to validate the promoted `v1.0.0` package identity without reducing coverage.
 
 ## [0.9.0-rc.1] — Release Candidate
 

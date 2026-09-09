@@ -1,18 +1,36 @@
-import {test} from '@playwright/test';
+import fs from 'node:fs';
+import {createHash} from 'node:crypto';
+import {test,expect} from '@playwright/test';
 
-const surfaces=[
-  ['home','/'],
-  ['product','/product/soft/'],
-  ['checkout','/checkout/'],
-  ['account','/account/'],
-  ['ownership','/account/license/demo-soft-team/']
-];
-const canonicalProjects=new Set(['chromium','mobile-chromium']);
+const baseline=JSON.parse(fs.readFileSync(new URL('./visual-baselines-v10.json',import.meta.url),'utf8'));
+const packageManifest=JSON.parse(fs.readFileSync(new URL('../package.json',import.meta.url),'utf8'));
+const canonicalSurfaceIds=['home','product','checkout','account','ownership'];
+// Canonical Linux pixel projects: chromium and mobile-chromium. Other configured engines remain behavioral/accessibility coverage.
 
-test('capture v1.0 canonical visual candidates',async({page},testInfo)=>{
-  test.skip(!canonicalProjects.has(testInfo.project.name),`${testInfo.project.name} remains behavioral/accessibility coverage rather than a canonical pixel engine.`);
-  for(const [id,route] of surfaces){
-    await page.goto(route,{waitUntil:'networkidle'});
-    await page.screenshot({path:testInfo.outputPath(`commerce-v10-candidate-${id}-${testInfo.project.name}.png`),fullPage:true});
+function pngSize(buffer){
+  if(buffer.length<24||buffer.toString('hex',0,8)!=='89504e470d0a1a0a')throw new Error('Expected Playwright screenshot to be a PNG');
+  return {width:buffer.readUInt32BE(16),height:buffer.readUInt32BE(20)};
+}
+
+test('v1.0 canonical visual fingerprints remain stable',async({page},testInfo)=>{
+  test.skip(packageManifest.version!=='1.0.0','Historical v1.0 fingerprints only run against the v1.0 package identity.');
+  expect(baseline.version).toBe('1.0.0');
+  expect(baseline.surfaces.map(surface=>surface.id)).toEqual(canonicalSurfaceIds);
+  test.skip(process.platform!==baseline.platform,`Canonical v1.0 fingerprints are ${baseline.platform} CI baselines.`);
+  const expectedProject=baseline.projects[testInfo.project.name];
+  test.skip(!expectedProject,`${testInfo.project.name} is behavioral/accessibility coverage, not a canonical pixel surface.`);
+
+  for(const surface of baseline.surfaces){
+    const expected=expectedProject[surface.id];
+    expect(expected,`Missing ${testInfo.project.name}/${surface.id} v1.0 visual baseline`).toBeTruthy();
+    await page.goto(surface.route,{waitUntil:'networkidle'});
+    const screenshot=await page.screenshot({
+      path:testInfo.outputPath(`commerce-v10-lock-${surface.id}-${testInfo.project.name}.png`),
+      fullPage:true
+    });
+    const actualSize=pngSize(screenshot);
+    const actualHash=createHash('sha256').update(screenshot).digest('hex');
+    expect(actualSize,`${testInfo.project.name}/${surface.id} dimensions drifted from reviewed v1.0 baseline`).toEqual({width:expected.width,height:expected.height});
+    expect(actualHash,`${testInfo.project.name}/${surface.id} pixels drifted from reviewed v1.0 baseline`).toBe(expected.sha256);
   }
 });

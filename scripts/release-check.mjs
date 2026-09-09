@@ -49,7 +49,7 @@ for(const marker of snapshot.typeMarkers){
   if(!declarations.includes(`interface ${marker}`))fail(`normalized type marker missing: ${marker}`);
 }
 
-for(const file of ['LICENSE.md','docs/PUBLIC-RELEASE.md','scripts/package-check.mjs','.github/workflows/release.yml','tests/public-api-v10.json','tests/commerce-v10-visual.spec.mjs','package-lock.json']){
+for(const file of ['LICENSE.md','docs/PUBLIC-RELEASE.md','scripts/package-check.mjs','.github/workflows/release.yml','tests/public-api-v10.json','tests/commerce-v10-visual.spec.mjs','tests/visual-baselines-v10.json','package-lock.json']){
   if(!fs.existsSync(path.join(root,file)))fail(`missing public-release file: ${file}`);
 }
 const license=read('LICENSE.md');
@@ -57,8 +57,20 @@ for(const marker of ['PolyForm Noncommercial License 1.0.0','https://polyformpro
   if(!license.includes(marker))fail(`license notice missing: ${marker}`);
 }
 const release=read('docs/PUBLIC-RELEASE.md');
-for(const marker of ['Public package','Supply-chain release','v1 API freeze','Release gates','PolyForm-Noncommercial-1.0.0','release.yml','1.0.0']){
+for(const marker of ['Public package','Supply-chain release','v1 API freeze','Visual freeze','Release gates','PolyForm-Noncommercial-1.0.0','release.yml','visual-baselines-v10.json','1.0.0']){
   if(!release.includes(marker))fail(`public-release guide missing marker: ${marker}`);
+}
+const visual=json('tests/visual-baselines-v10.json');
+if(visual.version!==version||visual.platform!=='linux')fail('v1 visual baseline identity/platform must remain exact');
+if(visual.source?.workflowRun!==34304046291||visual.source?.headSha!=='b48ee9491999ce1c998314f7b709ccfe1a1becd4'||visual.source?.artifactId!==10086065314)fail('v1 visual baseline provenance drifted from reviewed Browser QA #105 artifact');
+if(visual.surfaces.map(surface=>surface.id).join(',')!=='home,product,checkout,account,ownership')fail('v1 visual baseline surfaces are incomplete or reordered');
+for(const project of ['chromium','mobile-chromium'])for(const surface of ['home','product','checkout','account','ownership']){
+  const entry=visual.projects?.[project]?.[surface];
+  if(!entry||!/^[a-f0-9]{64}$/.test(entry.sha256)||!Number.isInteger(entry.width)||!Number.isInteger(entry.height))fail(`v1 visual fingerprint missing or invalid: ${project}/${surface}`);
+}
+const visualSpec=read('tests/commerce-v10-visual.spec.mjs');
+for(const marker of ['visual-baselines-v10.json','createHash','pixels drifted from reviewed v1.0 baseline','chromium','mobile-chromium']){
+  if(!visualSpec.includes(marker))fail(`v1 exact visual lock missing: ${marker}`);
 }
 const workflow=read('.github/workflows/release.yml');
 for(const marker of ['actions/checkout@v6','actions/setup-node@v6','node-version: 24','id-token: write','registry-url: https://registry.npmjs.org','npm ci','npm run check','npm run test:browser','npm publish --access public']){

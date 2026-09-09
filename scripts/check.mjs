@@ -24,7 +24,7 @@ const required=[
   'demo/index.html','demo/demo.css','demo/demo.js','demo/v02.html','demo/v02.css','demo/v02.js',
   'storefront/store.css','storefront/store.js','storefront/catalog.json','storefront/routes.json','storefront/states.json','storefront/components.json',...storefrontRoutes,
   'tests/contracts-v05.test.mjs','tests/reference-adapter-v05.test.mjs','tests/renderers-v05.test.mjs','tests/actions-v05.test.mjs','tests/action-bindings-v05.test.mjs','tests/edd-adapter-v05.test.mjs','tests/ownership-v06.test.mjs','tests/edd-lifecycle-v06.test.mjs',
-  'tests/commerce-v02.spec.mjs','tests/commerce-v03.spec.mjs','tests/commerce-v04.spec.mjs','tests/commerce-v06.spec.mjs','tests/commerce-v07.spec.mjs','tests/commerce-v08-visual.spec.mjs','tests/commerce-v09.spec.mjs','tests/commerce-v09-visual.spec.mjs','tests/commerce-v10-visual.spec.mjs','tests/visual-baselines-v07.json','tests/visual-baselines-v08.json','tests/visual-baselines-v09.json','tests/public-api-v09.json','tests/public-api-v10.json',
+  'tests/commerce-v02.spec.mjs','tests/commerce-v03.spec.mjs','tests/commerce-v04.spec.mjs','tests/commerce-v06.spec.mjs','tests/commerce-v07.spec.mjs','tests/commerce-v08-visual.spec.mjs','tests/commerce-v09.spec.mjs','tests/commerce-v09-visual.spec.mjs','tests/commerce-v10-visual.spec.mjs','tests/visual-baselines-v07.json','tests/visual-baselines-v08.json','tests/visual-baselines-v09.json','tests/visual-baselines-v10.json','tests/public-api-v09.json','tests/public-api-v10.json',
   'scripts/performance.mjs','scripts/docs-check.mjs','scripts/package-check.mjs','scripts/release-check.mjs','DESIGN.md','docs/EDD-MAPPING.md','docs/OWNERSHIP-LIFECYCLE.md','CHANGELOG.md','CONTRIBUTING.md','SECURITY.md',...adoptionFiles,
   'package.json','package-lock.json','LICENSE.md','playwright.config.mjs','.github/workflows/browser-qa.yml','.github/workflows/release.yml'
 ];
@@ -128,8 +128,16 @@ for(const project of ['chromium','mobile-chromium'])for(const surface of ['home'
 }
 const v09Visual=read('tests/commerce-v09-visual.spec.mjs');
 for(const marker of ['v0.9 RC','visual-baselines-v09.json','createHash','home','product','checkout','account','ownership','chromium','mobile-chromium','pixels drifted from reviewed v0.9 RC baseline'])if(!v09Visual.includes(marker))fail(`v0.9 RC exact visual lock missing: ${marker}`);
+const v10Baseline=json('tests/visual-baselines-v10.json');
+if(v10Baseline.version!==releaseVersion||v10Baseline.platform!=='linux')fail('v1.0 visual baseline identity/platform must remain exact');
+if(v10Baseline.source?.workflowRun!==34304046291||v10Baseline.source?.headSha!=='b48ee9491999ce1c998314f7b709ccfe1a1becd4'||v10Baseline.source?.artifactId!==10086065314)fail('v1.0 visual baseline provenance drifted from reviewed Browser QA #105 artifact');
+if(v10Baseline.surfaces.map(surface=>surface.id).join(',')!=='home,product,checkout,account,ownership')fail('v1.0 visual baseline surfaces are incomplete or reordered');
+for(const project of ['chromium','mobile-chromium'])for(const surface of ['home','product','checkout','account','ownership']){
+  const entry=v10Baseline.projects?.[project]?.[surface];
+  if(!entry||!/^[a-f0-9]{64}$/.test(entry.sha256)||!Number.isInteger(entry.width)||!Number.isInteger(entry.height))fail(`v1.0 visual fingerprint missing or invalid: ${project}/${surface}`);
+}
 const v10Visual=read('tests/commerce-v10-visual.spec.mjs');
-for(const marker of ['v1.0','home','product','checkout','account','ownership','chromium','mobile-chromium'])if(!v10Visual.includes(marker))fail(`v1.0 visual candidate missing: ${marker}`);
+for(const marker of ['v1.0','visual-baselines-v10.json','createHash','home','product','checkout','account','ownership','chromium','mobile-chromium','pixels drifted from reviewed v1.0 baseline'])if(!v10Visual.includes(marker))fail(`v1.0 exact visual lock missing: ${marker}`);
 const v09Stress=read('tests/commerce-v09.spec.mjs');
 for(const marker of ['plan-comparison','download-row','invoice-history','Agency applied','Individual scheduled'])if(!v09Stress.includes(marker))fail(`v0.9 production stress coverage missing: ${marker}`);
 
