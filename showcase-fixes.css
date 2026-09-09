@@ -1,0 +1,32 @@
+/* GitHub Pages showcase hardening.
+   Keep these corrections outside the frozen npm/runtime CSS contract. */
+
+/* The pink showcase band pins its own dark foreground. Route cards use theme
+   surfaces, so reset their content back to the active theme foreground. */
+.store-section--pink .store-route{
+  color:var(--nbc-text);
+  background:var(--nbc-surface);
+  border-color:var(--nbc-border);
+}
+.store-section--pink .store-route code{color:var(--nbc-text)}
+.store-section--pink .store-route span{color:var(--nbc-muted)}
+
+/* Primary + helper copy must read as two deliberate lines, never one fused
+   label. This covers component previews and reusable block previews. */
+:is(.cx-preview,.cx-block-preview) strong + small{
+  display:block;
+  margin-top:.22rem;
+  color:var(--nbc-muted);
+  line-height:1.35;
+}
+.cx-mini-row > span{
+  display:grid;
+  gap:.22rem;
+  min-width:0;
+}
+.cx-mini-row > span > :is(strong,small){min-width:0}
+.cx-mini-row > span > small{
+  display:block;
+  margin:0;
+  line-height:1.35;
+}
