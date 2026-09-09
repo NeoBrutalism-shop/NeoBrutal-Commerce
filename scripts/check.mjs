@@ -28,12 +28,17 @@ const required=[
   'scripts/performance.mjs','scripts/docs-check.mjs','scripts/package-check.mjs','scripts/release-check.mjs','DESIGN.md','docs/EDD-MAPPING.md','docs/OWNERSHIP-LIFECYCLE.md','CHANGELOG.md','CONTRIBUTING.md','SECURITY.md',...adoptionFiles,
   'package.json','package-lock.json','LICENSE.md','playwright.config.mjs','.github/workflows/browser-qa.yml','.github/workflows/release.yml'
 ];
+const showcaseFiles=['.nojekyll','components.html','component-explorer.css','component-explorer.js','demo/v10.html','demo/v10.css','demo/v10.js','tests/commerce-showcase-v10.spec.mjs'];
 for(const file of required)if(!exists(file))fail(`Missing required file: ${file}`);
+for(const file of showcaseFiles)if(!exists(file))fail(`Missing permanent showcase file: ${file}`);
 
 const cssFiles=required.filter(file=>file.endsWith('.css'));
 const css=cssFiles.map(read).join('\n');
 if(/transition\s*:\s*all/i.test(css))fail('transition: all is prohibited');
 if(/:hover[^\{]*\{[^\}]*translate(?:Y)?\(\s*-/i.test(css))fail('Upward hover lift is prohibited');
+const showcaseCss=['component-explorer.css','demo/v10.css'].map(read).join('\n');
+if(/transition\s*:\s*all/i.test(showcaseCss))fail('Showcase transition: all is prohibited');
+if(/:hover[^\{]*\{[^\}]*translate(?:Y)?\(\s*-/i.test(showcaseCss))fail('Showcase upward hover lift is prohibited');
 const baseCss=read('src/base.css');
 if(!baseCss.includes('.nbc-tactile:active{transform:translate(0,0);box-shadow:0 0 0 var(--nbc-shadow)}'))fail('Touch/coarse tactile active state must consume shadow without moving its hit target');
 if(!baseCss.includes('.nbc-tactile:active{transform:translate(var(--nbc-press-hover),var(--nbc-press-hover));box-shadow:0 0 0 var(--nbc-shadow)}'))fail('Fine-pointer tactile active state must stay at the hover-compressed hit position while consuming shadow');
@@ -137,12 +142,29 @@ for(const project of ['chromium','mobile-chromium'])for(const surface of ['home'
   if(!entry||!/^[a-f0-9]{64}$/.test(entry.sha256)||!Number.isInteger(entry.width)||!Number.isInteger(entry.height))fail(`v1.0 visual fingerprint missing or invalid: ${project}/${surface}`);
 }
 const v10Visual=read('tests/commerce-v10-visual.spec.mjs');
-for(const marker of ['v1.0','visual-baselines-v10.json','createHash','home','product','checkout','account','ownership','chromium','mobile-chromium','pixels drifted from reviewed v1.0 baseline'])if(!v10Visual.includes(marker))fail(`v1.0 exact visual lock missing: ${marker}`);
+for(const marker of ['v1.0 canonical visual fingerprints remain stable','visual-baselines-v10.json','createHash','home','product','checkout','account','ownership','chromium','mobile-chromium','pixels drifted from reviewed v1.0 baseline'])if(!v10Visual.includes(marker))fail(`v1.0 exact visual lock missing: ${marker}`);
 const v09Stress=read('tests/commerce-v09.spec.mjs');
 for(const marker of ['plan-comparison','download-row','invoice-history','Agency applied','Individual scheduled'])if(!v09Stress.includes(marker))fail(`v0.9 production stress coverage missing: ${marker}`);
+
+const flagship=read('index.html');
+if((flagship.match(/href="components\.html"/g)||[]).length!==2)fail('Flagship must connect both existing Components entry points to components.html without adding visual chrome');
+const explorer=read('components.html');
+for(const marker of ['Components + Blocks','47 contracts.','18 blocks','10 pages','componentGrid','blockGrid','demo/v10.html','storefront/components.json'])if(!explorer.includes(marker))fail(`Permanent component explorer missing marker: ${marker}`);
+const explorerScript=read('component-explorer.js');
+for(const component of registry.components)if(!explorerScript.includes(`'${component.id}'`))fail(`Permanent explorer does not map frozen component: ${component.id}`);
+const blockEntries=explorerScript.match(/\{id:'[^']+',title:'[^']+',category:/g)||[];
+if(blockEntries.length!==18)fail(`Permanent explorer must expose exactly 18 reviewed composition blocks, received ${blockEntries.length}`);
+const lab=read('demo/v10.html');
+for(const marker of ['APPLICATION LAB v1.0','REAL ROUTES · NO COPIES','Desktop','Tablet','Mobile','labFrame','components.html'])if(!lab.includes(marker))fail(`Permanent application lab missing marker: ${marker}`);
+const labScript=read('demo/v10.js');
+for(const marker of ["id:'home'","id:'products'","id:'product'","id:'pricing'","id:'cart'","id:'checkout'","id:'success'","id:'account'","id:'ownership'","id:'system'"])if(!labScript.includes(marker))fail(`Application lab route missing: ${marker}`);
+const showcaseSpec=read('tests/commerce-showcase-v10.spec.mjs');
+for(const marker of ['47','18','all ten real production routes','WCAG A/AA','horizontal overflow','permanent showcase review surfaces'])if(!showcaseSpec.includes(marker))fail(`Showcase browser contract missing: ${marker}`);
+const readme=read('README.md');
+for(const marker of ['## Live surfaces','https://neobrutalism-shop.github.io/NeoBrutal-Commerce/','https://neobrutalism-shop.github.io/NeoBrutal-Commerce/components.html','https://neobrutalism-shop.github.io/NeoBrutal-Commerce/demo/v10.html','Any future custom domain is an alias'])if(!readme.includes(marker))fail(`Permanent GitHub Pages documentation missing: ${marker}`);
 
 for(const file of ['package.json','src/contracts/runtime.js','src/contracts/index.d.ts','storefront/catalog.json','storefront/routes.json','storefront/states.json','storefront/components.json','README.md','tests/contracts-v05.test.mjs','tests/reference-adapter-v05.test.mjs','tests/ownership-v06.test.mjs']){
   if(read(file).includes('0.8.0-dev'))fail(`Release file still contains dev version: ${file}`);
 }
 
-console.log(`NeoBrutal Commerce ${releaseVersion} checks passed · ${(totalBytes/1024).toFixed(1)} KiB CSS · ${components.length} component stylesheets · ${storefrontRoutes.length} production routes · ${registry.components.length} agent-readable components`);
+console.log(`NeoBrutal Commerce ${releaseVersion} checks passed · ${(totalBytes/1024).toFixed(1)} KiB CSS · ${components.length} component stylesheets · ${storefrontRoutes.length} production routes · ${registry.components.length} agent-readable components · 3 permanent GitHub Pages surfaces`);

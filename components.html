@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="color-scheme" content="light dark" />
+  <meta name="theme-color" content="#fff7e8" />
+  <meta name="description" content="NeoBrutal Commerce v1.0 interactive component and block explorer — 47 frozen component contracts, reusable commerce blocks, real states, and live route links." />
+  <title>Components + Blocks — NeoBrutal Commerce</title>
+  <link rel="stylesheet" href="./src/index.css" />
+  <link rel="stylesheet" href="./storefront/store.css" />
+  <link rel="stylesheet" href="./component-explorer.css" />
+  <script type="module" src="./component-explorer.js"></script>
+  <script type="module">
+    let demoControlId=0;
+    function normalizePreviewSemantics(){
+      document.querySelectorAll('.nbc-account-nav .nbc-account-tab[aria-selected]').forEach(button=>{
+        const selected=button.getAttribute('aria-selected');
+        button.removeAttribute('aria-selected');
+        button.setAttribute('aria-pressed',selected);
+      });
+      document.querySelectorAll('.cx-preview .cx-mini-field, .cx-block-preview .cx-mini-field').forEach(field=>{
+        const label=field.querySelector(':scope > label');
+        const control=field.querySelector(':scope > input, :scope > select, :scope > textarea');
+        if(!label||!control||label.contains(control))return;
+        if(!control.id){
+          let candidate;
+          do{candidate=`cx-demo-control-${++demoControlId}`}while(document.getElementById(candidate));
+          control.id=candidate;
+        }
+        if(!label.htmlFor)label.htmlFor=control.id;
+      });
+    }
+    const previewObserver=new MutationObserver(normalizePreviewSemantics);
+    previewObserver.observe(document.documentElement,{subtree:true,childList:true});
+    queueMicrotask(normalizePreviewSemantics);
+  </script>
+</head>
+<body class="cx-page">
+  <a class="cx-skip" href="#content">Skip to explorer</a>
+  <header class="cx-topbar">
+    <a class="cx-brand" href="./" aria-label="NeoBrutal Commerce home"><span class="cx-brand-mark" aria-hidden="true">C.</span><span>NEOBRUTAL<small>COMMERCE · v1.0</small></span></a>
+    <nav class="cx-surface-nav" aria-label="Live surfaces">
+      <a href="./">Flagship</a>
+      <a href="./components.html" aria-current="page">Components + Blocks</a>
+      <a href="./demo/v10.html">Application lab</a>
+    </nav>
+    <div class="cx-top-actions">
+      <button class="nbc-button nbc-tactile cx-compact" id="focusSearch" type="button">⌕ Find</button>
+      <button class="nbc-button nbc-tactile cx-compact" id="themeToggle" type="button" aria-pressed="false">◐ Dark</button>
+      <a class="nbc-button nbc-button--primary nbc-tactile cx-compact" href="./demo/v10.html">OPEN LAB →</a>
+    </div>
+  </header>
+
+  <div class="cx-shell">
+    <aside class="cx-sidebar" aria-label="Explorer navigation">
+      <label class="cx-search"><span aria-hidden="true">⌕</span><input id="componentSearch" type="search" aria-label="Find component or block" placeholder="Find a component or block…" autocomplete="off" /><kbd>/</kbd></label>
+      <div class="cx-mode" role="tablist" aria-label="Explorer mode">
+        <button class="cx-mode-button nbc-tactile" id="componentsTab" type="button" role="tab" aria-selected="true" aria-controls="componentsPanel">Components <span>47</span></button>
+        <button class="cx-mode-button nbc-tactile" id="blocksTab" type="button" role="tab" aria-selected="false" aria-controls="blocksPanel">Blocks <span>18</span></button>
+      </div>
+      <nav class="cx-category-nav" id="categoryNav" aria-label="Component categories">
+        <button type="button" data-category="all" aria-pressed="true">All components <span>47</span></button>
+        <button type="button" data-category="storefront">Storefront <span>5</span></button>
+        <button type="button" data-category="product">Product + trust <span>8</span></button>
+        <button type="button" data-category="pricing">Pricing <span>3</span></button>
+        <button type="button" data-category="checkout">Cart + checkout <span>13</span></button>
+        <button type="button" data-category="account">Account + ownership <span>14</span></button>
+        <button type="button" data-category="system">System + foundation <span>4</span></button>
+      </nav>
+      <div class="cx-sidebar-note">
+        <span class="nbc-badge nbc-badge--lime">LIVE SOURCE</span>
+        <p>Every card is driven by <code>storefront/components.json</code> and rendered with the actual Commerce CSS. No screenshot-only catalog.</p>
+      </div>
+    </aside>
+
+    <main class="cx-main" id="content">
+      <section class="cx-hero">
+        <div class="cx-hero-copy">
+          <p class="cx-kicker">PUBLIC EXPLORER · COMMERCE v1.0</p>
+          <h1>47 contracts.<br /><span>Real pixels.</span></h1>
+          <p>Learn Commerce by touching it. Browse every frozen component, inspect its normalized model/action/state contract, then jump into reusable blocks and the real ten-route storefront lab.</p>
+          <div class="cx-hero-actions"><a class="nbc-button nbc-button--primary nbc-tactile" href="#componentsPanel">BROWSE COMPONENTS</a><a class="nbc-button nbc-tactile" href="./demo/v10.html">OPEN PAGE LAB →</a></div>
+        </div>
+        <div class="cx-stats" aria-label="Explorer coverage">
+          <div><strong id="componentCount">47</strong><span>components</span></div>
+          <div><strong>18</strong><span>blocks</span></div>
+          <div aria-label="10 pages"><strong>10</strong><span>pages</span></div>
+          <div><strong>4</strong><span>browsers</span></div>
+        </div>
+      </section>
+
+      <section class="cx-panel" id="componentsPanel" role="tabpanel" aria-labelledby="componentsTab">
+        <div class="cx-section-head">
+          <div><p class="cx-kicker">COMPONENTS</p><h2>Every public Commerce pattern.</h2></div>
+          <p>Search by name, model, action, state, or category. Each card shows the machine contract beside a working visual sample.</p>
+        </div>
+        <div class="cx-result-meta" aria-live="polite"><strong id="resultCount">47 components</strong><span id="resultHint">Showing the complete frozen registry.</span></div>
+        <div class="cx-component-grid" id="componentGrid"><div class="cx-loading">Loading the v1.0 registry…</div></div>
+        <div class="cx-empty" id="componentEmpty" hidden><strong>No matching component.</strong><span>Try a component ID, model such as “SubscriptionView”, or action such as “checkout.submit”.</span></div>
+      </section>
+
+      <section class="cx-panel" id="blocksPanel" role="tabpanel" aria-labelledby="blocksTab" hidden>
+        <div class="cx-section-head">
+          <div><p class="cx-kicker">BLOCKS</p><h2>Compose faster without inventing structure.</h2></div>
+          <p>Blocks combine frozen components into reusable commerce sections. They are examples, not a second API layer: the underlying component contracts remain authoritative.</p>
+        </div>
+        <div class="cx-result-meta" aria-live="polite"><strong id="blockCount">18 blocks</strong><span>Each block links to the production route where the pattern is exercised.</span></div>
+        <div class="cx-block-grid" id="blockGrid"></div>
+        <div class="cx-empty" id="blockEmpty" hidden><strong>No matching block.</strong><span>Try “pricing”, “checkout”, “ownership”, “trust”, or “account”.</span></div>
+      </section>
+
+      <section class="cx-route-strip" aria-labelledby="pages-title">
+        <div class="cx-section-head"><div><p class="cx-kicker">PREBUILT PAGES</p><h2 id="pages-title">Ten routes. One connected product.</h2></div><p>The application lab frames the real production pages at desktop, tablet, and mobile sizes instead of maintaining separate demo copies.</p></div>
+        <div class="cx-route-grid">
+          <a href="./demo/v10.html?route=home"><code>/</code><span>Storefront home</span></a>
+          <a href="./demo/v10.html?route=products"><code>/products</code><span>Catalog</span></a>
+          <a href="./demo/v10.html?route=product"><code>/product/soft</code><span>Product detail</span></a>
+          <a href="./demo/v10.html?route=pricing"><code>/pricing</code><span>Pricing</span></a>
+          <a href="./demo/v10.html?route=cart"><code>/cart</code><span>Cart</span></a>
+          <a href="./demo/v10.html?route=checkout"><code>/checkout</code><span>Checkout</span></a>
+          <a href="./demo/v10.html?route=success"><code>/order/success</code><span>Order success</span></a>
+          <a href="./demo/v10.html?route=account"><code>/account</code><span>Account</span></a>
+          <a href="./demo/v10.html?route=ownership"><code>/account/license/:id</code><span>Ownership</span></a>
+          <a href="./demo/v10.html?route=system"><code>/components</code><span>System states</span></a>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <footer class="cx-footer"><strong>NEOBRUTAL COMMERCE</strong><span>Permanent GitHub Pages surface · components + blocks · v1.0</span><a href="https://github.com/NeoBrutalism-shop/NeoBrutal-Commerce">View source ↗</a></footer>
+</body>
+</html>

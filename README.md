@@ -4,6 +4,20 @@
 
 Commerce is a flavor of the NeoBrutalism family. It shares the same tactile interaction grammar as Soft and Rivet, but uses a louder retail material: stronger price hierarchy, boxed-product surfaces, physical press depth and conversion-oriented workflows.
 
+> **Family law: Compress, never float.**
+
+Ordinary interactive surfaces move **into** their depth on hover/press. They do not generically rise toward the user. Semantic lift is reserved for actions such as actually dragging an object.
+
+## Live surfaces
+
+**[Open the NeoBrutal Commerce flagship →](https://neobrutalism-shop.github.io/NeoBrutal-Commerce/)**
+
+**[Browse the interactive component + block explorer →](https://neobrutalism-shop.github.io/NeoBrutal-Commerce/components.html)**
+
+**[Open the Commerce v1.0 application lab →](https://neobrutalism-shop.github.io/NeoBrutal-Commerce/demo/v10.html)**
+
+The public surfaces use the actual Commerce CSS, machine-readable component registry, and real production routes. They are covered by the same browser, interaction, responsive, and axe/WCAG quality gates as the shipping storefront rather than maintained as screenshot-only documentation.
+
 ## Status
 
 `1.0.0` — public release with the Commerce API frozen through the reviewed v0.9 RC, public npm packaging, source-available noncommercial licensing, trusted-publishing release automation, and the full production quality/browser contract.
@@ -20,6 +34,8 @@ The public package is source-available under PolyForm Noncommercial 1.0.0. Comme
 
 ### Humans
 
+- `components.html` — full interactive 47-component + 18-block public explorer
+- `demo/v10.html` — ten-route responsive application lab using the real production pages
 - `docs/ADOPTION.md` — architecture and adoption checklist
 - `docs/RECIPES.md` — copy-paste integration recipes
 - `docs/THEMING.md` — semantic colors, tactile depth, fluid spacing/type and accessibility requirements
@@ -61,6 +77,16 @@ Do not infer Commerce meaning from provider payloads or demo copy. Normalized co
 - machine-readable component/adoption contract for humans and agents
 - v1.0 public API freeze, package tarball contract and connected production storefront stress contract
 
+## Public documentation surfaces
+
+- flagship landing / production storefront: `index.html`
+- full registry-backed component + block explorer: `components.html`
+- responsive ten-route application lab: `demo/v10.html`
+- production system-state showcase retained at: `components/index.html`
+- legacy `demo/v02.html` retained for regression coverage
+
+The component explorer reads `storefront/components.json` directly, so all 47 frozen component contracts remain visible to humans and agents. The application lab frames the real production routes instead of copying them, with desktop, tablet, mobile, light, and dark inspection controls.
+
 ## Production routes
 
 - `/` — storefront home
@@ -72,9 +98,9 @@ Do not infer Commerce meaning from provider payloads or demo copy. Normalized co
 - `/order/success` — receipt and entitlement handoff
 - `/account` — downloads, purchases, licenses and invoice history
 - `/account/license/:id` — activations, seats, plan change, transfer/gift, subscription, renewal and ownership history
-- `/components` — component/state showcase
+- `/components` — production component/state showcase used by system QA
 
-The legacy `demo/v02.html` workflow remains regression coverage while production validation runs on the real routes.
+The public `components.html` explorer sits beside these production routes and exposes every frozen component contract plus reusable composition blocks.
 
 ## Normalized runtime
 
@@ -154,9 +180,17 @@ npm run check
 npm run test:browser
 ```
 
-`npm run check` enforces static conformance, documentation/component-registry consistency, the v1.0 public API freeze and package tarball contract, contract/action/adapter regressions and payload budgets. Browser QA runs desktop Chromium, mobile Chromium, Firefox and WebKit and includes strict WCAG A/AA Axe checks, keyboard journeys, reduced-motion, forced-colors, 320–1440px responsive checks, connected production-store stress, CLS and canonical visual regression.
+`npm run check` enforces static conformance, documentation/component-registry consistency, the v1.0 public API freeze and package tarball contract, contract/action/adapter regressions and payload budgets. Browser QA runs desktop Chromium, mobile Chromium, Firefox and WebKit and includes strict WCAG A/AA Axe checks, keyboard journeys, reduced-motion, forced-colors, 320–1440px responsive checks, connected production-store stress, CLS, canonical visual regression, and the permanent GitHub Pages explorer/application-lab surfaces.
 
 No known failing commerce journey is accepted for merge.
+
+## Hosting
+
+The permanent GitHub Pages origin is:
+
+`https://neobrutalism-shop.github.io/NeoBrutal-Commerce/`
+
+Any future custom domain is an alias, not the source of truth. The repository and GitHub Pages URLs remain the durable public home so the design system stays available even if domains or hosting vendors change.
 
 ## License
 
