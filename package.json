@@ -1,27 +1,63 @@
 {
   "name": "@neobrutal/commerce",
-  "version": "0.9.0-rc.1",
-  "private": true,
+  "version": "1.0.0",
+  "private": false,
   "type": "module",
   "description": "Expressive Neo-Brutalism for digital-product and software commerce.",
   "exports": {
     ".": "./src/index.css",
     "./styles.css": "./src/index.css",
-    "./contracts": {"types":"./src/contracts/index.d.ts","default":"./src/contracts/runtime.js"},
-    "./actions": {"types":"./src/actions/index.d.ts","default":"./src/actions/runtime.js"},
-    "./actions/bindings": {"types":"./src/actions/bindings.d.ts","default":"./src/actions/bindings.js"},
-    "./adapters/reference": {"types":"./src/adapters/reference.d.ts","default":"./src/adapters/reference.js"},
-    "./adapters/edd": {"types":"./src/adapters/edd.d.ts","default":"./src/adapters/edd.js"},
-    "./adapters/licensing-bridge": {"types":"./src/adapters/licensing-bridge.d.ts","default":"./src/adapters/licensing-bridge.js"},
-    "./renderers/headless": {"types":"./src/renderers/headless.d.ts","default":"./src/renderers/headless.js"},
-    "./renderers/react": {"types":"./src/renderers/react.d.ts","default":"./src/renderers/react.js"},
-    "./renderers/action-controls": {"types":"./src/renderers/action-controls.d.ts","default":"./src/renderers/action-controls.js"},
-    "./renderers/react-actions": {"types":"./src/renderers/react-actions.d.ts","default":"./src/renderers/react-actions.js"},
-    "./renderers/ownership": {"types":"./src/renderers/ownership.d.ts","default":"./src/renderers/ownership.js"},
-    "./renderers/react-ownership": {"types":"./src/renderers/react-ownership.d.ts","default":"./src/renderers/react-ownership.js"}
+    "./contracts": {
+      "types": "./src/contracts/index.d.ts",
+      "default": "./src/contracts/runtime.js"
+    },
+    "./actions": {
+      "types": "./src/actions/index.d.ts",
+      "default": "./src/actions/runtime.js"
+    },
+    "./actions/bindings": {
+      "types": "./src/actions/bindings.d.ts",
+      "default": "./src/actions/bindings.js"
+    },
+    "./adapters/reference": {
+      "types": "./src/adapters/reference.d.ts",
+      "default": "./src/adapters/reference.js"
+    },
+    "./adapters/edd": {
+      "types": "./src/adapters/edd.d.ts",
+      "default": "./src/adapters/edd.js"
+    },
+    "./adapters/licensing-bridge": {
+      "types": "./src/adapters/licensing-bridge.d.ts",
+      "default": "./src/adapters/licensing-bridge.js"
+    },
+    "./renderers/headless": {
+      "types": "./src/renderers/headless.d.ts",
+      "default": "./src/renderers/headless.js"
+    },
+    "./renderers/react": {
+      "types": "./src/renderers/react.d.ts",
+      "default": "./src/renderers/react.js"
+    },
+    "./renderers/action-controls": {
+      "types": "./src/renderers/action-controls.d.ts",
+      "default": "./src/renderers/action-controls.js"
+    },
+    "./renderers/react-actions": {
+      "types": "./src/renderers/react-actions.d.ts",
+      "default": "./src/renderers/react-actions.js"
+    },
+    "./renderers/ownership": {
+      "types": "./src/renderers/ownership.d.ts",
+      "default": "./src/renderers/ownership.js"
+    },
+    "./renderers/react-ownership": {
+      "types": "./src/renderers/react-ownership.d.ts",
+      "default": "./src/renderers/react-ownership.js"
+    }
   },
   "scripts": {
-    "check": "npm run check:static && npm run check:docs && npm run check:release && npm run test:contracts && npm run test:renderers && npm run test:actions && npm run test:integrations && npm run test:ownership && npm run test:performance",
+    "check": "npm run check:static && npm run check:docs && npm run check:package && npm run check:release && npm run test:contracts && npm run test:renderers && npm run test:actions && npm run test:integrations && npm run test:ownership && npm run test:performance",
     "check:static": "node scripts/check.mjs",
     "check:docs": "node scripts/docs-check.mjs",
     "check:release": "node scripts/release-check.mjs",
@@ -31,8 +67,60 @@
     "test:integrations": "node --test tests/action-bindings-v05.test.mjs tests/edd-adapter-v05.test.mjs",
     "test:ownership": "node --test tests/ownership-v06.test.mjs tests/edd-lifecycle-v06.test.mjs",
     "test:performance": "node scripts/performance.mjs",
-    "test:browser": "playwright test"
+    "test:browser": "playwright test",
+    "check:package": "node scripts/package-check.mjs",
+    "pack:dry-run": "npm pack --dry-run --json"
   },
-  "devDependencies": {"@axe-core/playwright":"^4.13.0","@playwright/test":"^1.63.0"},
-  "license": "UNLICENSED"
+  "devDependencies": {
+    "@axe-core/playwright": "4.13.0",
+    "@playwright/test": "1.63.0"
+  },
+  "license": "PolyForm-Noncommercial-1.0.0",
+  "style": "./src/index.css",
+  "sideEffects": [
+    "**/*.css"
+  ],
+  "files": [
+    "src",
+    "storefront/catalog.json",
+    "storefront/routes.json",
+    "storefront/states.json",
+    "storefront/components.json",
+    "AGENTS.md",
+    "LLMS.md",
+    "COMPONENTS.md",
+    "DESIGN.md",
+    "docs",
+    "README.md",
+    "CHANGELOG.md",
+    "LICENSE.md"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/NeoBrutalism-shop/NeoBrutal-Commerce.git"
+  },
+  "homepage": "https://github.com/NeoBrutalism-shop/NeoBrutal-Commerce#readme",
+  "bugs": {
+    "url": "https://github.com/NeoBrutalism-shop/NeoBrutal-Commerce/issues"
+  },
+  "keywords": [
+    "neobrutalism",
+    "design-system",
+    "commerce",
+    "ecommerce",
+    "css",
+    "ui",
+    "dark-mode",
+    "light-mode",
+    "tactile-ui",
+    "accessibility",
+    "react",
+    "headless",
+    "digital-products",
+    "licensing-ui"
+  ],
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  }
 }

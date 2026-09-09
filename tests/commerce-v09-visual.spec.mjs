@@ -13,8 +13,8 @@ function pngSize(buffer){
 }
 
 test('v0.9 RC canonical visual fingerprints remain stable',async({page},testInfo)=>{
-  expect(packageManifest.version).toBe('0.9.0-rc.1');
-  expect(baseline.version).toBe(packageManifest.version);
+  test.skip(packageManifest.version!=='0.9.0-rc.1','Historical v0.9 RC fingerprints only run against the v0.9 RC package identity.');
+  expect(baseline.version).toBe('0.9.0-rc.1');
   expect(baseline.surfaces.map(surface=>surface.id)).toEqual(canonicalSurfaceIds);
   test.skip(process.platform!==baseline.platform,`Canonical v0.9 RC fingerprints are ${baseline.platform} CI baselines.`);
   const expectedProject=baseline.projects[testInfo.project.name];

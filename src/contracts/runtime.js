@@ -52,5 +52,5 @@ export function createLicensingAdapter(adapter){
 
 export function composeCommerceRuntime({commerce,licensing}){
   const commerceAdapter=createCommerceAdapter(commerce);const licensingAdapter=createLicensingAdapter(licensing);
-  return Object.freeze({version:'0.9.0-rc.1',commerce:commerceAdapter,licensing:licensingAdapter});
+  return Object.freeze({version:'1.0.0',commerce:commerceAdapter,licensing:licensingAdapter});
 }

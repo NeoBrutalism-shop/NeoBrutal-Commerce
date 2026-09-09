@@ -1,5 +1,12 @@
 # Commerce Migration Guide — v0.9 RC
 
+## v0.9.0-rc.1 → v1.0.0
+
+There is no intentional breaking public API change between the reviewed RC and v1.0. Package/runtime/type/manifest identity moves to `1.0.0`; the npm package becomes public and uses `PolyForm-Noncommercial-1.0.0`. Existing provider adapters and normalized model/action/state identifiers remain frozen.
+
+For package consumers, install `@neobrutal/commerce@1.0.0` and review `LICENSE.md` before commercial use. The v0.9 visual baseline remains historical; v1.0 has its own canonical visual lock.
+
+
 Use this guide when moving an integration forward without breaking the normalized Commerce boundary.
 
 ## Upgrade order

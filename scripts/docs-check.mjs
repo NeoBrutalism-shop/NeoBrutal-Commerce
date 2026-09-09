@@ -7,7 +7,7 @@ const json=file=>JSON.parse(read(file));
 const required=[
   'AGENTS.md','LLMS.md','COMPONENTS.md',
   'docs/ADOPTION.md','docs/AGENT-PLAYBOOK.md','docs/AI-COMPONENT-NOTES.md',
-  'docs/RECIPES.md','docs/THEMING.md','docs/MIGRATION.md','docs/PROVIDER-EXAMPLES.md','docs/RELEASE-CANDIDATE.md',
+  'docs/RECIPES.md','docs/THEMING.md','docs/MIGRATION.md','docs/PROVIDER-EXAMPLES.md','docs/RELEASE-CANDIDATE.md','docs/PUBLIC-RELEASE.md',
   'storefront/components.json'
 ];
 for(const file of required){if(!fs.existsSync(path.join(root,file))){console.error(`Missing adoption file: ${file}`);process.exit(1);}}
@@ -48,8 +48,8 @@ for(const marker of ['createReferenceRuntime','createProductCardSpec','bindComme
 const theming=read('docs/THEMING.md');
 for(const marker of ['--nbc-bg','--nbc-depth','--nbc-space-7','--nbc-text-display','forced-colors']){if(!theming.includes(marker)){console.error(`THEMING.md missing marker: ${marker}`);process.exit(1);}}
 const migration=read('docs/MIGRATION.md');
-for(const marker of ['v0.5 → v0.6','v0.6 → v0.7','v0.7 → v0.8','v0.8 → v0.9','storefront/components.json','npm run test:browser']){if(!migration.includes(marker)){console.error(`MIGRATION.md missing marker: ${marker}`);process.exit(1);}}
+for(const marker of ['v0.5 → v0.6','v0.6 → v0.7','v0.7 → v0.8','v0.8 → v0.9','v0.9.0-rc.1 → v1.0.0','storefront/components.json','npm run test:browser']){if(!migration.includes(marker)){console.error(`MIGRATION.md missing marker: ${marker}`);process.exit(1);}}
 const providers=read('docs/PROVIDER-EXAMPLES.md');
 for(const marker of ['createEddCommerceAdapter','createLicensingBridgeAdapter','capabilities','normalize','cancel_at_period_end']){if(!providers.includes(marker)){console.error(`PROVIDER-EXAMPLES.md missing marker: ${marker}`);process.exit(1);}}
 
-console.log(`NeoBrutal Commerce v0.9 RC adoption docs passed · ${manifest.components.length} machine-readable components · ${routes.routes.length} production routes · recipes/theming/migration/provider examples verified`);
+console.log(`NeoBrutal Commerce v1.0 adoption docs passed · ${manifest.components.length} machine-readable components · ${routes.routes.length} production routes · recipes/theming/migration/provider examples verified`);
