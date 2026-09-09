@@ -80,7 +80,7 @@ test('v1.1 live canonical state matrices expose and switch real registry states'
   await expect(subscriptionMatrix.locator('[data-showcase-state="past_due"]')).toHaveAttribute('aria-pressed','true');
   await expect(subscriptionMatrix.locator('[data-state-result]')).toContainText('Subscription past due');
   await expect(subscriptionMatrix.locator('[data-state-result]')).toContainText('Billing recovery is required');
-  await expect(subscription.locator('[data-preview-for]')).toHaveAttribute('data-showcase-state','past_due');
+  await expect(subscription.locator('[data-preview-for]')).toHaveAttribute('data-showcase-current-state','past_due');
 
   const system=page.locator('[data-component-id="system-states"]');
   const systemMatrix=system.locator('[data-state-matrix]');
