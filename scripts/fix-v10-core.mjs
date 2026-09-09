@@ -8,4 +8,4 @@ if(!source.includes(from))throw new Error('v1.0 core interpolation marker not fo
 source=source.replace(from,to);
 fs.writeFileSync(file,source);
 fs.rmSync('scripts/fix-v10-core.mjs');
-console.log('v1.0 core interpolation patched.');
+console.log('v1.0 core interpolation patched and promotion triggered.');
