@@ -1,24 +1,66 @@
-const ROUTES=[
-  {id:'home',title:'Storefront home',path:'/',src:'../',description:'Flagship storefront with value proposition, featured product, and journey overview.'},
-  {id:'products',title:'Product catalog',path:'/products',src:'../products/',description:'Catalog discovery with product hierarchy, pricing, badges, and direct product entry.'},
-  {id:'product',title:'Product detail',path:'/product/soft',src:'../product/soft/',description:'Product media, reviews, trust, license selection, renewal context, and purchase action.'},
-  {id:'pricing',title:'Pricing',path:'/pricing',src:'../pricing/',description:'License tiers, comparison table, and optional bundle composition.'},
-  {id:'cart',title:'Cart',path:'/cart',src:'../cart/',description:'Persistent cart lines, coupon outcome, and inspectable order summary.'},
-  {id:'checkout',title:'Checkout',path:'/checkout',src:'../checkout/',description:'Contact, invoice/tax, payment choice, failure recovery, and provider-authoritative total.'},
-  {id:'success',title:'Order success',path:'/order/success',src:'../order/success/',description:'Receipt, transaction confirmation, and entitlement handoff after a successful order.'},
-  {id:'account',title:'Account dashboard',path:'/account',src:'../account/',description:'Downloads, purchases, licenses, and provider-authoritative invoice history.'},
-  {id:'ownership',title:'License + ownership',path:'/account/license/:id',src:'../account/license/demo-soft-team/',description:'Activations, seats, plan change, transfer/gift, subscription, renewal, and ownership timeline.'},
-  {id:'system',title:'System showcase',path:'/components',src:'../components/',description:'Production system states and lifecycle examples used by the storefront.'}
-];
+const EXPECTED_PAGE_LIBRARY_VERSION='1.2.0';
+const EXPECTED_COMMERCE_VERSION='1.0.0';
 const VIEWPORTS={desktop:{label:'1280px preview'},tablet:{label:'834px preview'},mobile:{label:'390px preview'}};
+const LEGACY_ROUTE_ALIASES={product:'product-soft',success:'order-success',ownership:'account-license',system:'components'};
 const qs=(selector,scope=document)=>scope.querySelector(selector);
 const qsa=(selector,scope=document)=>[...scope.querySelectorAll(selector)];
-let current=ROUTES[0];
+let ROUTES=[];
+let current=null;
 let theme='light';
 let viewport='desktop';
 
+async function fetchJson(url){
+  const response=await fetch(url,{cache:'no-store'});
+  if(!response.ok)throw new Error(`${url} request failed: ${response.status}`);
+  return response.json();
+}
+function assert(condition,message){if(!condition)throw new Error(message)}
+function sameIds(actual,expected){
+  const a=[...actual].sort();
+  const b=[...expected].sort();
+  return JSON.stringify(a)===JSON.stringify(b);
+}
+function routeSrc(route){
+  const target=route.example||route.path;
+  return target==='/'?'../':`..${target.replace(/\/$/,'')}/`;
+}
+function buildPageLibrary(routeManifest,pageLibrary,blockManifest){
+  assert(routeManifest.version===EXPECTED_COMMERCE_VERSION,'route manifest Commerce version mismatch');
+  assert(pageLibrary.schema==='neobrutal-commerce/pages@1','unexpected page library schema');
+  assert(pageLibrary.pageLibraryVersion===EXPECTED_PAGE_LIBRARY_VERSION,'page library version mismatch');
+  assert(pageLibrary.commerceVersion===EXPECTED_COMMERCE_VERSION,'page library Commerce version mismatch');
+  assert(blockManifest.schema==='neobrutal-commerce/blocks@1','unexpected blocks schema');
+  assert(blockManifest.commerceVersion===EXPECTED_COMMERCE_VERSION,'blocks Commerce version mismatch');
+  assert(routeManifest.routes?.length===10,'expected 10 frozen production routes');
+  assert(pageLibrary.pages?.length===10,'expected 10 page library contracts');
+  const routeIds=routeManifest.routes.map(route=>route.id);
+  const pagesById=new Map(pageLibrary.pages.map(page=>[page.id,page]));
+  assert(pagesById.size===10,'page library contains duplicate ids');
+  assert(sameIds([...pagesById.keys()],routeIds),'page library ids drifted from frozen routes');
+  const blockIds=new Set(blockManifest.blocks.map(block=>block.id));
+  const usedBlocks=new Set();
+  for(const page of pageLibrary.pages){
+    assert(page.title?.trim(),`missing page title: ${page.id}`);
+    assert(page.description?.trim(),`missing page description: ${page.id}`);
+    assert(Array.isArray(page.blocks)&&page.blocks.length>0,`page ${page.id} must compose at least one block`);
+    for(const blockId of page.blocks){
+      assert(blockIds.has(blockId),`page ${page.id} references unknown block ${blockId}`);
+      usedBlocks.add(blockId);
+    }
+  }
+  assert(usedBlocks.size===blockIds.size&&sameIds(usedBlocks,blockIds),'page library must compose all 18 documented blocks');
+  ROUTES=routeManifest.routes.map(route=>{
+    const page=pagesById.get(route.id);
+    return {...route,...page,src:routeSrc(route)};
+  });
+  return {blockCount:blockIds.size};
+}
 function routeButton(route,index){
-  return `<button class="lab-route-button" type="button" data-route="${route.id}" aria-current="${route.id===current.id?'page':'false'}"><span class="lab-route-index">${String(index+1).padStart(2,'0')}</span><span class="lab-route-copy"><strong>${route.title}</strong><code>${route.path}</code></span></button>`;
+  return `<button class="lab-route-button" type="button" data-route="${route.id}" data-page-id="${route.id}" aria-current="${route.id===current.id?'page':'false'}"><span class="lab-route-index">${String(index+1).padStart(2,'0')}</span><span class="lab-route-copy"><strong>${route.title}</strong><code>${route.path}</code></span></button>`;
+}
+function renderPageContract(){
+  qs('#currentIntent').textContent=current.intent;
+  qs('#currentBlocks').innerHTML=current.blocks.map(block=>`<span class="lab-block-chip" data-page-block="${block}">${block}</span>`).join('');
 }
 function syncRouteControls(){
   qsa('[data-route]').forEach(button=>button.setAttribute('aria-current',button.dataset.route===current.id?'page':'false'));
@@ -27,8 +69,9 @@ function syncRouteControls(){
   qs('#currentTitle').textContent=current.title;
   qs('#currentDescription').textContent=current.description;
   qs('#openLive').href=current.src;
-  qs('#deviceUrl').textContent=`/NeoBrutal-Commerce${current.path==='/'?'/':current.path}`;
+  qs('#deviceUrl').textContent=`/NeoBrutal-Commerce${current.path==='/'?'/':current.example||current.path}`;
   qs('#labFrame').title=`NeoBrutal Commerce — ${current.title}`;
+  renderPageContract();
 }
 function applyThemeToFrame(){
   try{
@@ -59,13 +102,15 @@ function setViewport(next){
   syncUrl();
 }
 function syncUrl(){
+  if(!current)return;
   const url=new URL(location.href);
   url.searchParams.set('route',current.id);
   url.searchParams.set('viewport',viewport);
   history.replaceState(null,'',url);
 }
 function selectRoute(id,{push=true}={}){
-  const route=ROUTES.find(item=>item.id===id)||ROUTES[0];
+  const canonical=LEGACY_ROUTE_ALIASES[id]||id;
+  const route=ROUTES.find(item=>item.id===canonical)||ROUTES[0];
   current=route;
   syncRouteControls();
   const frame=qs('#labFrame');
@@ -73,28 +118,46 @@ function selectRoute(id,{push=true}={}){
   frame.src=route.src;
   if(push)syncUrl();
 }
-function init(){
-  const params=new URLSearchParams(location.search);
-  const requested=ROUTES.find(route=>route.id===params.get('route'))||ROUTES[0];
-  current=requested;
-  viewport=VIEWPORTS[params.get('viewport')]?params.get('viewport'):'desktop';
-  theme=localStorage.getItem('nbc-lab-theme')==='dark'?'dark':'light';
-  qs('#routeNav').innerHTML=ROUTES.map(routeButton).join('');
-  qs('#routeSelect').innerHTML=ROUTES.map(route=>`<option value="${route.id}">${route.title} · ${route.path}</option>`).join('');
-  qs('#routeNav').addEventListener('click',event=>{const button=event.target.closest('[data-route]');if(button)selectRoute(button.dataset.route)});
-  qs('#routeSelect').addEventListener('change',event=>selectRoute(event.currentTarget.value));
-  qsa('button[data-viewport]').forEach(button=>button.addEventListener('click',()=>setViewport(button.dataset.viewport)));
-  qs('#labTheme').addEventListener('click',()=>setTheme(theme==='dark'?'light':'dark'));
-  qs('#labFrame').addEventListener('load',()=>{applyThemeToFrame();qs('#labStatus').textContent=`Live: ${current.title} · ${current.path} · ${VIEWPORTS[viewport].label} · ${theme} theme`});
-  document.addEventListener('keydown',event=>{
-    if(/INPUT|TEXTAREA|SELECT/.test(document.activeElement?.tagName))return;
-    if(event.key==='ArrowRight'&&event.altKey){event.preventDefault();const index=ROUTES.findIndex(route=>route.id===current.id);selectRoute(ROUTES[(index+1)%ROUTES.length].id)}
-    if(event.key==='ArrowLeft'&&event.altKey){event.preventDefault();const index=ROUTES.findIndex(route=>route.id===current.id);selectRoute(ROUTES[(index-1+ROUTES.length)%ROUTES.length].id)}
-  });
-  setViewport(viewport);
-  setTheme(theme);
-  syncRouteControls();
-  qs('#labFrame').src=current.src;
-  syncUrl();
+async function init(){
+  try{
+    const [routeManifest,pageLibrary,blockManifest]=await Promise.all([
+      fetchJson('../storefront/routes.json'),
+      fetchJson('../storefront/pages.json'),
+      fetchJson('../storefront/blocks.json')
+    ]);
+    const {blockCount}=buildPageLibrary(routeManifest,pageLibrary,blockManifest);
+    const params=new URLSearchParams(location.search);
+    const requestedId=LEGACY_ROUTE_ALIASES[params.get('route')]||params.get('route');
+    current=ROUTES.find(route=>route.id===requestedId)||ROUTES[0];
+    viewport=VIEWPORTS[params.get('viewport')]?params.get('viewport'):'desktop';
+    theme=localStorage.getItem('nbc-lab-theme')==='dark'?'dark':'light';
+    qs('#routeNav').innerHTML=ROUTES.map(routeButton).join('');
+    qs('#routeSelect').innerHTML=ROUTES.map(route=>`<option value="${route.id}">${route.title} · ${route.path}</option>`).join('');
+    qs('#pageCountBadge').textContent=`${ROUTES.length} PAGES`;
+    qs('#routeNav').addEventListener('click',event=>{const button=event.target.closest('[data-route]');if(button)selectRoute(button.dataset.route)});
+    qs('#routeSelect').addEventListener('change',event=>selectRoute(event.currentTarget.value));
+    qsa('button[data-viewport]').forEach(button=>button.addEventListener('click',()=>setViewport(button.dataset.viewport)));
+    qs('#labTheme').addEventListener('click',()=>setTheme(theme==='dark'?'light':'dark'));
+    qs('#labFrame').addEventListener('load',()=>{applyThemeToFrame();qs('#labStatus').textContent=`Live: ${current.title} · ${current.path} · ${VIEWPORTS[viewport].label} · ${theme} theme`});
+    document.addEventListener('keydown',event=>{
+      if(/INPUT|TEXTAREA|SELECT/.test(document.activeElement?.tagName))return;
+      if(event.key==='ArrowRight'&&event.altKey){event.preventDefault();const index=ROUTES.findIndex(route=>route.id===current.id);selectRoute(ROUTES[(index+1)%ROUTES.length].id)}
+      if(event.key==='ArrowLeft'&&event.altKey){event.preventDefault();const index=ROUTES.findIndex(route=>route.id===current.id);selectRoute(ROUTES[(index-1+ROUTES.length)%ROUTES.length].id)}
+    });
+    syncRouteControls();
+    setViewport(viewport);
+    setTheme(theme);
+    qs('#labFrame').src=current.src;
+    syncUrl();
+    document.documentElement.dataset.pageLibraryVersion=EXPECTED_PAGE_LIBRARY_VERSION;
+    document.documentElement.dataset.pageLibraryPages=String(ROUTES.length);
+    document.documentElement.dataset.pageLibraryBlocks=String(blockCount);
+    document.documentElement.dataset.pageLibraryReady='true';
+    document.dispatchEvent(new CustomEvent('nbc:page-library-ready',{detail:{pageLibraryVersion:EXPECTED_PAGE_LIBRARY_VERSION,pages:ROUTES.length,blocks:blockCount}}));
+  }catch(error){
+    document.documentElement.dataset.pageLibraryReady='error';
+    qs('#labStatus').textContent=`Page library failed: ${error.message}`;
+    console.error(error);
+  }
 }
 init();
