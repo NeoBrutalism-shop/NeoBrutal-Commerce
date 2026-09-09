@@ -60,8 +60,8 @@
     {
       "id": "components",
       "title": "System showcase",
-      "description": "Production system states and lifecycle examples used by the storefront.",
-      "blocks": ["system-states"]
+      "description": "Production contracts, tokens, system states, lifecycle, reviews, and guarantee foundations used by the storefront.",
+      "blocks": ["system-states", "trust-band"]
     }
   ]
 }
