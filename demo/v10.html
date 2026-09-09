@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="color-scheme" content="light dark" />
+  <meta name="theme-color" content="#fff7e8" />
+  <meta name="description" content="NeoBrutal Commerce v1.0 application lab — inspect the ten real production routes at desktop, tablet, and mobile sizes with light and dark themes." />
+  <title>Application Lab — NeoBrutal Commerce v1.0</title>
+  <link rel="stylesheet" href="../src/index.css" />
+  <link rel="stylesheet" href="../storefront/store.css" />
+  <link rel="stylesheet" href="./v10.css" />
+  <script type="module" src="./v10.js"></script>
+</head>
+<body class="lab-page">
+  <a class="lab-skip" href="#labFrame">Skip to live page</a>
+  <header class="lab-topbar">
+    <a class="lab-brand" href="../" aria-label="NeoBrutal Commerce home"><span class="lab-brand-mark" aria-hidden="true">C.</span><span>NEOBRUTAL<small>COMMERCE · APPLICATION LAB v1.0</small></span></a>
+    <nav class="lab-surface-nav" aria-label="Live surfaces"><a href="../">Flagship</a><a href="../components.html">Components + Blocks</a><a href="./v10.html" aria-current="page">Application lab</a></nav>
+    <div class="lab-actions"><button class="nbc-button nbc-tactile lab-compact" id="labTheme" type="button" aria-pressed="false">◐ Dark</button><a class="nbc-button nbc-button--primary nbc-tactile lab-compact" id="openLive" href="../" target="_blank" rel="noopener">OPEN PAGE ↗</a></div>
+  </header>
+
+  <main class="lab-shell">
+    <aside class="lab-sidebar" aria-label="Production pages">
+      <div class="lab-sidebar-head"><p class="lab-kicker">REAL ROUTES · NO COPIES</p><h1>Page lab.</h1><p>Inspect every production surface in one place. Change route, viewport, and theme while the iframe keeps using the real Commerce source.</p></div>
+      <nav class="lab-route-nav" id="routeNav"></nav>
+      <div class="lab-note"><span class="nbc-badge nbc-badge--lime">10 ROUTES</span><p>These are the same pages exercised by Browser QA. The lab only frames them; it does not fork their markup or behavior.</p></div>
+    </aside>
+
+    <section class="lab-workspace" aria-label="Page preview workspace">
+      <header class="lab-toolbar">
+        <div class="lab-current"><p class="lab-kicker" id="currentPath">/</p><h2 id="currentTitle">Storefront home</h2><p id="currentDescription">Browse the flagship production storefront.</p></div>
+        <div class="lab-controls">
+          <fieldset class="lab-segment" aria-label="Viewport"><legend>Viewport</legend><button type="button" data-viewport="desktop" aria-pressed="true">Desktop <span>1280</span></button><button type="button" data-viewport="tablet" aria-pressed="false">Tablet <span>834</span></button><button type="button" data-viewport="mobile" aria-pressed="false">Mobile <span>390</span></button></fieldset>
+          <label class="lab-route-select"><span>Page</span><select id="routeSelect" aria-label="Select production page"></select></label>
+        </div>
+      </header>
+
+      <div class="lab-stage" data-viewport="desktop" id="labStage">
+        <div class="lab-device-bar"><div class="lab-device-dots" aria-hidden="true"><i></i><i></i><i></i></div><code id="deviceUrl">/NeoBrutal-Commerce/</code><span id="viewportLabel">1280px preview</span></div>
+        <div class="lab-frame-wrap" id="frameWrap"><iframe id="labFrame" title="NeoBrutal Commerce storefront home" src="../" loading="eager"></iframe></div>
+      </div>
+      <p class="lab-status" id="labStatus" role="status">Loading the real storefront home…</p>
+    </section>
+  </main>
+
+  <footer class="lab-footer"><strong>NEOBRUTAL COMMERCE</strong><span>Permanent GitHub Pages application lab · v1.0</span><a href="https://github.com/NeoBrutalism-shop/NeoBrutal-Commerce">View source ↗</a></footer>
+</body>
+</html>
