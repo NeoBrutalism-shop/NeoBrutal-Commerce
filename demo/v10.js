@@ -55,7 +55,7 @@ function setViewport(next){
   viewport=VIEWPORTS[next]?next:'desktop';
   qs('#labStage').dataset.viewport=viewport;
   qs('#viewportLabel').textContent=VIEWPORTS[viewport].label;
-  qsa('[data-viewport]').forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.viewport===viewport)));
+  qsa('button[data-viewport]').forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.viewport===viewport)));
   syncUrl();
 }
 function syncUrl(){
@@ -83,7 +83,7 @@ function init(){
   qs('#routeSelect').innerHTML=ROUTES.map(route=>`<option value="${route.id}">${route.title} · ${route.path}</option>`).join('');
   qs('#routeNav').addEventListener('click',event=>{const button=event.target.closest('[data-route]');if(button)selectRoute(button.dataset.route)});
   qs('#routeSelect').addEventListener('change',event=>selectRoute(event.currentTarget.value));
-  qsa('[data-viewport]').forEach(button=>button.addEventListener('click',()=>setViewport(button.dataset.viewport)));
+  qsa('button[data-viewport]').forEach(button=>button.addEventListener('click',()=>setViewport(button.dataset.viewport)));
   qs('#labTheme').addEventListener('click',()=>setTheme(theme==='dark'?'light':'dark'));
   qs('#labFrame').addEventListener('load',()=>{applyThemeToFrame();qs('#labStatus').textContent=`Live: ${current.title} · ${current.path} · ${VIEWPORTS[viewport].label} · ${theme} theme`});
   document.addEventListener('keydown',event=>{
