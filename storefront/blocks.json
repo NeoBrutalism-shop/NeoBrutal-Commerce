@@ -1,1 +1,205 @@
-{"schema":"neobrutal-commerce/blocks@1","showcaseVersion":"1.1.0","commerceVersion":"1.0.0","blocks":[{"id":"storefront-hero","title":"Storefront hero","category":"storefront","description":"Primary value proposition, product proof, and two-action conversion path.","components":["promo-band","badge","price-block"],"route":"./","responsiveMode":"grid-to-stack","a11y":["heading-order","consequence-visible","named-controls"],"themeMode":"semantic-accent"},{"id":"product-grid","title":"Product grid","category":"storefront","description":"Discoverable catalog cards with price, category, and direct product action.","components":["product-card","badge","price-block"],"route":"./products/","responsiveMode":"grid-to-stack","a11y":["semantic-group","consequence-visible","named-controls"],"themeMode":"semantic-surface"},{"id":"trust-band","title":"Trust + guarantee band","category":"product","description":"Evidence-led trust without fake urgency or fabricated security claims.","components":["trust-strip","review-summary","guarantee"],"route":"./product/soft/","responsiveMode":"wrap","a11y":["data-authoritative","text-equivalent","no-color-only"],"themeMode":"semantic-surface"},{"id":"product-media","title":"Product media deck","category":"product","description":"Preview, code, and files as explicit media states.","components":["product-gallery","product-media"],"route":"./product/soft/","responsiveMode":"contained-scroll","a11y":["keyboard","programmatic-state","named-controls"],"themeMode":"semantic-surface"},{"id":"license-purchase","title":"License purchase panel","category":"product","description":"Capacity and renewal scope remain beside the price before commitment.","components":["license-selector","price-block","renewal-note"],"route":"./product/soft/","responsiveMode":"stack-controls","a11y":["labels","programmatic-state","consequence-visible"],"themeMode":"semantic-accent"},{"id":"pricing-trio","title":"Pricing trio","category":"pricing","description":"Three license capacities with consequence visible before purchase.","components":["pricing-tier","price-block"],"route":"./pricing/","responsiveMode":"grid-to-stack","a11y":["consequence-visible","named-controls"],"themeMode":"semantic-accent"},{"id":"plan-comparison","title":"Plan comparison","category":"pricing","description":"Responsive tabular comparison that keeps license scope inspectable.","components":["plan-comparison"],"route":"./pricing/","responsiveMode":"contained-scroll","a11y":["table-semantics","scroll-focus","text-equivalent"],"themeMode":"semantic-surface"},{"id":"bundle-builder","title":"Bundle builder","category":"pricing","description":"Optional extras begin unselected and totals remain visible.","components":["bundle-builder"],"route":"./pricing/","responsiveMode":"stack-controls","a11y":["labels","programmatic-state","consequence-visible"],"themeMode":"semantic-surface"},{"id":"cart-summary","title":"Cart + order summary","category":"checkout","description":"Line context and authoritative totals stay visible together.","components":["cart-item","coupon","order-summary"],"route":"./cart/","responsiveMode":"stack-controls","a11y":["semantic-group","labels","consequence-visible"],"themeMode":"semantic-surface"},{"id":"checkout-shell","title":"Checkout split","category":"checkout","description":"Contact/payment workflow paired with persistent order context.","components":["checkout-field","checkout-steps","payment-method","order-summary"],"route":"./checkout/","responsiveMode":"grid-to-stack","a11y":["labels","current-location","consequence-visible"],"themeMode":"semantic-surface"},{"id":"payment-recovery","title":"Payment recovery","category":"checkout","description":"Failure preserves checkout context and exposes a safe retry path.","components":["payment-failure","payment-recovery","processing-state"],"route":"./checkout/","responsiveMode":"state-panel","a11y":["status-live","error-recovery","programmatic-state"],"themeMode":"semantic-status"},{"id":"order-success","title":"Order success + receipt","category":"checkout","description":"Transaction confirmation stays distinct from entitlement and billing records.","components":["order-confirmation","receipt","download-entitlement"],"route":"./order/success/","responsiveMode":"grid-to-stack","a11y":["status-live","data-authoritative","consequence-visible"],"themeMode":"semantic-status"},{"id":"account-dashboard","title":"Account dashboard","category":"account","description":"Downloads, purchases, licenses, and invoices under one stable navigation model.","components":["account-nav","download-row","purchase-history-row","invoice-history"],"route":"./account/","responsiveMode":"grid-to-stack","a11y":["current-location","named-controls","data-authoritative"],"themeMode":"semantic-surface"},{"id":"license-dashboard","title":"License dashboard","category":"account","description":"Scope, entitlement, activations, and update eligibility without conflating billing.","components":["license-card","license-status","activation-row","update-eligibility"],"route":"./account/license/demo-soft-team/","responsiveMode":"grid-to-stack","a11y":["explicit-status","consequence-visible","data-authoritative"],"themeMode":"semantic-status"},{"id":"seat-management","title":"Seat management","category":"account","description":"Seat assignment remains separate from device/site activation.","components":["seat-assignment"],"route":"./account/license/demo-soft-team/","responsiveMode":"stack-controls","a11y":["labels","named-controls","consequence-visible"],"themeMode":"semantic-surface"},{"id":"ownership-operations","title":"Ownership operations","category":"account","description":"Plan change, transfer/gift, and subscription actions expose consequence before mutation.","components":["plan-change","ownership-transfer","subscription-management","renewal-state"],"route":"./account/license/demo-soft-team/","responsiveMode":"stack-controls","a11y":["programmatic-state","explicit-status","consequence-visible"],"themeMode":"semantic-status"},{"id":"ownership-timeline","title":"Ownership timeline","category":"account","description":"Audit history renders provider-returned events rather than reconstructing them.","components":["ownership-timeline","ownership-lifecycle"],"route":"./account/license/demo-soft-team/","responsiveMode":"wrap","a11y":["list-semantics","data-authoritative","explicit-status"],"themeMode":"semantic-surface"},{"id":"system-states","title":"System-state matrix","category":"system","description":"Empty, loading, error, offline, permission, and unsupported use one predictable anatomy.","components":["system-states"],"route":"./components/","responsiveMode":"grid-to-stack","a11y":["explicit-status","status-live","error-recovery","no-color-only"],"themeMode":"semantic-status"}]}
+{
+  "schema": "neobrutal-commerce/blocks@1",
+  "showcaseVersion": "1.1.0",
+  "commerceVersion": "1.0.0",
+  "blocks": [
+    {
+      "id": "storefront-hero",
+      "title": "Storefront hero",
+      "category": "storefront",
+      "description": "Primary value proposition, product proof, and two-action conversion path.",
+      "components": ["promo-band", "badge", "price-block"],
+      "route": "./",
+      "responsiveMode": "grid-to-stack",
+      "a11y": ["heading-order", "consequence-visible", "named-controls"],
+      "themeMode": "semantic-accent"
+    },
+    {
+      "id": "product-grid",
+      "title": "Product grid",
+      "category": "storefront",
+      "description": "Discoverable catalog cards with price, category, and direct product action.",
+      "components": ["product-card", "badge", "price-block"],
+      "route": "./products/",
+      "responsiveMode": "grid-to-stack",
+      "a11y": ["semantic-group", "consequence-visible", "named-controls"],
+      "themeMode": "semantic-surface"
+    },
+    {
+      "id": "trust-band",
+      "title": "Trust + guarantee band",
+      "category": "product",
+      "description": "Evidence-led reviews, testimonials, and guarantee language without fake urgency or fabricated security claims.",
+      "components": ["trust-strip", "review-summary", "testimonials", "guarantee"],
+      "route": "./product/soft/",
+      "responsiveMode": "wrap",
+      "a11y": ["data-authoritative", "text-equivalent", "no-color-only"],
+      "themeMode": "semantic-surface"
+    },
+    {
+      "id": "product-media",
+      "title": "Product detail + media deck",
+      "category": "product",
+      "description": "Product detail context with preview, code, and files as explicit media states.",
+      "components": ["product-detail", "product-gallery", "product-media"],
+      "route": "./product/soft/",
+      "responsiveMode": "contained-scroll",
+      "a11y": ["keyboard", "programmatic-state", "named-controls"],
+      "themeMode": "semantic-surface"
+    },
+    {
+      "id": "license-purchase",
+      "title": "License purchase panel",
+      "category": "product",
+      "description": "Capacity and renewal scope remain beside the price before commitment.",
+      "components": ["license-selector", "price-block", "renewal-note"],
+      "route": "./product/soft/",
+      "responsiveMode": "stack-controls",
+      "a11y": ["labels", "programmatic-state", "consequence-visible"],
+      "themeMode": "semantic-accent"
+    },
+    {
+      "id": "pricing-trio",
+      "title": "Pricing trio",
+      "category": "pricing",
+      "description": "Three license capacities with consequence visible before purchase.",
+      "components": ["pricing-tier", "price-block"],
+      "route": "./pricing/",
+      "responsiveMode": "grid-to-stack",
+      "a11y": ["consequence-visible", "named-controls"],
+      "themeMode": "semantic-accent"
+    },
+    {
+      "id": "plan-comparison",
+      "title": "Plan comparison",
+      "category": "pricing",
+      "description": "Responsive tabular comparison that keeps license scope inspectable.",
+      "components": ["plan-comparison"],
+      "route": "./pricing/",
+      "responsiveMode": "contained-scroll",
+      "a11y": ["table-semantics", "scroll-focus", "text-equivalent"],
+      "themeMode": "semantic-surface"
+    },
+    {
+      "id": "bundle-builder",
+      "title": "Bundle builder",
+      "category": "pricing",
+      "description": "Optional extras begin unselected and totals remain visible.",
+      "components": ["bundle-builder"],
+      "route": "./pricing/",
+      "responsiveMode": "stack-controls",
+      "a11y": ["labels", "programmatic-state", "consequence-visible"],
+      "themeMode": "semantic-surface"
+    },
+    {
+      "id": "cart-summary",
+      "title": "Cart + order summary",
+      "category": "checkout",
+      "description": "Line context and authoritative totals stay visible together.",
+      "components": ["cart-item", "coupon", "order-summary"],
+      "route": "./cart/",
+      "responsiveMode": "stack-controls",
+      "a11y": ["semantic-group", "labels", "consequence-visible"],
+      "themeMode": "semantic-surface"
+    },
+    {
+      "id": "checkout-shell",
+      "title": "Checkout split",
+      "category": "checkout",
+      "description": "Contact, invoice/tax, and payment workflow paired with persistent order context.",
+      "components": ["checkout-field", "invoice-details", "checkout-steps", "payment-method", "order-summary"],
+      "route": "./checkout/",
+      "responsiveMode": "grid-to-stack",
+      "a11y": ["labels", "current-location", "consequence-visible"],
+      "themeMode": "semantic-surface"
+    },
+    {
+      "id": "payment-recovery",
+      "title": "Payment recovery",
+      "category": "checkout",
+      "description": "Failure preserves checkout context and exposes a safe retry path.",
+      "components": ["payment-failure", "payment-recovery", "processing-state"],
+      "route": "./checkout/",
+      "responsiveMode": "state-panel",
+      "a11y": ["status-live", "error-recovery", "programmatic-state"],
+      "themeMode": "semantic-status"
+    },
+    {
+      "id": "order-success",
+      "title": "Order success + receipt",
+      "category": "checkout",
+      "description": "Transaction confirmation stays distinct from entitlement and billing records.",
+      "components": ["order-confirmation", "receipt", "download-entitlement"],
+      "route": "./order/success/",
+      "responsiveMode": "grid-to-stack",
+      "a11y": ["status-live", "data-authoritative", "consequence-visible"],
+      "themeMode": "semantic-status"
+    },
+    {
+      "id": "account-dashboard",
+      "title": "Account dashboard",
+      "category": "account",
+      "description": "Downloads, purchases, licenses, and invoices under one stable navigation model.",
+      "components": ["account-nav", "download-row", "purchase-history-row", "license-card", "invoice-history"],
+      "route": "./account/",
+      "responsiveMode": "grid-to-stack",
+      "a11y": ["current-location", "named-controls", "data-authoritative"],
+      "themeMode": "semantic-surface"
+    },
+    {
+      "id": "license-dashboard",
+      "title": "License dashboard",
+      "category": "account",
+      "description": "Scope, entitlement, activations, and update eligibility without conflating billing.",
+      "components": ["license-card", "license-status", "activation-row", "update-eligibility"],
+      "route": "./account/license/demo-soft-team/",
+      "responsiveMode": "grid-to-stack",
+      "a11y": ["explicit-status", "consequence-visible", "data-authoritative"],
+      "themeMode": "semantic-status"
+    },
+    {
+      "id": "seat-management",
+      "title": "Seat management",
+      "category": "account",
+      "description": "Seat assignment remains separate from device/site activation.",
+      "components": ["seat-assignment"],
+      "route": "./account/license/demo-soft-team/",
+      "responsiveMode": "stack-controls",
+      "a11y": ["labels", "named-controls", "consequence-visible"],
+      "themeMode": "semantic-surface"
+    },
+    {
+      "id": "ownership-operations",
+      "title": "Ownership operations",
+      "category": "account",
+      "description": "Plan change, transfer/gift, and subscription actions expose consequence before mutation.",
+      "components": ["plan-change", "ownership-transfer", "subscription-management", "renewal-state"],
+      "route": "./account/license/demo-soft-team/",
+      "responsiveMode": "stack-controls",
+      "a11y": ["programmatic-state", "explicit-status", "consequence-visible"],
+      "themeMode": "semantic-status"
+    },
+    {
+      "id": "ownership-timeline",
+      "title": "Ownership timeline",
+      "category": "account",
+      "description": "Audit history renders provider-returned events rather than reconstructing them.",
+      "components": ["ownership-timeline", "ownership-lifecycle"],
+      "route": "./account/license/demo-soft-team/",
+      "responsiveMode": "wrap",
+      "a11y": ["list-semantics", "data-authoritative", "explicit-status"],
+      "themeMode": "semantic-surface"
+    },
+    {
+      "id": "system-states",
+      "title": "System foundations + state matrix",
+      "category": "system",
+      "description": "Component contracts, tokens, ownership lifecycle, and empty/loading/error/offline system-state anatomy stay inspectable together.",
+      "components": ["component-contract", "tokens", "system-states", "ownership-lifecycle"],
+      "route": "./components/",
+      "responsiveMode": "grid-to-stack",
+      "a11y": ["explicit-status", "status-live", "error-recovery", "no-color-only"],
+      "themeMode": "semantic-status"
+    }
+  ]
+}
