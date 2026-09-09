@@ -27,9 +27,12 @@ test('v1.0 flagship connects to permanent component explorer without visual-layo
   await expect(links.last()).toContainText('EXPLORE COMPONENTS');
 });
 
-test('v1.0 component explorer renders the complete frozen registry and reusable blocks',async({page})=>{
+test('v1.1 component explorer renders 47 dedicated previews and reusable blocks',async({page})=>{
   await page.goto('/components.html',{waitUntil:'networkidle'});
   await expect(page.locator('[data-component-card]')).toHaveCount(47);
+  const previews=page.locator('[data-preview-for]');
+  await expect(previews).toHaveCount(47);
+  await expect(previews.filter({hasText:'Contract registered. Open the live route for full context.'})).toHaveCount(0);
   await expect(page.locator('[data-component-id="subscription-management"]')).toBeVisible();
   await expect(page.locator('[data-component-id="product-media"]')).toBeVisible();
   await page.getByRole('tab',{name:/Blocks/}).click();
