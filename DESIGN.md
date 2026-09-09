@@ -12,7 +12,7 @@ NeoBrutal Commerce is the retail/conversion flavor of the NeoBrutalism family.
 
 ## Shared family laws
 
-1. **Compress, never float.** Hover reduces depth; press consumes it.
+1. **Compress, never float.** Hover reduces depth; press consumes the remaining shadow without moving the pointer hit target during activation.
 2. Shadow communicates physical depth, not decoration.
 3. Fluid `clamp()` scales are preferred to breakpoint piles.
 4. Light and dark themes are required.
@@ -25,11 +25,13 @@ Commerce should feel like printed packaging, checkout buttons, price stickers an
 
 - structural border: 2–3px
 - standard raised depth: 6px
-- hover compression: 3px
-- active compression: full 6px
+- hover compression: 3px downward on fine pointers
+- active compression: consume the full remaining shadow while retaining the hover-compressed hit position; coarse pointers keep the control at its origin
 - pricing typography: oversized and compact
 - promo accents: yellow, coral, lime, sky and pink
 - surfaces: warm paper / ink in light mode, charcoal / cream in dark mode
+
+The active rule is intentional browser-hardening: tactile feedback must never make the clickable element move away from the pointer between `pointerdown` and `click`. Safari/WebKit compatibility is part of the design contract, not a test exception.
 
 ## Conversion ethics
 

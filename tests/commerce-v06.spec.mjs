@@ -5,7 +5,7 @@ test('v0.6 license route exposes complete ownership lifecycle',async({page})=>{
   for(const component of ['plan-change','ownership-transfer','seat-assignment','subscription-management','renewal-state','ownership-timeline']){
     await expect(page.locator(`[data-commerce-component="${component}"]`)).toBeVisible();
   }
-  await expect(page.locator('[data-commerce-component="license-card"]')).toContainText('v0.8.0');
+  await expect(page.locator('[data-commerce-component="license-card"]')).toContainText('v0.9.0-rc.1');
 });
 
 test('v0.6 plan change blocks unsafe immediate downgrade and allows next-term scheduling',async({page})=>{

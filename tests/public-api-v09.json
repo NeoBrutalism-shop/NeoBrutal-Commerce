@@ -1,0 +1,46 @@
+{
+  "schema": "neobrutal-commerce/public-api-freeze@1",
+  "frozenFrom": "0.8.0",
+  "candidate": "0.9.0-rc.1",
+  "packageExports": [
+    ".",
+    "./styles.css",
+    "./contracts",
+    "./actions",
+    "./actions/bindings",
+    "./adapters/reference",
+    "./adapters/edd",
+    "./adapters/licensing-bridge",
+    "./renderers/headless",
+    "./renderers/react",
+    "./renderers/action-controls",
+    "./renderers/react-actions",
+    "./renderers/ownership",
+    "./renderers/react-ownership"
+  ],
+  "actionTypes": [
+    "cart.add","cart.remove","checkout.quote","checkout.submit","order.refund","invoice.list",
+    "subscription.get","subscription.cancel","subscription.resume",
+    "license.activations.list","license.seats.list","seat.assign","seat.remove","license.renew","download.create",
+    "license.change.quote","license.change.submit","license.transfers.list","license.transfer.create","license.transfer.cancel","license.history.list"
+  ],
+  "states": {
+    "checkout": ["ready","processing","failed","recovered"],
+    "system": ["empty","loading","error","offline","permission","unsupported"],
+    "ownership": ["active","grace","expired","cancelled","refunded"],
+    "ownershipOperation": ["ready","quoted","processing","complete","failed"],
+    "subscription": ["active","cancel_at_period_end","cancelled","past_due"],
+    "media": ["preview","code","files"],
+    "licensePlans": ["individual","team","agency"]
+  },
+  "routes": ["/","/products","/product/soft","/pricing","/cart","/checkout","/order/success","/account","/account/license/:id","/components"],
+  "componentIds": [
+    "product-card","trust-strip","promo-band","badge","price-block","product-detail","product-gallery","product-media","review-summary","testimonials","guarantee","license-selector","renewal-note","pricing-tier","plan-comparison","bundle-builder","cart-item","order-summary","coupon","checkout-field","invoice-details","checkout-steps","payment-method","payment-failure","payment-recovery","processing-state","order-confirmation","receipt","download-entitlement","account-nav","download-row","purchase-history-row","license-card","invoice-history","license-status","activation-row","update-eligibility","seat-assignment","renewal-state","plan-change","ownership-transfer","subscription-management","ownership-timeline","component-contract","tokens","system-states","ownership-lifecycle"
+  ],
+  "semanticTokens": [
+    "--nbc-bg","--nbc-surface","--nbc-surface-2","--nbc-text","--nbc-muted","--nbc-border","--nbc-shadow","--nbc-yellow","--nbc-coral","--nbc-lime","--nbc-sky","--nbc-pink","--nbc-success","--nbc-danger","--nbc-focus","--nbc-radius-sm","--nbc-radius-md","--nbc-radius-lg","--nbc-border-w","--nbc-depth","--nbc-press-hover","--nbc-press-active","--nbc-ease-press","--nbc-ease-release","--nbc-motion-fast","--nbc-motion-standard","--nbc-space-1","--nbc-space-2","--nbc-space-3","--nbc-space-4","--nbc-space-5","--nbc-space-6","--nbc-space-7","--nbc-text-xs","--nbc-text-sm","--nbc-text-md","--nbc-text-lg","--nbc-text-xl","--nbc-text-2xl","--nbc-text-display"
+  ],
+  "typeMarkers": [
+    "ProductView","CartView","CheckoutQuoteView","OrderView","InvoiceView","SubscriptionView","LicenseView","EntitlementView","ActivationView","SeatAssignmentView","SignedDownloadView","PlanChangeQuoteView","OwnershipTransferView","OwnershipEventView","CommerceAdapter","LicensingAdapter","CommerceRuntime"
+  ]
+}

@@ -111,5 +111,5 @@ export declare function assertKnownState(group:'subscription',value:string):Subs
 export declare function assertKnownState(group:'media',value:string):MediaState;
 export declare function createCommerceAdapter<T extends CommerceAdapter>(adapter:T):Readonly<Omit<T,'capabilities'> & {kind:'commerce';capabilities:Readonly<CommerceAdapterCapabilities>}>;
 export declare function createLicensingAdapter<T extends LicensingAdapter>(adapter:T):Readonly<Omit<T,'capabilities'> & {kind:'licensing';capabilities:Readonly<LicensingAdapterCapabilities>}>;
-export interface CommerceRuntime<C extends CommerceAdapter=CommerceAdapter,L extends LicensingAdapter=LicensingAdapter>{readonly version:'0.8.0';readonly commerce:ReturnType<typeof createCommerceAdapter<C>>;readonly licensing:ReturnType<typeof createLicensingAdapter<L>>;}
+export interface CommerceRuntime<C extends CommerceAdapter=CommerceAdapter,L extends LicensingAdapter=LicensingAdapter>{readonly version:'0.9.0-rc.1';readonly commerce:ReturnType<typeof createCommerceAdapter<C>>;readonly licensing:ReturnType<typeof createLicensingAdapter<L>>;}
 export declare function composeCommerceRuntime<C extends CommerceAdapter,L extends LicensingAdapter>(input:{commerce:C;licensing:L}):CommerceRuntime<C,L>;
