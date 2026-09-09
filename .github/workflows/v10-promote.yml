@@ -1,0 +1,36 @@
+name: Promote Commerce v1.0
+
+on:
+  push:
+    branches: [feat/v10-public-release]
+
+permissions:
+  contents: write
+
+jobs:
+  promote:
+    if: ${{ github.actor != 'github-actions[bot]' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: feat/v10-public-release
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          package-manager-cache: false
+      - name: Promote all release identities and packaging
+        run: node scripts/promote-v10.mjs
+      - name: Generate exact dependency lock
+        run: npm install --package-lock-only --ignore-scripts --no-audit --no-fund
+      - name: Validate promoted release
+        run: npm run check
+      - name: Commit promoted v1.0 tree
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Promote Commerce v1.0 public release"
+          git push origin HEAD:feat/v10-public-release
