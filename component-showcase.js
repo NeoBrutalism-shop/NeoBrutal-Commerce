@@ -2,6 +2,11 @@ const EXPECTED_SHOWCASE_VERSION='1.1.0';
 const EXPECTED_COMMERCE_VERSION='1.0.0';
 const escapeHtml=value=>String(value).replace(/[&<>'"]/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[char]));
 const normalize=value=>String(value||'').trim().toLowerCase();
+const BLOCK_MEDIA_COPY={
+  preview:'Rendered visual preview is active.',
+  code:'Implementation code view is active.',
+  files:'Source files and deliverables view is active.'
+};
 
 async function fetchJson(url){
   const response=await fetch(url,{cache:'no-store'});
@@ -171,6 +176,20 @@ function decorateCategories(contract){
   }
 }
 
+function decorateBlockInteraction(block,preview){
+  if(block.id!=='product-media')return;
+  const states=['preview','code','files'];
+  const buttons=[...preview.querySelectorAll('button')];
+  assert(buttons.length===states.length,'product-media block preview must expose preview, code, and files controls');
+  buttons.forEach((button,index)=>{
+    button.dataset.blockMediaState=states[index];
+    button.setAttribute('aria-pressed',String(index===0));
+  });
+  preview.querySelector('[data-block-media-panel]')?.remove();
+  preview.insertAdjacentHTML('beforeend',`<div class="cx-block-media-status" data-block-media-panel data-media-state="preview" role="status" aria-live="polite"><strong>PREVIEW</strong><span>${escapeHtml(BLOCK_MEDIA_COPY.preview)}</span></div>`);
+  preview.dataset.blockCurrentState='preview';
+}
+
 function decorateBlocks(blocks,contract){
   const byTitle=new Map(blocks.blocks.map(block=>[block.title,block]));
   const seen=new Set();
@@ -182,7 +201,14 @@ function decorateBlocks(blocks,contract){
     seen.add(block.id);
     card.dataset.blockId=block.id;
     card.dataset.category=block.category;
+    card.dataset.responsiveMode=block.responsiveMode;
+    card.dataset.themeMode=block.themeMode;
     card.dataset.search=normalize([block.id,block.title,block.category,block.description,...block.components,block.responsiveMode,block.themeMode,...block.a11y].join(' '));
+    const preview=card.querySelector('.cx-block-preview');
+    assert(preview,`rendered block missing live preview: ${block.id}`);
+    preview.dataset.blockPreviewFor=block.id;
+    preview.dataset.responsiveMode=block.responsiveMode;
+    decorateBlockInteraction(block,preview);
     const copy=card.querySelector('.cx-block-copy');
     copy.querySelector('.cx-kicker').textContent=`${block.category} block`;
     copy.querySelector('h3').textContent=block.title;
@@ -196,6 +222,7 @@ function decorateBlocks(blocks,contract){
     if(link)link.insertAdjacentHTML('beforebegin',designDetails(block,contract));
   }
   assert(seen.size===18,'rendered block set did not match 18-block showcase contract');
+  assert(document.querySelectorAll('[data-block-preview-for]').length===18,'expected 18 explicit live block previews');
 }
 
 function wireStateMatrices(stateExamples){
@@ -212,6 +239,24 @@ function wireStateMatrices(stateExamples){
     matrix.querySelector('[data-state-result]').innerHTML=stateResult(state);
     const preview=matrix.closest('[data-component-card]')?.querySelector('.cx-preview');
     if(preview)preview.dataset.showcaseCurrentState=state.id;
+  });
+}
+
+function wireBlockInteractions(){
+  document.addEventListener('click',event=>{
+    const button=event.target.closest('[data-block-media-state]');
+    if(!button)return;
+    const preview=button.closest('[data-block-preview-for="product-media"]');
+    if(!preview)return;
+    const state=button.dataset.blockMediaState;
+    const copy=BLOCK_MEDIA_COPY[state];
+    assert(copy,`unknown product-media block state: ${state}`);
+    preview.querySelectorAll('[data-block-media-state]').forEach(item=>item.setAttribute('aria-pressed',String(item===button)));
+    const panel=preview.querySelector('[data-block-media-panel]');
+    panel.dataset.mediaState=state;
+    panel.querySelector('strong').textContent=state.toUpperCase();
+    panel.querySelector('span').textContent=copy;
+    preview.dataset.blockCurrentState=state;
   });
 }
 
@@ -244,6 +289,7 @@ async function initShowcaseContracts(){
     decorateCategories(contract);
     decorateBlocks(blocks,contract);
     wireStateMatrices(stateExamples);
+    wireBlockInteractions();
     updateCounts(contract,blocks,stateExamples);
     document.documentElement.dataset.showcaseVersion=EXPECTED_SHOWCASE_VERSION;
     document.documentElement.dataset.showcaseReady='true';

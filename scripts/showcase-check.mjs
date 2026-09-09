@@ -28,6 +28,7 @@ const stateExamples=json('storefront/component-states.json');
 const blocks=json('storefront/blocks.json');
 const explorer=read('component-explorer.js');
 const showcaseClient=read('component-showcase.js');
+const showcaseCss=read('component-showcase.css');
 const showcaseHtml=read('components.html');
 const components=registry.components||[];
 const componentIds=components.map(component=>component.id);
@@ -132,6 +133,16 @@ const renderedBlockIds=[...renderedBlockSource.matchAll(/\bid\s*:\s*['"]([^'"]+)
 unique(renderedBlockIds,'rendered block definitions');
 exactIds('rendered block ids',renderedBlockIds,blockIds);
 if(renderedBlockIds.length!==18)fail(`expected exactly 18 rendered block definitions, received ${renderedBlockIds.length}`);
+const renderedBlockPreviews=[...renderedBlockSource.matchAll(/\{id\s*:\s*['"]([^'"]+)['"][\s\S]*?\bmarkup\s*:\s*`([^`]*)`\}/g)].map(match=>({id:match[1],markup:match[2]}));
+const renderedBlockPreviewIds=renderedBlockPreviews.map(block=>block.id);
+unique(renderedBlockPreviewIds,'rendered block previews');
+exactIds('rendered block preview ids',renderedBlockPreviewIds,blockIds);
+if(renderedBlockPreviews.length!==18)fail(`expected exactly 18 explicit rendered block previews, received ${renderedBlockPreviews.length}`);
+for(const block of renderedBlockPreviews){
+  requiredText(block.markup,`block ${block.id} live preview markup`);
+  if(!/<[a-z][\s\S]*>/i.test(block.markup))fail(`block ${block.id} live preview must contain rendered HTML`);
+  if(block.markup.includes(fallback))fail(`block ${block.id} live preview must not use the component fallback`);
+}
 
 for(const marker of [
   "fetchJson('./storefront/components.json')",
@@ -142,13 +153,17 @@ for(const marker of [
   'data-doc-complete',
   'data-state-matrix',
   'data-showcase-state',
+  'dataset.blockPreviewFor',
+  'dataset.blockMediaState',
+  'wireBlockInteractions',
   'live state component ids drifted from frozen registry',
   'component showcase ids drifted from frozen registry'
 ])if(!showcaseClient.includes(marker))fail(`showcase runtime contract missing marker: ${marker}`);
+for(const marker of ['[data-block-preview-for][data-responsive-mode="contained-scroll"]','[data-block-card][data-responsive-mode="grid-to-stack"]','grid-template-columns:1fr'])if(!showcaseCss.includes(marker))fail(`showcase responsive proof missing marker: ${marker}`);
 try{new Function(showcaseClient)}catch(error){fail(`component-showcase.js syntax error: ${error.message}`)}
 for(const marker of ['./component-showcase.css','./component-showcase.js','SHOWCASE v1.1','component-showcase.json','blocks.json'])if(!showcaseHtml.includes(marker))fail(`components.html missing v1.1 marker: ${marker}`);
 
 const categoryCounts=Object.fromEntries(expectedCategories.map(category=>[category,docs.filter(doc=>doc.category===category).length]));
 if(Object.values(categoryCounts).reduce((sum,count)=>sum+count,0)!==47)fail('component category counts do not sum to 47');
 
-console.log(`NeoBrutal Commerce v${expectedShowcase} showcase contracts passed · 47/47 component previews · 47/47 documented components · 18/18 documented blocks · ${statefulComponents.length} stateful components / ${totalStateExamples} live canonical states`);
+console.log(`NeoBrutal Commerce v${expectedShowcase} showcase contracts passed · 47/47 component previews · 47/47 documented components · 18/18 block previews · 18/18 documented blocks · ${statefulComponents.length} stateful components / ${totalStateExamples} live canonical states`);
