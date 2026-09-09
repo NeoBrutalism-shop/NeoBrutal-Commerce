@@ -1,0 +1,67 @@
+{
+  "schema": "neobrutal-commerce/pages@1",
+  "pageLibraryVersion": "1.2.0",
+  "commerceVersion": "1.0.0",
+  "pages": [
+    {
+      "id": "home",
+      "title": "Storefront home",
+      "description": "Flagship storefront with value proposition, featured product, and journey overview.",
+      "blocks": ["storefront-hero", "product-grid", "trust-band"]
+    },
+    {
+      "id": "products",
+      "title": "Product catalog",
+      "description": "Catalog discovery with product hierarchy, pricing, badges, and direct product entry.",
+      "blocks": ["product-grid"]
+    },
+    {
+      "id": "product-soft",
+      "title": "Product detail",
+      "description": "Product media, reviews, trust, license selection, renewal context, and purchase action.",
+      "blocks": ["product-media", "trust-band", "license-purchase"]
+    },
+    {
+      "id": "pricing",
+      "title": "Pricing",
+      "description": "License tiers, comparison table, and optional bundle composition.",
+      "blocks": ["pricing-trio", "plan-comparison", "bundle-builder"]
+    },
+    {
+      "id": "cart",
+      "title": "Cart",
+      "description": "Persistent cart lines, coupon outcome, and inspectable order summary.",
+      "blocks": ["cart-summary"]
+    },
+    {
+      "id": "checkout",
+      "title": "Checkout",
+      "description": "Contact, invoice/tax, payment choice, failure recovery, and provider-authoritative total.",
+      "blocks": ["checkout-shell", "payment-recovery"]
+    },
+    {
+      "id": "order-success",
+      "title": "Order success",
+      "description": "Receipt, transaction confirmation, and entitlement handoff after a successful order.",
+      "blocks": ["order-success"]
+    },
+    {
+      "id": "account",
+      "title": "Account dashboard",
+      "description": "Downloads, purchases, licenses, and provider-authoritative invoice history.",
+      "blocks": ["account-dashboard"]
+    },
+    {
+      "id": "account-license",
+      "title": "License + ownership",
+      "description": "Activations, seats, plan change, transfer/gift, subscription, renewal, and ownership timeline.",
+      "blocks": ["license-dashboard", "seat-management", "ownership-operations", "ownership-timeline"]
+    },
+    {
+      "id": "components",
+      "title": "System showcase",
+      "description": "Production system states and lifecycle examples used by the storefront.",
+      "blocks": ["system-states"]
+    }
+  ]
+}

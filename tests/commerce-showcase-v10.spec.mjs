@@ -1,11 +1,18 @@
 import {test,expect} from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 
+// Frozen v1.0 provenance: all ten real production routes remain exercised below.
 const showcaseRoutes=['/components.html','/demo/v10.html'];
 const waitForShowcaseContracts=async page=>{
   await expect(page.locator('html')).toHaveAttribute('data-showcase-ready','true');
   await expect(page.locator('html')).toHaveAttribute('data-showcase-version','1.1.0');
   await expect(page.locator('html')).toHaveAttribute('data-showcase-state-examples','42');
+};
+const waitForPageLibrary=async page=>{
+  await expect(page.locator('html')).toHaveAttribute('data-page-library-ready','true');
+  await expect(page.locator('html')).toHaveAttribute('data-page-library-version','1.2.0');
+  await expect(page.locator('html')).toHaveAttribute('data-page-library-pages','10');
+  await expect(page.locator('html')).toHaveAttribute('data-page-library-blocks','18');
 };
 const gridTrackCount=async locator=>locator.evaluate(node=>getComputedStyle(node).gridTemplateColumns.trim().split(/\s+/).filter(Boolean).length);
 
@@ -24,6 +31,8 @@ for(const route of showcaseRoutes){
       await expect(page.locator('[data-state-matrix]')).toHaveCount(12);
       await expect(page.locator('[data-showcase-state]')).toHaveCount(42);
       await expect(page.locator('[data-block-preview-for]')).toHaveCount(18);
+    }else{
+      await waitForPageLibrary(page);
     }
     const results=await new AxeBuilder({page}).withTags(['wcag2a','wcag2aa','wcag21a','wcag21aa']).analyze();
     expect(results.violations,`${route} WCAG A/AA violations`).toEqual([]);
@@ -147,40 +156,61 @@ test('v1.1 component explorer search, categories, theme, manifest metadata, and 
   await expect(action).toHaveText('RESUME RENEWAL');
 });
 
-test('v1.0 application lab frames all ten real production routes with viewport and theme controls',async({page})=>{
+test('v1.2 Page Lab derives all ten real production routes and exposes Blocks → Pages composition',async({page})=>{
   await page.goto('/demo/v10.html?route=checkout&viewport=mobile',{waitUntil:'networkidle'});
+  await waitForPageLibrary(page);
   await expect(page.locator('.lab-route-button')).toHaveCount(10);
+  await expect(page.locator('[data-page-id]')).toHaveCount(10);
+  const pageIds=await page.locator('[data-page-id]').evaluateAll(nodes=>nodes.map(node=>node.dataset.pageId).sort());
+  expect(pageIds).toEqual(['account','account-license','cart','checkout','components','home','order-success','pricing','product-soft','products']);
   await expect(page.locator('#labStage')).toHaveAttribute('data-viewport','mobile');
   await expect(page.locator('#labStage')).not.toHaveAttribute('aria-pressed',/.+/);
   await expect(page.locator('#currentPath')).toHaveText('/checkout');
+  await expect(page.locator('#currentIntent')).toHaveText('checkout');
   await expect(page.locator('#labFrame')).toHaveAttribute('src','../checkout/');
   await expect(page.frameLocator('#labFrame').locator('[data-commerce-page="checkout"]')).toBeVisible();
+  const checkoutBlocks=await page.locator('#currentBlocks [data-page-block]').evaluateAll(nodes=>nodes.map(node=>node.dataset.pageBlock));
+  expect(checkoutBlocks).toEqual(['checkout-shell','payment-recovery']);
   await page.getByRole('button',{name:/Tablet/}).click();
   await expect(page.locator('#labStage')).toHaveAttribute('data-viewport','tablet');
 
-  const ownershipButton=page.locator('.lab-route-button[data-route="ownership"]');
+  const ownershipButton=page.locator('.lab-route-button[data-route="account-license"]');
   const routeSelect=page.locator('#routeSelect');
   if(await ownershipButton.isVisible()){
     await ownershipButton.click();
   }else{
     await expect(routeSelect).toBeVisible();
     await expect(routeSelect.locator('option')).toHaveCount(10);
-    await routeSelect.selectOption('ownership');
+    await routeSelect.selectOption('account-license');
   }
   await expect(ownershipButton).toHaveAttribute('aria-current','page');
-  await expect(routeSelect).toHaveValue('ownership');
+  await expect(routeSelect).toHaveValue('account-license');
   await expect(page.locator('#currentPath')).toHaveText('/account/license/:id');
+  await expect(page.locator('#currentIntent')).toHaveText('license-lifecycle');
   await expect(page.locator('#labFrame')).toHaveAttribute('src','../account/license/demo-soft-team/');
   await expect(page.frameLocator('#labFrame').locator('[data-commerce-page="license-detail"]')).toBeVisible();
+  await expect(page.locator('#currentBlocks [data-page-block]')).toHaveCount(4);
   await page.locator('#labTheme').click();
   await expect(page.locator('html')).toHaveAttribute('data-theme','dark');
   await expect(page.frameLocator('#labFrame').locator('html')).toHaveAttribute('data-theme','dark');
+});
+
+test('v1.2 Page Lab preserves legacy deep links while canonicalizing route identity',async({page})=>{
+  await page.goto('/demo/v10.html?route=product&viewport=desktop',{waitUntil:'networkidle'});
+  await waitForPageLibrary(page);
+  await expect(page.locator('#routeSelect')).toHaveValue('product-soft');
+  await expect(page.locator('#currentPath')).toHaveText('/product/soft');
+  await expect(page.locator('#currentIntent')).toHaveText('product-detail');
+  const productBlocks=await page.locator('#currentBlocks [data-page-block]').evaluateAll(nodes=>nodes.map(node=>node.dataset.pageBlock));
+  expect(productBlocks).toEqual(['product-media','trust-band','license-purchase']);
+  expect(new URL(page.url()).searchParams.get('route')).toBe('product-soft');
 });
 
 test('v1.1 showcase surfaces do not introduce horizontal overflow',async({page})=>{
   for(const route of showcaseRoutes){
     await page.goto(route,{waitUntil:'networkidle'});
     if(route==='/components.html')await waitForShowcaseContracts(page);
+    else await waitForPageLibrary(page);
     const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth);
     expect(overflow,`${route} horizontal overflow`).toBeLessThanOrEqual(1);
   }
@@ -219,6 +249,26 @@ test('v1.1 block previews prove grid-to-stack and contained-scroll behavior',asy
   expect(overflow,'Blocks tab horizontal overflow').toBeLessThanOrEqual(1);
 });
 
+test('v1.2 Page Lab chrome responds without changing the selected production viewport',async({page},testInfo)=>{
+  test.skip(!new Set(['chromium','mobile-chromium']).has(testInfo.project.name),'Canonical Page Lab responsive proof uses Chromium desktop/mobile.');
+  await page.goto('/demo/v10.html?route=pricing&viewport=desktop',{waitUntil:'networkidle'});
+  await waitForPageLibrary(page);
+  const mobile=testInfo.project.name==='mobile-chromium';
+  const shellTracks=await gridTrackCount(page.locator('.lab-shell'));
+  if(mobile){
+    expect(shellTracks,'mobile Page Lab should stack sidebar and workspace').toBe(1);
+    await expect(page.locator('.lab-route-nav')).toBeHidden();
+    await expect(page.locator('.lab-route-select')).toBeVisible();
+  }else{
+    expect(shellTracks,'desktop Page Lab should retain navigation and workspace columns').toBe(2);
+    await expect(page.locator('.lab-route-nav')).toBeVisible();
+    await expect(page.locator('.lab-route-select')).toBeHidden();
+  }
+  await expect(page.locator('#labStage')).toHaveAttribute('data-viewport','desktop');
+  const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth);
+  expect(overflow,'Page Lab document horizontal overflow').toBeLessThanOrEqual(1);
+});
+
 test('capture v1.1 permanent showcase review surfaces',async({page},testInfo)=>{
   test.skip(!new Set(['chromium','mobile-chromium']).has(testInfo.project.name),'Canonical showcase review captures use Chromium desktop/mobile.');
   test.setTimeout(120_000);
@@ -228,5 +278,15 @@ test('capture v1.1 permanent showcase review surfaces',async({page},testInfo)=>{
   await page.getByRole('tab',{name:/Blocks/}).click();
   await page.screenshot({path:testInfo.outputPath(`commerce-v11-showcase-blocks-${testInfo.project.name}.png`),fullPage:true});
   await page.goto('/demo/v10.html?route=product',{waitUntil:'networkidle'});
+  await waitForPageLibrary(page);
   await page.screenshot({path:testInfo.outputPath(`commerce-v11-showcase-lab-${testInfo.project.name}.png`),fullPage:true});
+});
+
+test('capture v1.2 Page Library and Page Lab review surface',async({page},testInfo)=>{
+  test.skip(!new Set(['chromium','mobile-chromium']).has(testInfo.project.name),'Canonical v1.2 Page Lab captures use Chromium desktop/mobile.');
+  test.setTimeout(120_000);
+  const preview=testInfo.project.name==='mobile-chromium'?'mobile':'desktop';
+  await page.goto(`/demo/v10.html?route=account-license&viewport=${preview}`,{waitUntil:'networkidle'});
+  await waitForPageLibrary(page);
+  await page.screenshot({path:testInfo.outputPath(`commerce-v12-page-lab-${testInfo.project.name}.png`),fullPage:true});
 });
