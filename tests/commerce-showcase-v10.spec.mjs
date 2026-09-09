@@ -70,7 +70,7 @@ test('v1.0 application lab frames all ten real production routes with viewport a
   await expect(page.locator('#labStage')).toHaveAttribute('data-viewport','tablet');
 
   const ownershipButton=page.locator('.lab-route-button[data-route="ownership"]');
-  const routeSelect=page.getByRole('combobox',{name:'Select production page'});
+  const routeSelect=page.locator('#routeSelect');
   if(await ownershipButton.isVisible()){
     await ownershipButton.click();
   }else{
