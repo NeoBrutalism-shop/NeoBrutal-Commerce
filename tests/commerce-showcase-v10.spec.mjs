@@ -68,8 +68,20 @@ test('v1.0 application lab frames all ten real production routes with viewport a
   await expect(page.frameLocator('#labFrame').locator('[data-commerce-page="checkout"]')).toBeVisible();
   await page.getByRole('button',{name:/Tablet/}).click();
   await expect(page.locator('#labStage')).toHaveAttribute('data-viewport','tablet');
-  await page.locator('.lab-route-button[data-route="ownership"]').click();
+
+  const ownershipButton=page.locator('.lab-route-button[data-route="ownership"]');
+  const routeSelect=page.getByRole('combobox',{name:'Select production page'});
+  if(await ownershipButton.isVisible()){
+    await ownershipButton.click();
+  }else{
+    await expect(routeSelect).toBeVisible();
+    await expect(routeSelect.locator('option')).toHaveCount(10);
+    await routeSelect.selectOption('ownership');
+  }
+  await expect(ownershipButton).toHaveAttribute('aria-current','page');
+  await expect(routeSelect).toHaveValue('ownership');
   await expect(page.locator('#currentPath')).toHaveText('/account/license/:id');
+  await expect(page.locator('#labFrame')).toHaveAttribute('src','../account/license/demo-soft-team/');
   await expect(page.frameLocator('#labFrame').locator('[data-commerce-page="license-detail"]')).toBeVisible();
   await page.locator('#labTheme').click();
   await expect(page.locator('html')).toHaveAttribute('data-theme','dark');
