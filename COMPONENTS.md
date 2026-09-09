@@ -1,150 +1,210 @@
-# Component Surface — v0.8
+# Component Surface — Showcase v1.1 / Commerce v1.0
 
-v0.8 keeps the stable v0.7 runtime/component behavior and adds an explicit agent/adoption contract around it.
+NeoBrutal Commerce keeps the shipping Commerce runtime frozen at `1.0.0` while the public design-system showcase evolves independently. Showcase v1.1 makes every frozen component, reusable block, and canonical component state inspectable for humans without changing the v1.0 package/API contract.
 
-## Machine-readable component registry
+## Live component + block explorer
 
-`storefront/components.json` is the canonical agent-facing registry. It currently documents every primary component referenced by the ten production routes.
+`components.html` is the permanent public explorer. It renders the actual Commerce styles and frozen component registry, then layers v1.1 design guidance over those real previews.
 
-Each entry declares:
+Coverage is enforced, not aspirational:
+
+- **47 / 47** frozen component IDs have dedicated live previews.
+- **47 / 47** components have human descriptions, variants, responsive behavior, theme behavior, and accessibility expectations.
+- **18 / 18** reusable Commerce blocks are documented with component composition and live-route context.
+- **12 / 12** stateful component families expose interactive canonical-state inspectors.
+- **42 / 42** canonical component states declared by the frozen registry have explicit live examples and consequence copy.
+
+The explorer must not fall back to a generic “registered component” placeholder for a frozen component. `scripts/showcase-check.mjs` and Browser QA both enforce that rule.
+
+## Machine-readable contracts
+
+The execution contract remains frozen in `storefront/components.json`:
+
 - `id` — stable component identifier
 - `kind` — read/action/input/selection/navigation/stateful/foundation role
 - `models` — normalized Commerce models the component consumes
 - `actions` — canonical Commerce commands the component may dispatch
-- `states` — canonical state IDs the component renders
-- `agentRules` — non-obvious generation constraints
+- `states` — canonical runtime state IDs the component renders
+- `agentRules` — non-obvious execution/generation constraints
 
-`scripts/docs-check.mjs` verifies that route components resolve in the registry and that referenced actions/states are canonical.
+Showcase v1.1 adds three documentation contracts beside—not inside—the frozen npm API:
+
+### `storefront/component-showcase.json`
+
+One entry for each of the 47 frozen component IDs. Each entry adds:
+
+- `category`
+- base-path-safe live `route`
+- human `description`
+- key `variants`
+- `responsiveMode`
+- `themeMode`
+- accessibility rule references in `a11y`
+
+The same manifest contains reusable category, responsive, theme, and accessibility-rule taxonomies so those terms have one explicit meaning across the explorer.
+
+### `storefront/blocks.json`
+
+Exactly 18 reusable composition blocks. Each block declares:
+
+- stable `id` and title
+- category and description
+- the frozen component IDs it composes
+- live production route
+- responsive and theme behavior
+- accessibility expectations
+
+Blocks never create a second Commerce runtime. They are composition guidance over existing frozen components.
+
+### `storefront/component-states.json`
+
+Live examples for every state declared by every stateful frozen component. Each state declares:
+
+- canonical `id`
+- human title
+- explicit user-facing consequence
+- semantic tone (`neutral`, `info`, `warning`, `danger`, or `success`)
+
+The state manifest must exactly match `storefront/components.json`; adding or removing a runtime state without updating the showcase fails Quality.
+
+## Showcase taxonomies
+
+### Responsive modes
+
+- `wrap` — content/actions wrap inside the component without page-level horizontal overflow.
+- `grid-to-stack` — multi-column content reduces columns or stacks while preserving reading order.
+- `stack-controls` — controls stack on narrow screens while labels/status/consequences stay adjacent.
+- `contained-scroll` — wide semantic content scrolls only inside a keyboard-reachable local container.
+- `state-panel` — state message, status, and recovery/next action remain visible together.
+
+### Theme modes
+
+- `semantic-surface` — semantic background/surface/border/text/muted tokens in light and dark.
+- `semantic-accent` — semantic accent tokens with explicit high-contrast foregrounds; meaning is not color-only.
+- `semantic-status` — semantic state/status tokens plus explicit text or iconography in light and dark.
+
+Accessibility requirements are referenced by stable rule IDs in `component-showcase.json`; their full human definitions live in that manifest and are rendered directly by `components.html`.
 
 ## Foundation
-- tokens and semantic light/dark themes
-- fluid `clamp()` type/spacing
+
+- semantic light/dark tokens
+- fluid `clamp()` type and spacing
 - tactile depth physics: compress on hover, seat on press
-- visible focus
-- reduced motion
-- forced colors
+- visible keyboard focus
+- reduced-motion behavior
+- forced-colors behavior
+- no generic upward hover lift
+- no `transition: all`
 
 ## Storefront and product
-- Button / action button / action link
-- Product card / product action card
-- Product art / badge / price block / feature list
-- License selector
-- Product detail / gallery / thumbnails
-- Product media tabs / code / file preview
-- Product metadata
-- Review summary / testimonials / guarantee
-- Renewal note
-- Responsive data table
+
+- product card
+- trust strip
+- promo band
+- badge
+- price block
+- product detail
+- product gallery
+- product media (`preview`, `code`, `files`)
+- review summary
+- testimonials
+- guarantee
+- license selector
+- renewal note
 
 ## Pricing
-- Pricing tiers
-- Featured plan treatment
-- Plan comparison table
-- Bundle builder / bundle totals
+
+- pricing tier
+- plan comparison
+- bundle builder
 
 ## Cart and checkout
-- Cart item / mini-cart drawer
-- Order summary
-- Coupon input/status
-- Checkout fields/steps
-- Invoice details / tax ID
-- Payment method / failure / processing / recovery
-- Trust strip
-- Order confirmation / receipt
+
+- cart item
+- order summary
+- coupon
+- checkout field
+- invoice details
+- checkout steps (`ready`, `processing`, `failed`, `recovered`)
+- payment method
+- payment failure
+- payment recovery
+- processing state
+- order confirmation
+- receipt
+- download entitlement
 
 ## Account and ownership
-- Account navigation
-- Download row
-- Purchase-history row
-- License card/status/key
-- Activation rows
-- Update eligibility
-- Renewal lifecycle
-- Team-seat assignment
-- Entitlement note
-- Invoice history
-- Plan-change quote/result
-- Upgrade/downgrade timing
-- Ownership transfer/gift panel
-- Subscription management
-- Ownership timeline / audit trail
 
-Canonical ownership states:
-- `active`, `grace`, `expired`, `cancelled`, `refunded`
+- account navigation
+- download row
+- purchase-history row
+- license card
+- invoice history
+- license status (`active`, `grace`, `expired`, `cancelled`, `refunded`)
+- activation row
+- update eligibility
+- seat assignment
+- renewal state
+- plan change (`ready`, `quoted`, `processing`, `complete`, `failed`)
+- ownership transfer (`ready`, `processing`, `complete`, `failed`)
+- subscription management (`active`, `cancel_at_period_end`, `cancelled`, `past_due`)
+- ownership timeline
 
-Canonical ownership-operation states:
-- `ready`, `quoted`, `processing`, `complete`, `failed`
+## System and foundation components
 
-Canonical subscription states:
-- `active`, `cancel_at_period_end`, `cancelled`, `past_due`
+- component contract
+- tokens
+- system states (`empty`, `loading`, `error`, `offline`, `permission`, `unsupported`)
+- ownership lifecycle
 
-## Runtime/data contracts
+## Runtime/data boundaries
 
 Normalized models include:
+
 - `ProductView`, `CartView`, `CheckoutQuoteView`, `OrderView`
 - `LicenseView`, `EntitlementView`, `ActivationView`, `SeatAssignmentView`, `SignedDownloadView`
 - `InvoiceView`, `SubscriptionView`, `PlanChangeQuoteView`, `OwnershipTransferView`, `OwnershipEventView`
 
-Capability flags are authoritative. UI does not infer support from EDD, WordPress, a gateway, a licensing provider or any provider name.
+Capability flags are authoritative. UI does not infer support from EDD, WordPress, a gateway, a licensing provider, or any provider name.
 
-## Actions
-
-Canonical mutations/queries are exposed through `@neobrutal/commerce/actions`. Key lifecycle actions include:
-- `invoice.list`
-- `subscription.get`, `subscription.cancel`, `subscription.resume`
-- `license.change.quote`, `license.change.submit`
-- `license.transfers.list`, `license.transfer.create`, `license.transfer.cancel`
-- `license.history.list`
-
-Plan change is quote-first. Pending transfer/gift does not mean ownership moved. Subscription cancellation does not silently revoke an already-paid license term.
-
-## Renderers
-
-Read surfaces:
-- `@neobrutal/commerce/renderers/headless`
-- `@neobrutal/commerce/renderers/react`
-
-Action surfaces:
-- `@neobrutal/commerce/renderers/action-controls`
-- `@neobrutal/commerce/renderers/react-actions`
-
-Ownership lifecycle:
-- `@neobrutal/commerce/renderers/ownership`
-- `@neobrutal/commerce/renderers/react-ownership`
-
-## Provider adapters
-
-- `@neobrutal/commerce/adapters/reference` — deterministic test/reference runtime.
-- `@neobrutal/commerce/adapters/edd` — injected transaction-provider bridge.
-- `@neobrutal/commerce/adapters/licensing-bridge` — replaceable licensing transport + normalized lifecycle bridge.
-
-## Production page patterns
-- Storefront/home
-- Product catalog/detail
-- Pricing/comparison/bundles
-- Full cart
-- Checkout + invoice/tax + payment recovery
-- Order success
-- Account dashboard + invoice history
-- License lifecycle workspace
-- Component/state showcase
-
-## Agent/adoption sources
-- `AGENTS.md` — first-read entry point for coding agents
-- `LLMS.md` — non-negotiable interaction/commerce/boundary laws
-- `docs/ADOPTION.md` — human adoption guide
-- `docs/AGENT-PLAYBOOK.md` — deterministic implementation workflow
-- `docs/AI-COMPONENT-NOTES.md` — high-risk component generation notes
-- `storefront/components.json` — machine-readable component contract
-- `storefront/routes.json` — route contract
-- `storefront/states.json` — state contract
-
-## Delivery rule
-
-HTML/static, React/shadcn, WordPress and other UI layers render normalized models and dispatch normalized Commerce actions. They must not accept raw provider objects as component contracts or call provider APIs directly when a canonical action exists.
+Canonical mutations and queries are exposed through `@neobrutal/commerce/actions`. Plan change remains quote-first. A pending transfer invitation does not mean ownership moved. `cancel_at_period_end` preserves the already-paid term. Provider-specific objects stop at the adapter boundary.
 
 Read path:
+
 `provider → adapter/normalizer → normalized model → renderer`
 
 Action path:
+
 `UI/agent → Commerce action → normalized runtime → adapter → provider`
+
+## Reusable block catalog
+
+The 18 v1.1 blocks are:
+
+1. `storefront-hero`
+2. `product-grid`
+3. `trust-band`
+4. `product-media`
+5. `license-purchase`
+6. `pricing-trio`
+7. `plan-comparison`
+8. `bundle-builder`
+9. `cart-summary`
+10. `checkout-shell`
+11. `payment-recovery`
+12. `order-success`
+13. `account-dashboard`
+14. `license-dashboard`
+15. `seat-management`
+16. `ownership-operations`
+17. `ownership-timeline`
+18. `system-states`
+
+Their authoritative metadata is `storefront/blocks.json`; the public explorer renders the block preview and links to the real production route where the pattern is exercised.
+
+## Verification
+
+`npm run check` includes `scripts/showcase-check.mjs`, which validates exact component/preview/docs/block/state coverage and contract references. Browser QA then exercises the live explorer across Chromium desktop, mobile Chromium, Firefox, and WebKit with Axe A/AA, interaction, state switching, theme, search/filter, horizontal-overflow, and screenshot review coverage.
+
+The frozen Commerce v1.0 package/API/visual-release checks continue to run alongside these v1.1 showcase checks.
