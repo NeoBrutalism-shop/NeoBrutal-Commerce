@@ -5,6 +5,7 @@ const showcaseRoutes=['/components.html','/demo/v10.html'];
 const waitForShowcaseContracts=async page=>{
   await expect(page.locator('html')).toHaveAttribute('data-showcase-ready','true');
   await expect(page.locator('html')).toHaveAttribute('data-showcase-version','1.1.0');
+  await expect(page.locator('html')).toHaveAttribute('data-showcase-state-examples','42');
 };
 
 for(const route of showcaseRoutes){
@@ -19,6 +20,8 @@ for(const route of showcaseRoutes){
       await waitForShowcaseContracts(page);
       await expect(page.locator('[data-component-card]')).toHaveCount(47);
       await expect(page.locator('[data-doc-complete]')).toHaveCount(47);
+      await expect(page.locator('[data-state-matrix]')).toHaveCount(12);
+      await expect(page.locator('[data-showcase-state]')).toHaveCount(42);
     }
     const results=await new AxeBuilder({page}).withTags(['wcag2a','wcag2aa','wcag21a','wcag21aa']).analyze();
     expect(results.violations,`${route} WCAG A/AA violations`).toEqual([]);
@@ -61,6 +64,33 @@ test('v1.1 component explorer renders complete frozen components and documented 
   await checkoutBlock.locator('.cx-doc summary').click();
   await expect(checkoutBlock.locator('.cx-doc')).toContainText('grid-to-stack');
   await expect(checkoutBlock.locator('.cx-doc')).toContainText('current-location');
+});
+
+test('v1.1 live canonical state matrices expose and switch real registry states',async({page})=>{
+  await page.goto('/components.html',{waitUntil:'networkidle'});
+  await waitForShowcaseContracts(page);
+  await expect(page.locator('[data-state-matrix]')).toHaveCount(12);
+  await expect(page.locator('[data-showcase-state]')).toHaveCount(42);
+
+  const subscription=page.locator('[data-component-id="subscription-management"]');
+  const subscriptionMatrix=subscription.locator('[data-state-matrix]');
+  await expect(subscriptionMatrix.locator('[data-showcase-state]')).toHaveCount(4);
+  await subscriptionMatrix.locator('[data-showcase-state="past_due"]').click();
+  await expect(subscriptionMatrix.locator('[data-showcase-state="past_due"]')).toHaveAttribute('aria-pressed','true');
+  await expect(subscriptionMatrix.locator('[data-state-result]')).toContainText('Subscription past due');
+  await expect(subscriptionMatrix.locator('[data-state-result]')).toContainText('Billing recovery is required');
+  await expect(subscription.locator('[data-preview-for]')).toHaveAttribute('data-showcase-state','past_due');
+
+  const system=page.locator('[data-component-id="system-states"]');
+  const systemMatrix=system.locator('[data-state-matrix]');
+  await expect(systemMatrix.locator('[data-showcase-state]')).toHaveCount(6);
+  await systemMatrix.locator('[data-showcase-state="offline"]').click();
+  await expect(systemMatrix.locator('[data-state-result]')).toContainText('Network access is unavailable');
+
+  const planChange=page.locator('[data-component-id="plan-change"]');
+  await expect(planChange.locator('[data-showcase-state]')).toHaveCount(5);
+  await planChange.locator('[data-showcase-state="quoted"]').click();
+  await expect(planChange.locator('[data-state-result]')).toContainText('Provider-authoritative price/capacity consequences');
 });
 
 test('v1.1 component explorer search, categories, theme, manifest metadata, and live source interactions work',async({page})=>{
