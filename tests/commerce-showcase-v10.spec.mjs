@@ -19,7 +19,7 @@ for(const route of showcaseRoutes){
     if(route==='/components.html'){
       await waitForShowcaseContracts(page);
       await expect(page.locator('[data-component-card]')).toHaveCount(47);
-      await expect(page.locator('[data-doc-complete]')).toHaveCount(47);
+      await expect(page.locator('[data-component-card] [data-doc-complete]')).toHaveCount(47);
       await expect(page.locator('[data-state-matrix]')).toHaveCount(12);
       await expect(page.locator('[data-showcase-state]')).toHaveCount(42);
     }
@@ -43,7 +43,7 @@ test('v1.1 component explorer renders complete frozen components and documented 
   await waitForShowcaseContracts(page);
   await expect(page.locator('[data-component-card]')).toHaveCount(47);
   await expect(page.locator('[data-preview-for]')).toHaveCount(47);
-  await expect(page.locator('[data-doc-complete]')).toHaveCount(47);
+  await expect(page.locator('[data-component-card] [data-doc-complete]')).toHaveCount(47);
   await expect(page.locator('[data-preview-for]').filter({hasText:'Contract registered. Open the live route for full context.'})).toHaveCount(0);
   await expect(page.locator('[data-component-id="subscription-management"]')).toBeVisible();
   await expect(page.locator('[data-component-id="product-media"]')).toBeVisible();
@@ -58,6 +58,7 @@ test('v1.1 component explorer renders complete frozen components and documented 
   await page.getByRole('tab',{name:/Blocks/}).click();
   await expect(page.locator('[data-block-card]')).toHaveCount(18);
   await expect(page.locator('[data-block-id]')).toHaveCount(18);
+  await expect(page.locator('[data-block-card] [data-doc-complete]')).toHaveCount(18);
   await expect(page.locator('[data-block-id="checkout-shell"]')).toBeVisible();
   await expect(page.locator('[data-block-id="ownership-operations"]')).toBeVisible();
   const checkoutBlock=page.locator('[data-block-id="checkout-shell"]');
