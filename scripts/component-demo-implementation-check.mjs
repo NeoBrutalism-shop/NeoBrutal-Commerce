@@ -12,18 +12,20 @@ const FIRST_BATCH=['product-media','checkout-steps','payment-failure','payment-r
 const SECOND_BATCH=['product-card','badge','price-block','product-detail','product-gallery','license-selector','renewal-note'];
 const THIRD_BATCH=['trust-strip','review-summary','testimonials','guarantee','pricing-tier','plan-comparison','bundle-builder'];
 const FOURTH_BATCH=['cart-item','order-summary','coupon','checkout-field','payment-method','order-confirmation','receipt'];
+const FIFTH_BATCH=['download-entitlement','account-nav','download-row','purchase-history-row','license-card','invoice-history','activation-row','seat-assignment','ownership-timeline','ownership-lifecycle'];
 
 const audit=json('storefront/component-demo-depth.json');
 const registry=json('storefront/components.json');
 const packageManifest=json('package.json');
 const tokensCss=read('src/tokens.css');
 const batches=audit.implementationBatches||[];
-if(batches.length!==4)fail('Component implementation evidence must expose exactly four audited batches');
-const first=batches[0],second=batches[1],third=batches[2],fourth=batches[3];
+if(batches.length!==5)fail('Component implementation evidence must expose exactly five audited batches');
+const first=batches[0],second=batches[1],third=batches[2],fourth=batches[3],fifth=batches[4];
 if(first.id!=='stateful-high-risk'||first.ordinal!==1||first.evidenceFile!=='storefront/component-demo-implementation.json'||!same(first.componentIds||[],FIRST_BATCH))fail('First implementation batch provenance drifted');
 if(second.id!=='product-storefront'||second.ordinal!==2||second.evidenceFile!=='storefront/component-demo-implementation-product.json'||!same(second.componentIds||[],SECOND_BATCH))fail('Second product/storefront implementation batch provenance drifted');
 if(third.id!=='trust-review-pricing'||third.ordinal!==3||third.evidenceFile!=='storefront/component-demo-implementation-trust-pricing.json'||!same(third.componentIds||[],THIRD_BATCH))fail('Third trust/review/pricing implementation batch provenance drifted');
 if(fourth.id!=='cart-checkout'||fourth.ordinal!==4||fourth.evidenceFile!=='storefront/component-demo-implementation-cart-checkout.json'||!same(fourth.componentIds||[],FOURTH_BATCH))fail('Fourth cart/checkout implementation batch provenance drifted');
+if(fifth.id!=='account-ownership'||fifth.ordinal!==5||fifth.evidenceFile!=='storefront/component-demo-implementation-account-ownership.json'||!same(fifth.componentIds||[],FIFTH_BATCH))fail('Fifth account/ownership implementation batch provenance drifted');
 if(!same(audit.nextImplementationBatch||[],FIRST_BATCH))fail('Legacy first implementation batch alias drifted');
 
 const batchFiles=batches.map(batch=>({batch,evidence:json(batch.evidenceFile)}));
@@ -37,7 +39,7 @@ for(const {batch,evidence} of batchFiles){
   for(const entry of evidence.components||[])entries.push({...entry,batchId:batch.id});
 }
 const ids=entries.map(entry=>entry.id);
-if(entries.length!==33||new Set(ids).size!==33||!same(ids,[...FIRST_BATCH,...SECOND_BATCH,...THIRD_BATCH,...FOURTH_BATCH]))fail('Accumulated implementation evidence must cover exact 33-component set');
+if(entries.length!==43||new Set(ids).size!==43||!same(ids,[...FIRST_BATCH,...SECOND_BATCH,...THIRD_BATCH,...FOURTH_BATCH,...FIFTH_BATCH]))fail('Accumulated implementation evidence must cover exact 43-component set');
 
 const registryById=new Map(registry.components.map(component=>[component.id,component]));
 const definedTokens=new Set([...tokensCss.matchAll(/(--nbc-[\w-]+)\s*:/g)].map(match=>match[1]));
@@ -127,6 +129,30 @@ try{
   const receiptHtml=byId.get('receipt')?.copyReady?.html||'';
   const receiptJs=byId.get('receipt')?.copyReady?.js||'';
   if(!receiptHtml.includes('data-receipt-order-total')||!receiptHtml.includes('data-receipt-invoice-number')||!receiptHtml.includes('data-receipt-invoice-status')||!receiptJs.includes('{order,invoice}'))fail('Receipt evidence must keep order/payment and invoice records distinct');
+
+  const entitlementHtml=byId.get('download-entitlement')?.copyReady?.html||'';
+  const entitlementJs=byId.get('download-entitlement')?.copyReady?.js||'';
+  if(!/signed url is requested only when/i.test(entitlementHtml)||!entitlementJs.includes('download.create')||!entitlementJs.includes('entitlementId:root.dataset.entitlementId')||!entitlementJs.includes('releaseId:root.dataset.releaseId')||!entitlementJs.includes('signed.url'))fail('Download-entitlement evidence must request ephemeral signed download results through the canonical action');
+  const accountNavHtml=byId.get('account-nav')?.copyReady?.html||'';
+  if(!accountNavHtml.includes('<nav')||!accountNavHtml.includes('aria-label="Account"')||!accountNavHtml.includes('aria-current="page"')||!accountNavHtml.includes('nbc-account-tab'))fail('Account-nav evidence must use real navigation anatomy and expose the current section');
+  const downloadRowJs=byId.get('download-row')?.copyReady?.js||'';
+  if(!downloadRowJs.includes('download.create')||!downloadRowJs.includes('entitlementId:root.dataset.entitlementId')||!downloadRowJs.includes('releaseId:root.dataset.releaseId'))fail('Download-row evidence must request signed downloads from entitlement/release identity');
+  const purchaseJs=byId.get('purchase-history-row')?.copyReady?.js||'';
+  if(!purchaseJs.includes('normalized OrderView')||/license\.status|subscription\.status/.test(purchaseJs))fail('Purchase-history evidence must remain transaction history rather than inferred ownership state');
+  const licenseCardJs=byId.get('license-card')?.copyReady?.js||'';
+  if(!licenseCardJs.includes('{license,entitlement}')||!licenseCardJs.includes('license.id')||!licenseCardJs.includes('entitlement.id')||/subscription\?\./.test(licenseCardJs))fail('License-card evidence must keep license and entitlement identity explicit without substituting subscription billing state');
+  const invoicesJs=byId.get('invoice-history')?.copyReady?.js||'';
+  if(!invoicesJs.includes('invoice.list')||!invoicesJs.includes('orderId:root.dataset.orderId')||!invoicesJs.includes('invoice.number')||!invoicesJs.includes('invoice.status'))fail('Invoice-history evidence must render provider-authoritative invoice records from canonical invoice.list results');
+  const activationHtml=byId.get('activation-row')?.copyReady?.html||'';
+  const activationJs=byId.get('activation-row')?.copyReady?.js||'';
+  if(!activationJs.includes('license.activations.list')||!activationJs.includes('licenseId:root.dataset.licenseId')||/deactivate|activation\.remove|seat\.remove/i.test(activationHtml+activationJs))fail('Activation-row evidence must remain a read/query surface because frozen Commerce exposes no activation mutation');
+  const seatJs=byId.get('seat-assignment')?.copyReady?.js||'';
+  for(const marker of ['license.seats.list','seat.assign','seat.remove','licenseId:root.dataset.licenseId','seatId:seat.id','assignee:{email}','role:\'member\''])if(!seatJs.includes(marker))fail(`Seat-assignment evidence missing canonical seat contract marker: ${marker}`);
+  const timelineJs=byId.get('ownership-timeline')?.copyReady?.js||'';
+  if(!timelineJs.includes('license.history.list')||!timelineJs.includes('result.items.map')||!timelineJs.includes('event.summary')||!timelineJs.includes('event.occurredAt'))fail('Ownership-timeline evidence must render adapter-returned audit events rather than reconstructing history');
+  const lifecycleHtml=byId.get('ownership-lifecycle')?.copyReady?.html||'';
+  const lifecycleJs=byId.get('ownership-lifecycle')?.copyReady?.js||'';
+  if(!/remain separate normalized concepts/i.test(lifecycleHtml)||!lifecycleJs.includes('{license,entitlement,subscription}')||!lifecycleJs.includes('license?.status')||!lifecycleJs.includes('entitlement?.status')||!lifecycleJs.includes('subscription?.status'))fail('Ownership-lifecycle evidence must keep license, entitlement, and subscription records distinct');
 
   console.log(`Component implementation evidence passed · ${entries.length}/47 components · ${batches.length} batches · ${entries.reduce((sum,entry)=>sum+entry.tokens.length,0)} source-backed token references · ${entries.length*3} copy-ready snippets`);
 } finally {

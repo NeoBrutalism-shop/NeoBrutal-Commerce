@@ -9,8 +9,8 @@ const waitForDepthAudit=async page=>{
   await expect(page.locator('html')).toHaveAttribute('data-component-depth-ready','true');
   await expect(page.locator('html')).toHaveAttribute('data-component-depth-audited','47');
   await expect(page.locator('html')).toHaveAttribute('data-component-implementation-ready','true');
-  await expect(page.locator('html')).toHaveAttribute('data-component-implementation-audited','33');
-  await expect(page.locator('html')).toHaveAttribute('data-component-implementation-batches','4');
+  await expect(page.locator('html')).toHaveAttribute('data-component-implementation-audited','43');
+  await expect(page.locator('html')).toHaveAttribute('data-component-implementation-batches','5');
 };
 
 test('v1.1 component demo depth audit covers exact accumulated implementation evidence',async({page})=>{
@@ -29,16 +29,18 @@ test('v1.1 component demo depth audit covers exact accumulated implementation ev
   await expect(page.locator('[data-component-card][data-demo-depth-batch="product-storefront"]')).toHaveCount(7);
   await expect(page.locator('[data-component-card][data-demo-depth-batch="trust-review-pricing"]')).toHaveCount(7);
   await expect(page.locator('[data-component-card][data-demo-depth-batch="cart-checkout"]')).toHaveCount(7);
-  await expect(page.locator('[data-component-card][data-demo-depth-batch="none"]')).toHaveCount(14);
-  await expect(page.locator('[data-component-card][data-demo-implementation-evidence="true"]')).toHaveCount(33);
-  await expect(page.locator('[data-component-card][data-demo-depth-missing="0"]')).toHaveCount(33);
-  await expect(page.locator('[data-component-card][data-demo-depth-missing="2"]')).toHaveCount(14);
-  await expect(page.locator('.cx-depth-evidence[data-demo-implementation-evidence]')).toHaveCount(33);
+  await expect(page.locator('[data-component-card][data-demo-depth-batch="account-ownership"]')).toHaveCount(10);
+  await expect(page.locator('[data-component-card][data-demo-depth-batch="none"]')).toHaveCount(4);
+  await expect(page.locator('[data-component-card][data-demo-implementation-evidence="true"]')).toHaveCount(43);
+  await expect(page.locator('[data-component-card][data-demo-depth-missing="0"]')).toHaveCount(43);
+  await expect(page.locator('[data-component-card][data-demo-depth-missing="2"]')).toHaveCount(4);
+  await expect(page.locator('.cx-depth-evidence[data-demo-implementation-evidence]')).toHaveCount(43);
   await expect(page.locator('[data-demo-implementation-batch="stateful-high-risk"]')).toHaveCount(12);
   await expect(page.locator('[data-demo-implementation-batch="product-storefront"]')).toHaveCount(7);
   await expect(page.locator('[data-demo-implementation-batch="trust-review-pricing"]')).toHaveCount(7);
   await expect(page.locator('[data-demo-implementation-batch="cart-checkout"]')).toHaveCount(7);
-  await expect(page.locator('[data-copy-ready-kind]')).toHaveCount(33*3);
+  await expect(page.locator('[data-demo-implementation-batch="account-ownership"]')).toHaveCount(10);
+  await expect(page.locator('[data-copy-ready-kind]')).toHaveCount(43*3);
 
   const subscription=page.locator('[data-component-id="subscription-management"]');
   await expect(subscription).toHaveAttribute('data-demo-depth-first-batch','true');
@@ -196,13 +198,92 @@ test('v1.1 component demo depth audit covers exact accumulated implementation ev
   await expect(receipt.locator('[data-copy-ready-kind="js"]')).toContainText('renderReceipt');
   await expect(receipt.locator('[data-copy-ready-kind="js"]')).toContainText('invoice.number');
 
-  const remaining=page.locator('[data-component-id="promo-band"]');
-  await expect(remaining).toHaveAttribute('data-demo-depth-batch','none');
-  await expect(remaining).toHaveAttribute('data-demo-implementation-evidence','false');
-  await remaining.locator('[data-component-depth-audit] summary').click();
-  await expect(depthChip(remaining,'missing','Design tokens used')).toBeVisible();
-  await expect(depthChip(remaining,'missing','Copy-ready HTML / CSS / JS')).toBeVisible();
-  await expect(remaining.locator('[data-demo-implementation-evidence]')).toHaveCount(0);
+  const entitlement=page.locator('[data-component-id="download-entitlement"]');
+  await expect(entitlement).toHaveAttribute('data-demo-depth-batch','account-ownership');
+  await expect(entitlement).toHaveAttribute('data-demo-implementation-evidence','true');
+  await entitlement.locator('[data-component-depth-audit] summary').click();
+  await expect(depthChip(entitlement,'complete','Action contracts')).toBeVisible();
+  await expect(depthChip(entitlement,'complete','Design tokens used')).toBeVisible();
+  await expect(depthChip(entitlement,'complete','Copy-ready HTML / CSS / JS')).toBeVisible();
+  await expect(entitlement.locator('[data-demo-implementation-evidence]')).toContainText('BATCH 5 · ACCOUNT / OWNERSHIP');
+  await expect(entitlement.locator('[data-copy-ready-kind="html"]')).toContainText('data-entitlement-id="entitlement-source"');
+  await expect(entitlement.locator('[data-copy-ready-kind="js"]')).toContainText('download.create');
+  await expect(entitlement.locator('[data-copy-ready-kind="js"]')).toContainText('releaseId:root.dataset.releaseId');
+
+  const accountNav=page.locator('[data-component-id="account-nav"]');
+  await accountNav.locator('[data-component-depth-audit] summary').click();
+  await expect(depthChip(accountNav,'not-applicable','Action contracts')).toBeVisible();
+  await expect(accountNav.locator('[data-copy-ready-kind="html"]')).toContainText('aria-label="Account"');
+  await expect(accountNav.locator('[data-copy-ready-kind="html"]')).toContainText('aria-current="page"');
+  await expect(accountNav.locator('[data-copy-ready-kind="js"]')).not.toContainText('createCommerceAction');
+
+  const downloadRow=page.locator('[data-component-id="download-row"]');
+  await downloadRow.locator('[data-component-depth-audit] summary').click();
+  await expect(depthChip(downloadRow,'complete','Action contracts')).toBeVisible();
+  await expect(downloadRow.locator('[data-copy-ready-kind="html"]')).toContainText('nbc-download-version');
+  await expect(downloadRow.locator('[data-copy-ready-kind="js"]')).toContainText('download.create');
+
+  const purchaseHistory=page.locator('[data-component-id="purchase-history-row"]');
+  await purchaseHistory.locator('[data-component-depth-audit] summary').click();
+  await expect(depthChip(purchaseHistory,'not-applicable','Action contracts')).toBeVisible();
+  await expect(purchaseHistory.locator('[data-copy-ready-kind="html"]')).toContainText('Order #NBC-1042');
+  await expect(purchaseHistory.locator('[data-copy-ready-kind="js"]')).toContainText('normalized OrderView data');
+
+  const licenseCard=page.locator('[data-component-id="license-card"]');
+  await licenseCard.locator('[data-component-depth-audit] summary').click();
+  await expect(depthChip(licenseCard,'not-applicable','Action contracts')).toBeVisible();
+  await expect(licenseCard.locator('[data-copy-ready-kind="html"]')).toContainText('Sites');
+  await expect(licenseCard.locator('[data-copy-ready-kind="html"]')).toContainText('Seats');
+  await expect(licenseCard.locator('[data-copy-ready-kind="js"]')).toContainText('{license,entitlement}');
+
+  const invoiceHistory=page.locator('[data-component-id="invoice-history"]');
+  await invoiceHistory.locator('[data-component-depth-audit] summary').click();
+  await expect(depthChip(invoiceHistory,'complete','Action contracts')).toBeVisible();
+  await expect(invoiceHistory.locator('[data-copy-ready-kind="html"]')).toContainText('data-order-id="order_1042"');
+  await expect(invoiceHistory.locator('[data-copy-ready-kind="js"]')).toContainText('invoice.list');
+  await expect(invoiceHistory.locator('[data-copy-ready-kind="js"]')).toContainText('invoice.status');
+
+  const activation=page.locator('[data-component-id="activation-row"]');
+  await activation.locator('[data-component-depth-audit] summary').click();
+  await expect(depthChip(activation,'complete','Action contracts')).toBeVisible();
+  await expect(activation.locator('[data-copy-ready-kind="js"]')).toContainText('license.activations.list');
+  await expect(activation.locator('[data-copy-ready-kind="js"]')).not.toContainText('seat.remove');
+  await expect(activation.locator('[data-copy-ready-kind="html"]')).not.toContainText('DEACTIVATE');
+
+  const seats=page.locator('[data-component-id="seat-assignment"]');
+  await seats.locator('[data-component-depth-audit] summary').click();
+  await expect(depthChip(seats,'complete','Action contracts')).toBeVisible();
+  await expect(seats.locator('[data-copy-ready-kind="js"]')).toContainText('license.seats.list');
+  await expect(seats.locator('[data-copy-ready-kind="js"]')).toContainText('seat.assign');
+  await expect(seats.locator('[data-copy-ready-kind="js"]')).toContainText('seat.remove');
+  await expect(seats.locator('[data-copy-ready-kind="js"]')).toContainText('seatId:seat.id');
+
+  const timeline=page.locator('[data-component-id="ownership-timeline"]');
+  await timeline.locator('[data-component-depth-audit] summary').click();
+  await expect(depthChip(timeline,'complete','Action contracts')).toBeVisible();
+  await expect(timeline.locator('[data-copy-ready-kind="html"]')).toContainText('data-ownership-events');
+  await expect(timeline.locator('[data-copy-ready-kind="js"]')).toContainText('license.history.list');
+  await expect(timeline.locator('[data-copy-ready-kind="js"]')).toContainText('event.occurredAt');
+
+  const lifecycle=page.locator('[data-component-id="ownership-lifecycle"]');
+  await lifecycle.locator('[data-component-depth-audit] summary').click();
+  await expect(depthChip(lifecycle,'not-applicable','Action contracts')).toBeVisible();
+  await expect(lifecycle.locator('[data-copy-ready-kind="html"]')).toContainText('remain separate normalized concepts');
+  await expect(lifecycle.locator('[data-copy-ready-kind="js"]')).toContainText('{license,entitlement,subscription}');
+  await expect(lifecycle.locator('[data-copy-ready-kind="js"]')).toContainText('subscription?.status');
+
+  const remaining=page.locator('[data-component-card][data-demo-depth-batch="none"]');
+  await expect(remaining).toHaveCount(4);
+  const remainingIds=await remaining.evaluateAll(nodes=>nodes.map(node=>node.dataset.componentId).sort());
+  expect(remainingIds).toEqual(['component-contract','invoice-details','promo-band','tokens']);
+  for(const id of remainingIds){
+    const card=page.locator(`[data-component-id="${id}"]`);
+    await expect(card).toHaveAttribute('data-demo-implementation-evidence','false');
+    await card.locator('[data-component-depth-audit] summary').click();
+    await expect(depthChip(card,'missing','Design tokens used')).toBeVisible();
+    await expect(depthChip(card,'missing','Copy-ready HTML / CSS / JS')).toBeVisible();
+    await expect(card.locator('[data-demo-implementation-evidence]')).toHaveCount(0);
+  }
 
   const results=await new AxeBuilder({page}).withTags(['wcag2a','wcag2aa','wcag21a','wcag21aa']).analyze();
   expect(results.violations,'expanded component depth audit WCAG A/AA violations').toEqual([]);
@@ -218,16 +299,14 @@ test('v1.1 accumulated depth evidence survives theme and narrow-screen inspectio
   const pricing=page.locator('[data-component-id="pricing-tier"]');
   const cartItem=page.locator('[data-component-id="cart-item"]');
   const coupon=page.locator('[data-component-id="coupon"]');
-  await subscription.locator('[data-component-depth-audit] summary').click();
-  await productCard.locator('[data-component-depth-audit] summary').click();
-  await trust.locator('[data-component-depth-audit] summary').click();
-  await pricing.locator('[data-component-depth-audit] summary').click();
-  await cartItem.locator('[data-component-depth-audit] summary').click();
-  await coupon.locator('[data-component-depth-audit] summary').click();
+  const entitlement=page.locator('[data-component-id="download-entitlement"]');
+  const seats=page.locator('[data-component-id="seat-assignment"]');
+  const lifecycle=page.locator('[data-component-id="ownership-lifecycle"]');
+  for(const card of [subscription,productCard,trust,pricing,cartItem,coupon,entitlement,seats,lifecycle])await card.locator('[data-component-depth-audit] summary').click();
 
   await page.locator('#themeToggle').click();
   await expect(page.locator('html')).toHaveAttribute('data-theme','dark');
-  for(const card of [subscription,productCard,trust,pricing,cartItem,coupon]){
+  for(const card of [subscription,productCard,trust,pricing,cartItem,coupon,entitlement,seats,lifecycle]){
     await expect(card.locator('[data-component-depth-audit]')).toBeVisible();
     await expect(card.locator('[data-demo-implementation-evidence]')).toBeVisible();
     await expect(card.locator('.cx-depth-summary')).toContainText('0 missing');
@@ -237,6 +316,9 @@ test('v1.1 accumulated depth evidence survives theme and narrow-screen inspectio
   await expect(pricing.locator('[data-copy-ready-kind="html"] pre')).toBeVisible();
   await expect(cartItem.locator('[data-copy-ready-kind="html"] pre')).toBeVisible();
   await expect(coupon.locator('[data-copy-ready-kind="html"] pre')).toBeVisible();
+  await expect(entitlement.locator('[data-copy-ready-kind="html"] pre')).toBeVisible();
+  await expect(seats.locator('[data-copy-ready-kind="html"] pre')).toBeVisible();
+  await expect(lifecycle.locator('[data-copy-ready-kind="html"] pre')).toBeVisible();
 
   const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth);
   expect(overflow,'accumulated component depth implementation evidence must not introduce document horizontal overflow').toBeLessThanOrEqual(1);

@@ -295,28 +295,46 @@
     {
       "id": "download-entitlement",
       "overrides": {
-        "actions": "complete"
+        "actions": "complete",
+        "tokens": "complete",
+        "copy-ready": "complete"
       }
     },
     {
-      "id": "account-nav"
+      "id": "account-nav",
+      "overrides": {
+        "tokens": "complete",
+        "copy-ready": "complete"
+      }
     },
     {
       "id": "download-row",
       "overrides": {
-        "actions": "complete"
+        "actions": "complete",
+        "tokens": "complete",
+        "copy-ready": "complete"
       }
     },
     {
-      "id": "purchase-history-row"
+      "id": "purchase-history-row",
+      "overrides": {
+        "tokens": "complete",
+        "copy-ready": "complete"
+      }
     },
     {
-      "id": "license-card"
+      "id": "license-card",
+      "overrides": {
+        "tokens": "complete",
+        "copy-ready": "complete"
+      }
     },
     {
       "id": "invoice-history",
       "overrides": {
-        "actions": "complete"
+        "actions": "complete",
+        "tokens": "complete",
+        "copy-ready": "complete"
       }
     },
     {
@@ -330,7 +348,9 @@
     {
       "id": "activation-row",
       "overrides": {
-        "actions": "complete"
+        "actions": "complete",
+        "tokens": "complete",
+        "copy-ready": "complete"
       }
     },
     {
@@ -344,7 +364,9 @@
     {
       "id": "seat-assignment",
       "overrides": {
-        "actions": "complete"
+        "actions": "complete",
+        "tokens": "complete",
+        "copy-ready": "complete"
       }
     },
     {
@@ -386,7 +408,9 @@
     {
       "id": "ownership-timeline",
       "overrides": {
-        "actions": "complete"
+        "actions": "complete",
+        "tokens": "complete",
+        "copy-ready": "complete"
       }
     },
     {
@@ -404,7 +428,11 @@
       }
     },
     {
-      "id": "ownership-lifecycle"
+      "id": "ownership-lifecycle",
+      "overrides": {
+        "tokens": "complete",
+        "copy-ready": "complete"
+      }
     }
   ],
   "implementationBatches": [
@@ -471,6 +499,24 @@
         "payment-method",
         "order-confirmation",
         "receipt"
+      ]
+    },
+    {
+      "id": "account-ownership",
+      "ordinal": 5,
+      "label": "Account / ownership",
+      "evidenceFile": "storefront/component-demo-implementation-account-ownership.json",
+      "componentIds": [
+        "download-entitlement",
+        "account-nav",
+        "download-row",
+        "purchase-history-row",
+        "license-card",
+        "invoice-history",
+        "activation-row",
+        "seat-assignment",
+        "ownership-timeline",
+        "ownership-lifecycle"
       ]
     }
   ],

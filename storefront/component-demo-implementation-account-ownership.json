@@ -1,0 +1,121 @@
+{
+  "schema": "neobrutal-commerce/component-demo-implementation@1",
+  "showcaseVersion": "1.1.0",
+  "commerceVersion": "1.0.0",
+  "role": "implementation-evidence-only",
+  "batchId": "account-ownership",
+  "description": "Source-backed implementation evidence for the fifth v1.1 component demo-depth batch: account and ownership. This file does not redefine component models, actions, states, or interaction laws.",
+  "styleImport": "@neobrutal/commerce/styles.css",
+  "components": [
+    {
+      "id": "download-entitlement",
+      "sourceFiles": ["src/components/license.css", "src/actions/runtime.js"],
+      "selectors": [".nbc-update-card", ".nbc-update-card[data-eligible=\"true\"]", ".nbc-entitlement-note"],
+      "tokens": ["--nbc-space-3", "--nbc-border", "--nbc-radius-md", "--nbc-surface-2", "--nbc-success", "--nbc-muted", "--nbc-text-sm"],
+      "copyReady": {
+        "html": "<section class=\"nbc-update-card\" data-eligible=\"true\" data-commerce-component=\"download-entitlement\" data-entitlement-id=\"entitlement-source\" data-release-id=\"v1.0\"><div><strong>NeoBrutal Soft v1.0</strong><small>Download eligible through the current entitlement term.</small><p class=\"nbc-entitlement-note\">A signed URL is requested only when you choose Download.</p></div><button class=\"nbc-button nbc-button--primary nbc-tactile\" type=\"button\" data-download>Download</button></section>",
+        "css": "@import '@neobrutal/commerce/styles.css';",
+        "js": "import {createCommerceAction} from '@neobrutal/commerce/actions';\nconst root=document.querySelector('[data-commerce-component=\"download-entitlement\"]');\nroot.querySelector('[data-download]').addEventListener('click',async()=>{\n  const signed=await actions.dispatch(createCommerceAction('download.create',{entitlementId:root.dataset.entitlementId,releaseId:root.dataset.releaseId}));\n  if(!signed?.url)throw new Error('SignedDownloadView requires a URL result');\n  window.location.assign(signed.url);\n});"
+      }
+    },
+    {
+      "id": "account-nav",
+      "sourceFiles": ["src/components/account.css"],
+      "selectors": [".nbc-account-nav", ".nbc-account-tab"],
+      "tokens": ["--nbc-space-3", "--nbc-surface", "--nbc-border-w", "--nbc-border", "--nbc-radius-lg", "--nbc-shadow", "--nbc-text"],
+      "copyReady": {
+        "html": "<nav class=\"nbc-account-nav\" data-commerce-component=\"account-nav\" aria-label=\"Account\"><a class=\"nbc-account-tab\" href=\"/account/\" aria-current=\"page\">Downloads <span>2</span></a><a class=\"nbc-account-tab\" href=\"/account/?view=purchases\">Purchases <span>4</span></a><a class=\"nbc-account-tab\" href=\"/account/?view=licenses\">Licenses <span>1</span></a></nav>",
+        "css": "@import '@neobrutal/commerce/styles.css';",
+        "js": "const nav=document.querySelector('[data-commerce-component=\"account-nav\"]');\nconst current=`${location.pathname}${location.search}`;\nfor(const item of nav.querySelectorAll('.nbc-account-tab')){const target=new URL(item.href,location.href);const active=`${target.pathname}${target.search}`===current;if(active)item.setAttribute('aria-current','page');else item.removeAttribute('aria-current');}"
+      }
+    },
+    {
+      "id": "download-row",
+      "sourceFiles": ["src/components/account.css", "src/actions/runtime.js"],
+      "selectors": [".nbc-download-row", ".nbc-download-meta", ".nbc-download-version"],
+      "tokens": ["--nbc-space-3", "--nbc-surface", "--nbc-border", "--nbc-radius-md", "--nbc-muted", "--nbc-text-xs"],
+      "copyReady": {
+        "html": "<article class=\"nbc-download-row\" data-commerce-component=\"download-row\" data-entitlement-id=\"entitlement-source\" data-release-id=\"v1.0\"><div class=\"nbc-download-meta\"><strong>NeoBrutal Soft</strong><small>Updates and downloads eligible</small></div><span class=\"nbc-download-version\">v1.0</span><button class=\"nbc-button nbc-tactile\" type=\"button\" data-download>Download</button></article>",
+        "css": "@import '@neobrutal/commerce/styles.css';",
+        "js": "import {createCommerceAction} from '@neobrutal/commerce/actions';\nconst root=document.querySelector('[data-commerce-component=\"download-row\"]');\nroot.querySelector('[data-download]').addEventListener('click',async()=>{\n  const signed=await actions.dispatch(createCommerceAction('download.create',{entitlementId:root.dataset.entitlementId,releaseId:root.dataset.releaseId}));\n  if(signed?.url)window.location.assign(signed.url);\n});"
+      }
+    },
+    {
+      "id": "purchase-history-row",
+      "sourceFiles": ["src/components/account.css"],
+      "selectors": [".nbc-history-row", ".nbc-history-meta", ".nbc-history-meta small"],
+      "tokens": ["--nbc-space-3", "--nbc-surface", "--nbc-border", "--nbc-radius-md", "--nbc-muted"],
+      "copyReady": {
+        "html": "<article class=\"nbc-history-row\" data-commerce-component=\"purchase-history-row\"><div class=\"nbc-history-meta\"><strong>Order #NBC-1042</strong><small>08 Sep 2026 · Team license</small></div><strong>$149</strong><a class=\"nbc-button nbc-tactile\" href=\"/order/NBC-1042/\">View order</a></article>",
+        "css": "@import '@neobrutal/commerce/styles.css';",
+        "js": "const root=document.querySelector('[data-commerce-component=\"purchase-history-row\"]');\nfunction renderPurchaseHistory(order){\n  if(!order?.id)throw new Error('purchase-history-row requires normalized OrderView data');\n  root.dataset.orderId=order.id;\n}"
+      }
+    },
+    {
+      "id": "license-card",
+      "sourceFiles": ["src/components/license.css"],
+      "selectors": [".nbc-license-card", ".nbc-license-head", ".nbc-license-key", ".nbc-license-grid", ".nbc-license-stat"],
+      "tokens": ["--nbc-space-3", "--nbc-space-4", "--nbc-surface", "--nbc-border", "--nbc-radius-lg", "--nbc-shadow", "--nbc-bg", "--nbc-radius-sm", "--nbc-text-sm", "--nbc-surface-2", "--nbc-muted", "--nbc-text-xs"],
+      "copyReady": {
+        "html": "<article class=\"nbc-license-card\" data-commerce-component=\"license-card\"><div class=\"nbc-license-head\"><div><p>TEAM LICENSE</p><h3>NeoBrutal Soft</h3></div><span class=\"nbc-license-status\">Active</span></div><div class=\"nbc-license-key\"><span data-license-key>NBC-SOFT-••••-1042</span></div><div class=\"nbc-license-grid\"><div class=\"nbc-license-stat\"><span>Sites</span><strong>3 / 5</strong></div><div class=\"nbc-license-stat\"><span>Seats</span><strong>4 / 5</strong></div><div class=\"nbc-license-stat\"><span>Updates</span><strong>Eligible</strong></div></div></article>",
+        "css": "@import '@neobrutal/commerce/styles.css';",
+        "js": "const root=document.querySelector('[data-commerce-component=\"license-card\"]');\nfunction renderLicenseCard({license,entitlement}){\n  if(!license?.id||!entitlement?.id)throw new Error('license-card requires normalized license and entitlement records');\n  root.dataset.licenseId=license.id;\n  root.dataset.entitlementId=entitlement.id;\n}"
+      }
+    },
+    {
+      "id": "invoice-history",
+      "sourceFiles": ["src/components/account.css", "src/actions/runtime.js"],
+      "selectors": [".nbc-history-row", ".nbc-history-meta", ".nbc-history-meta small"],
+      "tokens": ["--nbc-space-3", "--nbc-surface", "--nbc-border", "--nbc-radius-md", "--nbc-muted"],
+      "copyReady": {
+        "html": "<section data-commerce-component=\"invoice-history\" data-order-id=\"order_1042\" aria-labelledby=\"invoice-history-title\"><h3 id=\"invoice-history-title\">Invoices</h3><div data-invoice-list aria-live=\"polite\"></div></section>",
+        "css": "@import '@neobrutal/commerce/styles.css';",
+        "js": "import {createCommerceAction} from '@neobrutal/commerce/actions';\nconst root=document.querySelector('[data-commerce-component=\"invoice-history\"]');\nasync function loadInvoices(){\n  const result=await actions.dispatch(createCommerceAction('invoice.list',{orderId:root.dataset.orderId}));\n  const list=root.querySelector('[data-invoice-list]');\n  list.replaceChildren(...result.items.map(invoice=>{const row=document.createElement('article');row.className='nbc-history-row';row.innerHTML=`<div class=\"nbc-history-meta\"><strong></strong><small></small></div><strong></strong>`;row.querySelector('.nbc-history-meta strong').textContent=invoice.number;row.querySelector('.nbc-history-meta small').textContent=invoice.status;row.lastElementChild.textContent=invoice.total?.formatted||'';return row;}));\n}\nloadInvoices();"
+      }
+    },
+    {
+      "id": "activation-row",
+      "sourceFiles": ["src/components/license.css", "src/actions/runtime.js"],
+      "selectors": [".nbc-site-list", ".nbc-site-row", ".nbc-site-row code"],
+      "tokens": ["--nbc-border", "--nbc-bg", "--nbc-text-sm"],
+      "copyReady": {
+        "html": "<section class=\"nbc-site-list\" data-commerce-component=\"activation-row\" data-license-id=\"license-reference-team\" aria-labelledby=\"activation-title\"><h3 id=\"activation-title\">Activations</h3><div data-activation-list></div></section>",
+        "css": "@import '@neobrutal/commerce/styles.css';",
+        "js": "import {createCommerceAction} from '@neobrutal/commerce/actions';\nconst root=document.querySelector('[data-commerce-component=\"activation-row\"]');\nasync function loadActivations(){\n  const result=await actions.dispatch(createCommerceAction('license.activations.list',{licenseId:root.dataset.licenseId}));\n  root.querySelector('[data-activation-list]').replaceChildren(...result.items.map(activation=>{const row=document.createElement('div');row.className='nbc-site-row';const code=document.createElement('code');code.textContent=activation.site||activation.domain||activation.id;row.append(code);return row;}));\n}\nloadActivations();"
+      }
+    },
+    {
+      "id": "seat-assignment",
+      "sourceFiles": ["src/components/lifecycle.css", "src/actions/runtime.js"],
+      "selectors": [".nbc-seat-list", ".nbc-seat-row", ".nbc-seat-row small", ".nbc-operation-form"],
+      "tokens": ["--nbc-border", "--nbc-bg", "--nbc-muted", "--nbc-text-sm"],
+      "copyReady": {
+        "html": "<section data-commerce-component=\"seat-assignment\" data-license-id=\"license-reference-team\"><div class=\"nbc-seat-list\" data-seat-list></div><form class=\"nbc-operation-form\" data-seat-form><label>Assign seat<input name=\"email\" type=\"email\" autocomplete=\"email\" required></label><button class=\"nbc-button nbc-button--primary nbc-tactile\" type=\"submit\">Assign</button></form></section>",
+        "css": "@import '@neobrutal/commerce/styles.css';",
+        "js": "import {createCommerceAction} from '@neobrutal/commerce/actions';\nconst root=document.querySelector('[data-commerce-component=\"seat-assignment\"]');\nconst list=root.querySelector('[data-seat-list]');\nconst render=items=>list.replaceChildren(...items.map(seat=>{const row=document.createElement('div');row.className='nbc-seat-row';row.dataset.seatId=seat.id;const label=document.createElement('span');label.textContent=seat.assignee?.email||seat.id;const remove=document.createElement('button');remove.type='button';remove.className='nbc-button nbc-tactile';remove.textContent='Remove';remove.addEventListener('click',async()=>render((await actions.dispatch(createCommerceAction('seat.remove',{licenseId:root.dataset.licenseId,seatId:seat.id}))).items));row.append(label,remove);return row;}));\nrender((await actions.dispatch(createCommerceAction('license.seats.list',{licenseId:root.dataset.licenseId}))).items);\nroot.querySelector('[data-seat-form]').addEventListener('submit',async event=>{event.preventDefault();const email=new FormData(event.currentTarget).get('email').toString();const result=await actions.dispatch(createCommerceAction('seat.assign',{licenseId:root.dataset.licenseId,assignee:{email},role:'member'}));render(result.items);});"
+      }
+    },
+    {
+      "id": "ownership-timeline",
+      "sourceFiles": ["src/components/lifecycle.css", "src/actions/runtime.js"],
+      "selectors": [".nbc-timeline", ".nbc-timeline li", ".nbc-timeline small"],
+      "tokens": ["--nbc-border", "--nbc-bg", "--nbc-yellow", "--nbc-muted"],
+      "copyReady": {
+        "html": "<section data-commerce-component=\"ownership-timeline\" data-license-id=\"license-reference-team\" aria-labelledby=\"ownership-timeline-title\"><h3 id=\"ownership-timeline-title\">Ownership history</h3><ol class=\"nbc-timeline\" data-ownership-events aria-live=\"polite\"></ol></section>",
+        "css": "@import '@neobrutal/commerce/styles.css';",
+        "js": "import {createCommerceAction} from '@neobrutal/commerce/actions';\nconst root=document.querySelector('[data-commerce-component=\"ownership-timeline\"]');\nasync function loadOwnershipHistory(){\n  const result=await actions.dispatch(createCommerceAction('license.history.list',{licenseId:root.dataset.licenseId}));\n  root.querySelector('[data-ownership-events]').replaceChildren(...result.items.map(event=>{const item=document.createElement('li');const strong=document.createElement('strong');strong.textContent=event.summary;const meta=document.createElement('small');meta.textContent=event.occurredAt;item.append(strong,meta);return item;}));\n}\nloadOwnershipHistory();"
+      }
+    },
+    {
+      "id": "ownership-lifecycle",
+      "sourceFiles": ["src/components/lifecycle.css"],
+      "selectors": [".nbc-lifecycle", ".nbc-lifecycle-head", ".nbc-lifecycle-badge", ".nbc-lifecycle-facts", ".nbc-lifecycle-note"],
+      "tokens": ["--nbc-border", "--nbc-surface", "--nbc-shadow", "--nbc-yellow", "--nbc-muted", "--nbc-text-sm"],
+      "copyReady": {
+        "html": "<article class=\"nbc-lifecycle\" data-commerce-component=\"ownership-lifecycle\"><div class=\"nbc-lifecycle-head\"><div><h3>Ownership lifecycle</h3><p>License, entitlement, subscription, seat, activation, and transfer remain separate normalized concepts.</p></div><span class=\"nbc-lifecycle-badge\" data-state=\"active\">Active</span></div><dl class=\"nbc-lifecycle-facts\"><div><dt>License</dt><dd data-license-state>Active</dd></div><div><dt>Entitlement</dt><dd data-entitlement-state>Updates allowed</dd></div><div><dt>Subscription</dt><dd data-subscription-state>Renews annually</dd></div></dl><p class=\"nbc-lifecycle-note\">Do not infer one lifecycle record from another.</p></article>",
+        "css": "@import '@neobrutal/commerce/styles.css';",
+        "js": "const root=document.querySelector('[data-commerce-component=\"ownership-lifecycle\"]');\nfunction renderOwnershipLifecycle({license,entitlement,subscription}){\n  root.querySelector('[data-license-state]').textContent=license?.status||'Unknown';\n  root.querySelector('[data-entitlement-state]').textContent=entitlement?.status||'Unknown';\n  root.querySelector('[data-subscription-state]').textContent=subscription?.status||'Not attached';\n}"
+      }
+    }
+  ]
+}

@@ -52,8 +52,8 @@ async function initComponentDepthAudit(){
     depthAssert(manifest.criteria?.length===13,'component demo depth must cover the 13 v1.1 audit criteria');
     depthAssert(manifest.components?.length===47,'component demo depth must audit all 47 components');
     const batches=manifest.implementationBatches||[];
-    depthAssert(batches.length===4,'component demo depth must expose four implementation batches');
-    depthAssert(batches.map(batch=>batch.ordinal).join(',')==='1,2,3,4','component implementation batch ordinals drifted');
+    depthAssert(batches.length===5,'component demo depth must expose five implementation batches');
+    depthAssert(batches.map(batch=>batch.ordinal).join(',')==='1,2,3,4,5','component implementation batch ordinals drifted');
     depthAssert(sameDepthIds(batches[0].componentIds||[],manifest.nextImplementationBatch||[]),'legacy first-batch alias drifted');
     const implementationFiles=await Promise.all(batches.map(async batch=>{
       const response=await fetch(`./${batch.evidenceFile}`,{cache:'no-store'});
@@ -73,7 +73,7 @@ async function initComponentDepthAudit(){
       implementationById.set(evidence.id,evidence);
       batchById.set(evidence.id,batch);
     }
-    depthAssert(implementationById.size===33,'component demo implementation must cover exact accumulated 33-component evidence set');
+    depthAssert(implementationById.size===43,'component demo implementation must cover exact accumulated 43-component evidence set');
     await waitForShowcaseReady();
     const cards=[...document.querySelectorAll('[data-component-card]')];
     depthAssert(cards.length===47,'component demo depth requires 47 rendered component cards');

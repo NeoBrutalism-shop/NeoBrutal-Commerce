@@ -12,7 +12,7 @@ const required=[
   'docs/RECIPES.md','docs/THEMING.md','docs/MIGRATION.md','docs/PROVIDER-EXAMPLES.md','docs/RELEASE-CANDIDATE.md','docs/PUBLIC-RELEASE.md',
   'docs/V1.1-COMPONENT-DEMO-DEPTH-AUDIT.md',
   'storefront/components.json','storefront/component-showcase.json','storefront/component-states.json','storefront/component-demo-depth.json',
-  'storefront/component-demo-implementation.json','storefront/component-demo-implementation-product.json','storefront/component-demo-implementation-trust-pricing.json','storefront/component-demo-implementation-cart-checkout.json','storefront/blocks.json',
+  'storefront/component-demo-implementation.json','storefront/component-demo-implementation-product.json','storefront/component-demo-implementation-trust-pricing.json','storefront/component-demo-implementation-cart-checkout.json','storefront/component-demo-implementation-account-ownership.json','storefront/blocks.json',
   'component-depth-audit.js','component-depth-audit.css','tests/component-demo-depth-v11.spec.mjs','scripts/component-demo-implementation-check.mjs'
 ];
 for(const file of required)if(!fs.existsSync(path.join(root,file)))fail(`Missing adoption file: ${file}`);
@@ -83,10 +83,10 @@ const statefulIds=manifest.components.filter(component=>component.states.length)
 const stateExampleIds=(stateExamples.components||[]).map(component=>component.id).sort();
 if(!same(statefulIds,stateExampleIds))fail('Component demo depth stateful set drifted from live canonical-state evidence');
 const batches=demoDepth.implementationBatches||[];
-if(batches.length!==4||batches.map(batch=>batch.ordinal).join(',')!=='1,2,3,4')fail('Component demo implementation batch lineage must contain ordered batches 1, 2, 3, and 4');
+if(batches.length!==5||batches.map(batch=>batch.ordinal).join(',')!=='1,2,3,4,5')fail('Component demo implementation batch lineage must contain ordered batches 1 through 5');
 if(!same(demoDepth.nextImplementationBatch||[],statefulIds)||!same(batches[0].componentIds||[],statefulIds))fail('First component demo depth implementation batch must remain the exact stateful component set');
 const implementationIds=batches.flatMap(batch=>batch.componentIds||[]);
-if(implementationIds.length!==33||new Set(implementationIds).size!==33)fail('Accumulated implementation evidence batch membership must cover 33 unique components');
+if(implementationIds.length!==43||new Set(implementationIds).size!==43)fail('Accumulated implementation evidence batch membership must cover 43 unique components');
 for(const file of batches.map(batch=>batch.evidenceFile))if(!required.includes(file))fail(`Implementation batch evidence file is not adoption-required: ${file}`);
 const implementationSet=new Set(implementationIds);
 for(const [id,resolved] of resolvedDepth){
@@ -99,7 +99,7 @@ for(const resolved of resolvedDepth.values())for(const criterion of expectedDept
 if(depthCounts.preview.complete!==47||depthCounts.accessibility.complete!==47)fail('Existing 47/47 preview and accessibility coverage must remain complete');
 if(depthCounts['canonical-states'].complete!==12||depthCounts['canonical-states']['not-applicable']!==35)fail('Canonical-state audit must remain 12 complete / 35 not-applicable until the frozen registry changes');
 if(depthCounts.actions.complete!==16||depthCounts.actions['not-applicable']!==31)fail('Action-contract audit must remain 16 complete / 31 not-applicable until the frozen registry changes');
-if(depthCounts.tokens.complete!==33||depthCounts.tokens.missing!==14||depthCounts['copy-ready'].complete!==33||depthCounts['copy-ready'].missing!==14)fail('Accumulated demo implementation evidence must remain exact at 33 complete / 14 missing for token and copy-ready criteria');
+if(depthCounts.tokens.complete!==43||depthCounts.tokens.missing!==4||depthCounts['copy-ready'].complete!==43||depthCounts['copy-ready'].missing!==4)fail('Accumulated demo implementation evidence must remain exact at 43 complete / 4 missing for token and copy-ready criteria');
 
 const depthClient=read('component-depth-audit.js');
 const depthCss=read('component-depth-audit.css');
@@ -107,7 +107,7 @@ const depthBrowser=read('tests/component-demo-depth-v11.spec.mjs');
 try{new Function(depthClient)}catch(error){fail(`component-depth-audit.js syntax error: ${error.message}`)}
 if(/transition\s*:\s*all/i.test(depthCss)||/:hover[^\{]*\{[^\}]*translate(?:Y)?\(\s*-/i.test(depthCss))fail('Component demo depth UI violates motion/tactile laws');
 for(const marker of ['component-demo-depth.json','implementationBatches','data-component-depth-audit','dataset.componentDepthReady','dataset.componentImplementationAudited','dataset.componentImplementationBatches','data-demo-depth-first-batch'])if(!depthClient.includes(marker))fail(`Component demo depth runtime missing marker: ${marker}`);
-for(const marker of ['47*13','data-demo-depth-first-batch','data-demo-depth-batch','Canonical states','Action contracts','Design tokens used','Copy-ready HTML / CSS / JS','AxeBuilder','33','trust-review-pricing','cart-checkout'])if(!depthBrowser.includes(marker))fail(`Component demo depth Browser QA missing marker: ${marker}`);
+for(const marker of ['47*13','data-demo-depth-first-batch','data-demo-depth-batch','Canonical states','Action contracts','Design tokens used','Copy-ready HTML / CSS / JS','AxeBuilder','43','trust-review-pricing','cart-checkout','account-ownership'])if(!depthBrowser.includes(marker))fail(`Component demo depth Browser QA missing marker: ${marker}`);
 const explorerHtml=read('components.html');
 for(const marker of ['./component-depth-audit.css','./component-depth-audit.js','demo-depth audit'])if(!explorerHtml.includes(marker))fail(`components.html missing component demo depth marker: ${marker}`);
 
@@ -117,7 +117,7 @@ for(const marker of ['Showcase v1.1 / Commerce v1.0','47 / 47',documentedBlockCo
 for(const block of blocks.blocks)if(!componentsDoc.includes(`\`${block.id}\``))fail(`COMPONENTS.md missing current Block id: ${block.id}`);
 
 const depthDoc=read('docs/V1.1-COMPONENT-DEMO-DEPTH-AUDIT.md');
-for(const marker of ['v1.1 Component demo depth audit','audit evidence only','47','12','33','14','16','Design tokens used','Copy-ready HTML / CSS / JS','First implementation-depth batch','Second implementation-depth batch','Third implementation-depth batch','Fourth implementation-depth batch','storefront/component-demo-depth.json','storefront/component-demo-implementation.json','storefront/component-demo-implementation-product.json','storefront/component-demo-implementation-trust-pricing.json','storefront/component-demo-implementation-cart-checkout.json'])if(!depthDoc.includes(marker))fail(`Component demo depth audit doc missing marker: ${marker}`);
+for(const marker of ['v1.1 Component demo depth audit','audit evidence only','47','12','43','4','16','Design tokens used','Copy-ready HTML / CSS / JS','First implementation-depth batch','Second implementation-depth batch','Third implementation-depth batch','Fourth implementation-depth batch','Fifth implementation-depth batch','storefront/component-demo-depth.json','storefront/component-demo-implementation.json','storefront/component-demo-implementation-product.json','storefront/component-demo-implementation-trust-pricing.json','storefront/component-demo-implementation-cart-checkout.json','storefront/component-demo-implementation-account-ownership.json'])if(!depthDoc.includes(marker))fail(`Component demo depth audit doc missing marker: ${marker}`);
 for(const batch of batches)for(const id of batch.componentIds)if(!depthDoc.includes(`\`${id}\``))fail(`Component demo depth audit doc missing batch component: ${id}`);
 
 const agents=read('AGENTS.md');
