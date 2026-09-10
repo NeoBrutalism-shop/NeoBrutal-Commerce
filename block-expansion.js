@@ -8,7 +8,7 @@ const BLOCK_PREVIEWS={
   'testimonials':`<div class="nbc-review-grid"><article class="nbc-review"><blockquote>“The tactile grammar makes actions obvious without making the UI noisy.”</blockquote><footer><strong>Example customer</strong><span>Product team</span></footer></article></div>`,
   'guarantee':`<div class="nbc-trust"><span class="nbc-trust-mark">↺</span><div><strong>Fit guarantee</strong><p>Refund and support terms are policy data, never inferred by the component.</p></div></div>`,
   'product-detail':`<div class="cx-mini-stack"><span class="nbc-badge">Complete system</span><h2>NeoBrutal Soft.</h2><p>Refined Neo-Brutalism for SaaS, admin, developer and AI products.</p><ul class="nbc-feature-list"><li>Light + dark themes</li><li>Fluid clamp() foundation</li><li>Agent-readable contracts</li></ul></div>`,
-  'product-gallery':`<div class="cx-mini-stack"><div class="nbc-product-art"><strong>SOFT.</strong></div><div class="store-actions-row"><button class="nbc-button nbc-tactile">01</button><button class="nbc-button nbc-tactile">02</button><button class="nbc-button nbc-tactile">03</button></div></div>`
+  'product-gallery':`<div class="cx-mini-stack" data-promoted-gallery><div class="nbc-product-art"><strong data-block-gallery-current>SOFT. · 01</strong></div><div class="store-actions-row" role="group" aria-label="Product gallery previews"><button class="nbc-button nbc-tactile" type="button" data-block-gallery-index="01" aria-label="Show product preview 1" aria-pressed="true">01</button><button class="nbc-button nbc-tactile" type="button" data-block-gallery-index="02" aria-label="Show product preview 2" aria-pressed="false">02</button><button class="nbc-button nbc-tactile" type="button" data-block-gallery-index="03" aria-label="Show product preview 3" aria-pressed="false">03</button></div></div>`
 };
 const escapeHtml=value=>String(value).replace(/[&<>'"]/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[char]));
 
@@ -19,6 +19,18 @@ function renderPromotedBlock(block){
   assert(markup,`missing promoted Block preview: ${block.id}`);
   const search=[block.id,block.title,block.category,block.description,...block.components,block.promotedFrom].join(' ').toLowerCase();
   return `<article class="cx-block-card" data-block-card data-search="${escapeHtml(search)}"><div class="cx-block-copy"><p class="cx-kicker">${escapeHtml(block.category)} block</p><h3>${escapeHtml(block.title)}</h3><p>${escapeHtml(block.description)}</p><div class="cx-block-meta">${block.components.map(id=>`<span class="cx-chip">${escapeHtml(id)}</span>`).join('')}</div><a class="nbc-button nbc-tactile" href="${escapeHtml(block.route)}">OPEN LIVE ROUTE →</a></div><div class="cx-block-preview">${markup}</div></article>`;
+}
+
+function wirePromotedBlockInteractions(grid){
+  grid.addEventListener('click',event=>{
+    const button=event.target.closest('[data-block-gallery-index]');
+    if(!button)return;
+    const gallery=button.closest('[data-promoted-gallery]');
+    if(!gallery)return;
+    gallery.querySelectorAll('[data-block-gallery-index]').forEach(item=>item.setAttribute('aria-pressed',String(item===button)));
+    const current=gallery.querySelector('[data-block-gallery-current]');
+    if(current)current.textContent=`SOFT. · ${button.dataset.blockGalleryIndex}`;
+  });
 }
 
 async function initPromotedBlocks(){
@@ -44,6 +56,7 @@ async function initPromotedBlocks(){
     const grid=document.querySelector('#blockGrid');
     assert(grid,'missing Block explorer grid');
     grid.insertAdjacentHTML('beforeend',promoted.map(renderPromotedBlock).join(''));
+    wirePromotedBlockInteractions(grid);
     document.documentElement.dataset.promotedBlocksReady='true';
   }catch(error){
     document.documentElement.dataset.promotedBlocksReady='error';
