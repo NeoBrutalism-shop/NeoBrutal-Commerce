@@ -15,9 +15,10 @@ const requiredText=(value,label)=>{if(typeof value!=='string'||!value.trim())fai
 
 const expectedCommerce='1.0.0';
 const expectedPageLibrary='1.2.0';
-const expectedBlockCount=21;
+const expectedBlockCount=23;
 const expectedPageComposedBlockCount=18;
-const expectedPromotedBlockCount=3;
+const expectedPromotedBlockCount=5;
+const expectedPromotedBlockIds=['trust-strip','testimonials','guarantee','product-detail','product-gallery'];
 const routes=json('storefront/routes.json');
 const blocks=json('storefront/blocks.json');
 const pages=json('storefront/pages.json');
@@ -85,6 +86,7 @@ for(const page of pageDocs){
 if(usedBlocks.size!==expectedPageComposedBlockCount)fail(`expected ${expectedPageComposedBlockCount} Page-composed compatibility Blocks, received ${usedBlocks.size}`);
 const promotedBlocks=blockDocs.filter(block=>!usedBlocks.has(block.id));
 if(promotedBlocks.length!==expectedPromotedBlockCount)fail(`expected ${expectedPromotedBlockCount} promoted reusable Blocks outside current Page composition, received ${promotedBlocks.length}`);
+exactIds('promoted reusable Block ids',promotedBlocks.map(block=>block.id),expectedPromotedBlockIds);
 for(const block of promotedBlocks){
   requiredText(block.promotedFrom,`uncomposed block ${block.id} promotedFrom`);
   if(block.promotedFrom===block.id)fail(`uncomposed block ${block.id} cannot promote from itself`);
@@ -94,6 +96,7 @@ for(const block of promotedBlocks){
   const outsideParent=block.components.filter(componentId=>!parent.components.includes(componentId));
   if(outsideParent.length)fail(`uncomposed block ${block.id} escapes compatibility parent ${parent.id}: ${outsideParent.join(', ')}`);
 }
+exactIds('product-media promoted Blocks',promotedBlocks.filter(block=>block.promotedFrom==='product-media').map(block=>block.id),['product-detail','product-gallery']);
 if(usedBlocks.size+promotedBlocks.length!==blockIds.length)fail('Page composition and promoted compatibility accounting must cover every documented Block');
 
 if(/\bconst\s+ROUTES\s*=\s*\[/.test(lab))fail('Page Lab must not hard-code a duplicate route catalog');
