@@ -151,6 +151,20 @@ test('v1.1 storefront-core variant samples preserve their shipping semantics',as
   await promo.details.locator('[data-variant-choice="highlighted-offer"]').click();
   await expect(promo.panel).toContainText('no countdown or fake scarcity');
 
+  const badge=await openVariantProof(page,'badge');
+  await badge.details.locator('[data-variant-choice="coral"]').click();
+  await expect(badge.details.locator('[data-variant-panel] .nbc-badge--coral')).toHaveCount(1);
+  await badge.details.locator('[data-variant-choice="lime"]').click();
+  await expect(badge.details.locator('[data-variant-panel] .nbc-badge--lime')).toHaveCount(1);
+
+  const price=await openVariantProof(page,'price-block');
+  await price.details.locator('[data-variant-choice="one-time"]').click();
+  await expect(price.panel).toContainText('no recurring charge');
+  await price.details.locator('[data-variant-choice="recurring"]').click();
+  await expect(price.panel).toContainText('Renews annually until cancelled');
+  await price.details.locator('[data-variant-choice="license-scoped"]').click();
+  await expect(price.panel).toContainText('5 production sites · 12 months of updates');
+
   expect(runtimeFailures).toEqual([]);
 });
 
