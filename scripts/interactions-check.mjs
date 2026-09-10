@@ -108,7 +108,7 @@ for(const marker of [
 if(!mediaCss.includes('.nbc-media-tab[aria-selected="true"]'))fail('latched media selection styling is missing');
 for(const marker of ['ArrowLeft','ArrowRight','aria-selected'])if(!storeJs.includes(marker))fail(`keyboard/programmatic selection marker missing: ${marker}`);
 for(const marker of ['@keyframes nbc-skeleton-shift','@media(prefers-reduced-motion:reduce){.nbc-skeleton span{animation:none}}','@media(forced-colors:active)'])if(!stateCss.includes(marker))fail(`processing feedback marker missing: ${marker}`);
-for(const marker of ['setLifecycleBadge','data-subscription-state'])if(!storeJs.includes(marker))fail(`result feedback marker missing: ${marker}`);
+for(const marker of ['setLifecycleBadge','dataset.subscriptionState'])if(!storeJs.includes(marker))fail(`result feedback marker missing: ${marker}`);
 
 const cssFiles=['src/base.css',...fs.readdirSync(path.join(root,'src/components')).filter(file=>file.endsWith('.css')).map(file=>`src/components/${file}`)];
 const css=cssFiles.map(read).join('\n');
