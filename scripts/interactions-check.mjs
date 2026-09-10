@@ -15,7 +15,8 @@ const escapeRegExp=value=>value.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
 
 const requiredFiles=[
   'storefront/interactions.json','src/tokens.css','src/base.css','src/components/media.css','src/components/state.css',
-  'storefront/store.js','tests/commerce-v07.spec.mjs','DESIGN.md','README.md','docs/INTERACTIONS.md','package.json'
+  'storefront/store.js','tests/commerce-v07.spec.mjs','DESIGN.md','README.md','docs/INTERACTIONS.md','package.json',
+  'demo/v13.html','demo/v13.css','demo/v13.js','tests/commerce-v13-interactions.spec.mjs','.github/workflows/pages-smoke.yml'
 ];
 for(const file of requiredFiles)if(!exists(file))fail(`missing interaction evidence: ${file}`);
 
@@ -28,6 +29,11 @@ const stateCss=read('src/components/state.css');
 const storeJs=read('storefront/store.js');
 const design=read('DESIGN.md');
 const interactionGuide=read('docs/INTERACTIONS.md');
+const labHtml=read('demo/v13.html');
+const labCss=read('demo/v13.css');
+const labJs=read('demo/v13.js');
+const labSpec=read('tests/commerce-v13-interactions.spec.mjs');
+const pagesSmoke=read('.github/workflows/pages-smoke.yml');
 
 if(contract.schema!=='neobrutal-commerce/interactions@1')fail(`unexpected schema: ${contract.schema}`);
 if(contract.interactionVersion!=='1.3.0')fail(`interaction contract must use exact 1.3.0, received ${contract.interactionVersion}`);
@@ -125,11 +131,38 @@ for(const evidence of drag.evidence){
   if(!exists(evidence.file)||!read(evidence.file).includes(evidence.marker))fail(`drag-lift evidence is stale: ${evidence.file} → ${evidence.marker}`);
 }
 
+const labPatternIds=[...labHtml.matchAll(/data-interaction-pattern="([^"]+)"/g)].map(match=>match[1]);
+unique(labPatternIds,'Motion Lab pattern slots');
+same('Motion Lab pattern slots',labPatternIds,expectedPatternIds);
+const labExceptionIds=[...labHtml.matchAll(/data-interaction-exception="([^"]+)"/g)].map(match=>match[1]);
+same('Motion Lab exception slots',labExceptionIds,['drag-lift']);
+for(const marker of [
+  'MOTION &amp; INTERACTION LAB v1.3','../src/index.css','../storefront/store.css','../storefront/store.js','./v13.css','./v13.js',
+  'data-media','data-subscription-state="active"','data-subscription-cancel','data-subscription-resume','NOT A PRODUCTION PATTERN'
+])if(!labHtml.includes(marker))fail(`Motion Lab HTML missing marker: ${marker}`);
+for(const marker of [
+  "fetchJson('../storefront/interactions.json')","expectedPatternIds=['tactile-press','latched-selection','processing-feedback','result-feedback']",
+  "root.dataset.interactionLabReady='true'","root.dataset.interactionVersion=contract.interactionVersion","matchMedia('(prefers-reduced-motion: reduce)')",
+  "root.dataset.motionPreview='reduced'",'drag.productionPattern===false'
+])if(!labJs.includes(marker))fail(`Motion Lab runtime missing marker: ${marker}`);
+if(/addEventListener\(\s*['"]keydown['"]/.test(labJs))fail('Motion Lab must reuse production media keyboard behavior instead of creating a second tab controller');
+try{new Function(labJs)}catch(error){fail(`demo/v13.js syntax error: ${error.message}`)}
+if(/transition\s*:\s*all/i.test(labCss))fail('Motion Lab transition: all is prohibited');
+if(/:hover[^\{]*\{[^\}]*translate(?:Y)?\(\s*-/i.test(labCss))fail('Motion Lab generic upward hover lift is prohibited');
+for(const marker of ['data-motion-preview="reduced"','@media(prefers-reduced-motion:reduce)','@media(forced-colors:active)'])if(!labCss.includes(marker))fail(`Motion Lab accessibility CSS missing marker: ${marker}`);
+for(const marker of [
+  "'/demo/v13.html'",'data-interaction-lab-ready','data-interaction-version','AxeBuilder','ArrowRight','data-subscription-state','reducedMotion:\'reduce\'',
+  "forcedColors:'active'",'commerce-v13-motion-lab-${testInfo.project.name}.png','commerce-v13-motion-lab-reduced-chromium.png'
+])if(!labSpec.includes(marker))fail(`Motion Lab browser proof missing marker: ${marker}`);
+for(const marker of ["process.env.GITHUB_EVENT_NAME === 'pull_request'","'/demo/v13.html'",'attempts: 12',"marker: 'MOTION &amp; INTERACTION LAB v1.3'"])if(!pagesSmoke.includes(marker))fail(`Pages smoke missing deploy-aware Motion Lab marker: ${marker}`);
+
 for(const marker of ['Compress, never float.','Motion communicates cause, state and result.'])if(!design.includes(marker))fail(`DESIGN.md interaction law missing: ${marker}`);
-for(const marker of ['# Motion & Interaction v1.3','storefront/interactions.json','scripts/interactions-check.mjs','productionPattern: false'])if(!interactionGuide.includes(marker))fail(`docs/INTERACTIONS.md missing v1.3 marker: ${marker}`);
+for(const marker of ['# Motion & Interaction v1.3','storefront/interactions.json','scripts/interactions-check.mjs','productionPattern: false','demo/v13.html'])if(!interactionGuide.includes(marker))fail(`docs/INTERACTIONS.md missing v1.3 marker: ${marker}`);
+const readme=read('README.md');
+for(const marker of ['Motion & Interaction Lab','demo/v13.html','storefront/interactions.json'])if(!readme.includes(marker))fail(`README missing v1.3 Motion Lab marker: ${marker}`);
 if(pkg.files?.includes('storefront/interactions.json'))fail('v1.3 documentation contract must stay outside the frozen v1.0 npm package files allowlist');
 if(pkg.exports?.['./interactions'])fail('v1.3 documentation contract must not create a new v1.0 package export');
 if(pkg.scripts?.['check:interactions']!=='node scripts/interactions-check.mjs')fail('check:interactions script is missing');
 if(!String(pkg.scripts?.check||'').includes('npm run check:interactions'))fail('main Quality chain does not include check:interactions');
 
-console.log(`NeoBrutal Commerce Interaction v${contract.interactionVersion} passed · ${principles.length} principles · ${patterns.length} production interaction patterns · 1 drag-lift exception · frozen Commerce ${contract.commerceVersion} API preserved`);
+console.log(`NeoBrutal Commerce Interaction v${contract.interactionVersion} passed · ${principles.length} principles · ${patterns.length}/${patterns.length} live lab patterns · 1 explicit drag-lift exception · frozen Commerce ${contract.commerceVersion} API preserved`);
