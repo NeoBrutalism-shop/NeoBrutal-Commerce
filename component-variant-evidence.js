@@ -20,7 +20,7 @@ function waitForVariantShowcase(){
 function renderVariantEvidence(entry){
   const first=entry.variants[0];
   const choices=entry.variants.map((variant,index)=>`<button class="cx-variant-choice nbc-tactile" type="button" data-variant-choice="${escapeVariant(variant.id)}" aria-pressed="${index===0?'true':'false'}">${escapeVariant(variant.label)}</button>`).join('');
-  return `<details class="cx-variant-evidence" data-component-variant-evidence><summary><span>Variant proof</span><span>${entry.variants.length}/${entry.variants.length}</span></summary><div class="cx-variant-body"><div class="cx-variant-choices" aria-label="${escapeVariant(entry.id)} variants">${choices}</div><div class="cx-variant-panel" data-variant-panel data-variant-current="${escapeVariant(first.id)}">${first.markup}</div></div></details>`;
+  return `<details class="cx-variant-evidence" data-component-variant-evidence><summary><span>Variant proof</span><span>${entry.variants.length}/${entry.variants.length}</span></summary><div class="cx-variant-body"><div class="cx-variant-choices" role="group" aria-label="${escapeVariant(entry.id)} variants">${choices}</div><div class="cx-variant-panel" data-variant-panel data-variant-current="${escapeVariant(first.id)}">${first.markup}</div></div></details>`;
 }
 
 function bindVariantEvidence(card,entry){
