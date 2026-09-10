@@ -57,7 +57,7 @@ for(const marker of ['PolyForm Noncommercial License 1.0.0','https://polyformpro
   if(!license.includes(marker))fail(`license notice missing: ${marker}`);
 }
 const release=read('docs/PUBLIC-RELEASE.md');
-for(const marker of ['Public package','Supply-chain release','v1 API freeze','Visual freeze','Release gates','PolyForm-Noncommercial-1.0.0','release.yml','visual-baselines-v10.json','1.0.0']){
+for(const marker of ['Public package','Supply-chain release','Production activation boundary','Safe preflight','v1 API freeze','Visual freeze','Release gates','PolyForm-Noncommercial-1.0.0','release.yml','visual-baselines-v10.json','1.0.0']){
   if(!release.includes(marker))fail(`public-release guide missing marker: ${marker}`);
 }
 const visual=json('tests/visual-baselines-v10.json');
@@ -72,10 +72,48 @@ const visualSpec=read('tests/commerce-v10-visual.spec.mjs');
 for(const marker of ['visual-baselines-v10.json','createHash','pixels drifted from reviewed v1.0 baseline','chromium','mobile-chromium']){
   if(!visualSpec.includes(marker))fail(`v1 exact visual lock missing: ${marker}`);
 }
-const workflow=read('.github/workflows/release.yml');
-for(const marker of ['actions/checkout@v6','actions/setup-node@v6','node-version: 24','id-token: write','registry-url: https://registry.npmjs.org','npm ci','npm run check','npm run test:browser','npm publish --access public']){
+const workflow=read('.github/workflows/release.yml').replace(/\r\n/g,'\n');
+const permissionsIndex=workflow.indexOf('\npermissions:\n');
+const jobsIndex=workflow.indexOf('\njobs:\n');
+if(!workflow.startsWith('name: Publish Commerce\n\non:\n')||permissionsIndex<0||jobsIndex<0||permissionsIndex>=jobsIndex)fail('release workflow header structure drifted');
+const triggerBlock=workflow.slice(workflow.indexOf('on:\n'),permissionsIndex).trim();
+if(triggerBlock!==`on:\n  release:\n    types: [published]`)fail('release workflow must trigger only when a GitHub Release is published');
+const permissionBlock=workflow.slice(permissionsIndex+1,jobsIndex).trim();
+if(permissionBlock!==`permissions:\n  contents: read\n  id-token: write`)fail('release workflow permissions must remain exact: contents read + OIDC id-token write');
+
+const orderedSteps=[
+  '- name: Verify release tag',
+  '- name: Install exact QA dependencies',
+  '- name: Quality and package gates',
+  '- name: Install Chromium Firefox and WebKit',
+  '- name: Browser release gates',
+  '- name: Publish public package with npm trusted publishing'
+];
+let previous=-1;
+for(const marker of orderedSteps){
+  const index=workflow.indexOf(marker);
+  if(index<0)fail(`release workflow missing ordered step: ${marker}`);
+  if(index<=previous)fail(`release workflow step order drifted at: ${marker}`);
+  previous=index;
+}
+for(const marker of [
+  'runs-on: ubuntu-latest',
+  'timeout-minutes: 30',
+  'actions/checkout@v6',
+  'actions/setup-node@v6',
+  'node-version: 24',
+  'package-manager-cache: false',
+  'registry-url: https://registry.npmjs.org',
+  `process.env.GITHUB_REF_NAME!=='v'+p.version`,
+  'run: npm ci --ignore-scripts --no-audit --no-fund',
+  'run: npm run check',
+  'run: npx playwright install --with-deps chromium firefox webkit',
+  'run: npm run test:browser',
+  'run: npm publish --access public'
+]){
   if(!workflow.includes(marker))fail(`release workflow missing marker: ${marker}`);
 }
-if(/NPM_TOKEN|NODE_AUTH_TOKEN/.test(workflow))fail('release workflow must not use a long-lived npm publish token');
+if((workflow.match(/run:\s*npm publish --access public/g)||[]).length!==1)fail('release workflow must contain exactly one public npm publish command');
+if(/NPM_TOKEN|NODE_AUTH_TOKEN|\bsecrets\./.test(workflow))fail('release workflow must use tokenless npm trusted publishing only');
 
-console.log(`NeoBrutal Commerce ${version} release freeze passed · ${snapshot.packageExports.length} exports · ${snapshot.actionTypes.length} actions · ${snapshot.componentIds.length} components · ${snapshot.semanticTokens.length} semantic tokens`);
+console.log(`NeoBrutal Commerce ${version} release freeze passed · ${snapshot.packageExports.length} exports · ${snapshot.actionTypes.length} actions · ${snapshot.componentIds.length} components · ${snapshot.semanticTokens.length} semantic tokens · release-only OIDC publish path locked`);
