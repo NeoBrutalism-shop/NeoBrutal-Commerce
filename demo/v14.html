@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="color-scheme" content="light dark" />
+  <meta name="theme-color" content="#fff7e8" />
+  <meta name="description" content="NeoBrutal Commerce v1.4 Agent Execution Lab — inspect the manifest-backed agent workflow, authority model, composition trace, review outputs, and anti-guess laws." />
+  <title>Agent Execution Lab — NeoBrutal Commerce v1.4</title>
+  <link rel="stylesheet" href="../src/index.css" />
+  <link rel="stylesheet" href="../storefront/store.css" />
+  <link rel="stylesheet" href="./v14.css" />
+  <script type="module" src="../storefront/store.js"></script>
+  <script type="module" src="./v14.js"></script>
+</head>
+<body class="agent-page">
+  <a class="agent-skip" href="#agentLab">Skip to agent contract</a>
+  <header class="agent-topbar">
+    <a class="agent-brand" href="../" aria-label="NeoBrutal Commerce home">
+      <span class="agent-brand-mark" aria-hidden="true">C.</span>
+      <span>NEOBRUTAL<small>COMMERCE · AGENT EXECUTION LAB v1.4</small></span>
+    </a>
+    <nav class="agent-surface-nav" aria-label="Live surfaces">
+      <a href="../">Flagship</a>
+      <a href="../components.html">Components + Blocks</a>
+      <a href="./v10.html">Page lab</a>
+      <a href="./v13.html">Motion lab</a>
+      <a href="./v14.html" aria-current="page">Agent lab</a>
+    </nav>
+    <div class="agent-actions">
+      <button class="nbc-button nbc-tactile agent-compact" type="button" data-theme-toggle aria-pressed="false">◐ Dark</button>
+      <a class="nbc-button nbc-button--primary nbc-tactile agent-compact" href="../AGENTS.md">READ ENTRY POINT ↗</a>
+    </div>
+  </header>
+
+  <main id="agentLab" class="agent-shell">
+    <header class="agent-hero">
+      <div>
+        <p class="agent-kicker">MANIFEST-BACKED · COMPOSITION-AWARE · ANTI-GUESS</p>
+        <h1>Agents resolve.<br /><span>They do not guess.</span></h1>
+      </div>
+      <div class="agent-hero-copy">
+        <p>This lab reads <code>storefront/agents.json</code> and the existing route, Page, Block, and Component authorities. It demonstrates the v1.4 execution model without creating a second source of Commerce meaning.</p>
+        <div class="agent-badges" aria-label="Agent contract summary">
+          <span class="nbc-badge nbc-badge--lime" id="authorityCount">10 AUTHORITIES</span>
+          <span class="nbc-badge" id="workflowCount">6 WORKFLOW STEPS</span>
+          <span class="nbc-badge">COMMERCE 1.0 FROZEN</span>
+        </div>
+      </div>
+    </header>
+
+    <section class="agent-architecture" aria-labelledby="architectureTitle">
+      <div class="agent-section-heading">
+        <div><p class="agent-kicker">COMPOSITION HIERARCHY</p><h2 id="architectureTitle">Resolve from primitives to applications.</h2></div>
+        <p>Each layer composes the authority below it. None may rename or duplicate the domain contract it consumes.</p>
+      </div>
+      <ol class="agent-architecture-list" id="architectureList" aria-label="Commerce composition hierarchy"></ol>
+    </section>
+
+    <section class="agent-trace" aria-labelledby="traceTitle">
+      <div class="agent-trace-controls">
+        <div>
+          <p class="agent-kicker">LIVE EXECUTION TRACE</p>
+          <h2 id="traceTitle">Follow one route through the real manifests.</h2>
+          <p>Choose a production route. The trace derives its Page, Blocks, composed Components, route states, models, actions, and component states from the canonical sources.</p>
+        </div>
+        <label class="agent-route-field" for="agentRouteSelect">
+          <span>Production route</span>
+          <select id="agentRouteSelect" aria-describedby="traceHint"></select>
+        </label>
+        <p class="agent-route-hint" id="traceHint">The selector is populated from <code>storefront/routes.json</code>; route IDs are not duplicated in this lab.</p>
+      </div>
+
+      <div class="agent-trace-summary" data-agent-trace aria-live="polite">
+        <div class="agent-trace-identity">
+          <div><p class="agent-kicker">ROUTE</p><h3 id="traceRouteTitle">Loading…</h3><code id="traceRoutePath">—</code></div>
+          <span class="nbc-badge nbc-badge--lime" id="traceCoverage">CHECKING COVERAGE</span>
+        </div>
+        <p class="agent-trace-intent" id="traceIntent">Resolving route intent…</p>
+        <div class="agent-trace-grid">
+          <section class="agent-trace-card" aria-labelledby="tracePageTitle"><p class="agent-kicker">PAGE CONTRACT</p><h4 id="tracePageTitle">Page</h4><div id="tracePage"></div></section>
+          <section class="agent-trace-card" aria-labelledby="traceBlocksTitle"><p class="agent-kicker">BLOCK COMPOSITION</p><h4 id="traceBlocksTitle">Blocks</h4><div class="agent-chip-list" id="traceBlocks"></div></section>
+          <section class="agent-trace-card" aria-labelledby="traceRequiredTitle"><p class="agent-kicker">REQUIRED COMPONENTS</p><h4 id="traceRequiredTitle">Route primary components</h4><div class="agent-chip-list" id="traceRequired"></div></section>
+          <section class="agent-trace-card" aria-labelledby="traceStatesTitle"><p class="agent-kicker">ROUTE STATES</p><h4 id="traceStatesTitle">Canonical route set</h4><div class="agent-chip-list" id="traceStates"></div></section>
+        </div>
+        <section class="agent-contract-summary" aria-labelledby="contractSummaryTitle">
+          <div><p class="agent-kicker">RESOLVED COMPONENT CONTRACTS</p><h4 id="contractSummaryTitle">Meaning stays at the component/runtime authorities.</h4></div>
+          <dl class="agent-contract-metrics">
+            <div><dt>Composed components</dt><dd id="traceComponentCount">—</dd></div>
+            <div><dt>Normalized models</dt><dd id="traceModelCount">—</dd></div>
+            <div><dt>Canonical actions</dt><dd id="traceActionCount">—</dd></div>
+            <div><dt>Component states</dt><dd id="traceStateCount">—</dd></div>
+          </dl>
+        </section>
+      </div>
+    </section>
+
+    <section class="agent-section" aria-labelledby="authorityTitle">
+      <div class="agent-section-heading">
+        <div><p class="agent-kicker">AUTHORITY BY CONCERN</p><h2 id="authorityTitle">Ask the owner of the question.</h2></div>
+        <p>There is no universal precedence ladder. Route intent, composition, runtime meaning, interactions, models, actions, and reference content each have an explicit owner.</p>
+      </div>
+      <div class="agent-authority-grid" id="authorityGrid" data-agent-authorities></div>
+    </section>
+
+    <section class="agent-section agent-workflow-section" aria-labelledby="workflowTitle">
+      <div class="agent-section-heading">
+        <div><p class="agent-kicker">DETERMINISTIC WORKFLOW</p><h2 id="workflowTitle">Resolve, then validate.</h2></div>
+        <p>The six steps below are rendered in contract order. Sources and outputs remain visible so an agent can explain what it used and what it produced.</p>
+      </div>
+      <ol class="agent-workflow" id="workflowList" data-agent-workflow></ol>
+    </section>
+
+    <div class="agent-two-up">
+      <section class="agent-panel" aria-labelledby="readOrderTitle">
+        <p class="agent-kicker">READ BEFORE WRITE</p>
+        <h2 id="readOrderTitle">Repository-source order.</h2>
+        <p class="agent-panel-copy">The v1.4 contract coordinates repository sources. The frozen npm package intentionally does not publish the documentation-layer manifests.</p>
+        <ol class="agent-read-order" id="readOrderList" data-agent-read-order></ol>
+      </section>
+
+      <section class="agent-panel" aria-labelledby="outputTitle">
+        <p class="agent-kicker">REVIEW OUTPUT CONTRACT</p>
+        <h2 id="outputTitle">Show your work without exposing hidden reasoning.</h2>
+        <p class="agent-panel-copy">Completion reports name the affected contracts, capability gates, interaction rules, responsive/accessibility impact, and tests changed.</p>
+        <ul class="agent-output-list" id="outputList" data-agent-outputs></ul>
+      </section>
+    </div>
+
+    <section class="agent-prohibitions" aria-labelledby="prohibitionsTitle">
+      <div class="agent-section-heading">
+        <div><p class="agent-kicker">ANTI-GUESS LAWS</p><h2 id="prohibitionsTitle">Unsupported meaning stays unsupported.</h2></div>
+        <p>Provider names, demo copy, and convenience are never permission to invent Commerce semantics.</p>
+      </div>
+      <ul class="agent-prohibition-grid" id="prohibitionList" data-agent-prohibitions></ul>
+    </section>
+
+    <p class="agent-status" id="agentStatus" role="status">Loading the manifest-backed agent execution contract…</p>
+  </main>
+
+  <footer class="agent-footer"><strong>NEOBRUTAL COMMERCE</strong><span>Permanent Agent Execution Lab v1.4 · repository-source guidance · frozen Commerce v1.0 runtime</span><a href="https://github.com/NeoBrutalism-shop/NeoBrutal-Commerce">View source ↗</a></footer>
+</body>
+</html>
