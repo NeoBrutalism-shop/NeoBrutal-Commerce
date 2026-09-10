@@ -11,17 +11,19 @@ const same=(a,b)=>[...a].sort().join(',')===[...b].sort().join(',');
 const FIRST_BATCH=['product-media','checkout-steps','payment-failure','payment-recovery','processing-state','license-status','update-eligibility','renewal-state','plan-change','ownership-transfer','subscription-management','system-states'];
 const SECOND_BATCH=['product-card','badge','price-block','product-detail','product-gallery','license-selector','renewal-note'];
 const THIRD_BATCH=['trust-strip','review-summary','testimonials','guarantee','pricing-tier','plan-comparison','bundle-builder'];
+const FOURTH_BATCH=['cart-item','order-summary','coupon','checkout-field','payment-method','order-confirmation','receipt'];
 
 const audit=json('storefront/component-demo-depth.json');
 const registry=json('storefront/components.json');
 const packageManifest=json('package.json');
 const tokensCss=read('src/tokens.css');
 const batches=audit.implementationBatches||[];
-if(batches.length!==3)fail('Component implementation evidence must expose exactly three audited batches');
-const first=batches[0],second=batches[1],third=batches[2];
+if(batches.length!==4)fail('Component implementation evidence must expose exactly four audited batches');
+const first=batches[0],second=batches[1],third=batches[2],fourth=batches[3];
 if(first.id!=='stateful-high-risk'||first.ordinal!==1||first.evidenceFile!=='storefront/component-demo-implementation.json'||!same(first.componentIds||[],FIRST_BATCH))fail('First implementation batch provenance drifted');
 if(second.id!=='product-storefront'||second.ordinal!==2||second.evidenceFile!=='storefront/component-demo-implementation-product.json'||!same(second.componentIds||[],SECOND_BATCH))fail('Second product/storefront implementation batch provenance drifted');
 if(third.id!=='trust-review-pricing'||third.ordinal!==3||third.evidenceFile!=='storefront/component-demo-implementation-trust-pricing.json'||!same(third.componentIds||[],THIRD_BATCH))fail('Third trust/review/pricing implementation batch provenance drifted');
+if(fourth.id!=='cart-checkout'||fourth.ordinal!==4||fourth.evidenceFile!=='storefront/component-demo-implementation-cart-checkout.json'||!same(fourth.componentIds||[],FOURTH_BATCH))fail('Fourth cart/checkout implementation batch provenance drifted');
 if(!same(audit.nextImplementationBatch||[],FIRST_BATCH))fail('Legacy first implementation batch alias drifted');
 
 const batchFiles=batches.map(batch=>({batch,evidence:json(batch.evidenceFile)}));
@@ -35,7 +37,7 @@ for(const {batch,evidence} of batchFiles){
   for(const entry of evidence.components||[])entries.push({...entry,batchId:batch.id});
 }
 const ids=entries.map(entry=>entry.id);
-if(entries.length!==26||new Set(ids).size!==26||!same(ids,[...FIRST_BATCH,...SECOND_BATCH,...THIRD_BATCH]))fail('Accumulated implementation evidence must cover exact 26-component set');
+if(entries.length!==33||new Set(ids).size!==33||!same(ids,[...FIRST_BATCH,...SECOND_BATCH,...THIRD_BATCH,...FOURTH_BATCH]))fail('Accumulated implementation evidence must cover exact 33-component set');
 
 const registryById=new Map(registry.components.map(component=>[component.id,component]));
 const definedTokens=new Set([...tokensCss.matchAll(/(--nbc-[\w-]+)\s*:/g)].map(match=>match[1]));
@@ -104,6 +106,27 @@ try{
   if(!comparisonHtml.includes('<table')||!comparisonHtml.includes('tabindex="0"')||!comparisonHtml.includes('scope="col"'))fail('Plan-comparison evidence must remain semantic and keyboard-scrollable');
   const bundleHtml=byId.get('bundle-builder')?.copyReady?.html||'';
   if(!bundleHtml.includes('type="checkbox"')||/type="checkbox"[^>]*checked/i.test(bundleHtml)||!bundleHtml.includes('nbc-bundle-total'))fail('Bundle-builder evidence must start optional extras unselected and keep total inspectable');
+
+  const cartHtml=byId.get('cart-item')?.copyReady?.html||'';
+  const cartJs=byId.get('cart-item')?.copyReady?.js||'';
+  if(!cartHtml.includes('data-cart-id')||!cartHtml.includes('data-line-id')||!cartJs.includes('cart.remove')||!cartJs.includes('cartId:root.dataset.cartId')||!cartJs.includes('lineId:root.dataset.lineId'))fail('Cart-item evidence must preserve canonical cart.remove identity and payload');
+  const summaryHtml=byId.get('order-summary')?.copyReady?.html||'';
+  const summaryJs=byId.get('order-summary')?.copyReady?.js||'';
+  if(!/provider-normalized quote values are authoritative/i.test(summaryHtml)||!summaryJs.includes('quote.subtotal')||!summaryJs.includes('quote.total')||/tax rate|jurisdiction/i.test(summaryJs))fail('Order-summary evidence must render normalized quote totals without inferring tax jurisdiction or rates');
+  const couponHtml=byId.get('coupon')?.copyReady?.html||'';
+  const couponJs=byId.get('coupon')?.copyReady?.js||'';
+  if(!couponHtml.includes('aria-live="polite"')||!couponJs.includes('checkout.quote')||!couponJs.includes('couponCodes')||/discount\s*=|tax\s*=/i.test(couponJs))fail('Coupon evidence must requote through checkout.quote and expose returned outcome without local discount/tax math');
+  const fieldHtml=byId.get('checkout-field')?.copyReady?.html||'';
+  if(!fieldHtml.includes('<label')||!fieldHtml.includes('autocomplete="email"')||!fieldHtml.includes('aria-describedby')||!fieldHtml.includes('required'))fail('Checkout-field evidence must preserve explicit labels, autocomplete, and recoverable validation anatomy');
+  const paymentHtml=byId.get('payment-method')?.copyReady?.html||'';
+  const paymentJs=byId.get('payment-method')?.copyReady?.js||'';
+  if(!paymentHtml.includes('<fieldset')||!paymentHtml.includes('<legend')||!paymentHtml.includes('type="radio"')||!paymentHtml.includes('checked')||/createCommerceAction\s*\(/.test(paymentJs))fail('Payment-method evidence must preserve local normalized selection without inventing a Commerce action');
+  const confirmationHtml=byId.get('order-confirmation')?.copyReady?.html||'';
+  const confirmationJs=byId.get('order-confirmation')?.copyReady?.js||'';
+  if(!/entitlement.*separately/i.test(confirmationHtml)||/license is ready|download is ready|entitlement delivered/i.test(confirmationHtml)||!confirmationJs.includes("order.status!=='complete'"))fail('Order-confirmation evidence must prove a complete transaction without claiming entitlement delivery');
+  const receiptHtml=byId.get('receipt')?.copyReady?.html||'';
+  const receiptJs=byId.get('receipt')?.copyReady?.js||'';
+  if(!receiptHtml.includes('data-receipt-order-total')||!receiptHtml.includes('data-receipt-invoice-number')||!receiptHtml.includes('data-receipt-invoice-status')||!receiptJs.includes('{order,invoice}'))fail('Receipt evidence must keep order/payment and invoice records distinct');
 
   console.log(`Component implementation evidence passed · ${entries.length}/47 components · ${batches.length} batches · ${entries.reduce((sum,entry)=>sum+entry.tokens.length,0)} source-backed token references · ${entries.length*3} copy-ready snippets`);
 } finally {
