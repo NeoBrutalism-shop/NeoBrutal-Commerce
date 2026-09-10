@@ -1,6 +1,9 @@
 import {test,expect} from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 
+const escapeRegex=value=>value.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+const depthChip=(card,status,label)=>card.locator(`.cx-depth-chip[data-depth-status="${status}"]`).filter({hasText:new RegExp(`^${escapeRegex(label)}$`)});
+
 const waitForDepthAudit=async page=>{
   await expect(page.locator('html')).toHaveAttribute('data-showcase-ready','true');
   await expect(page.locator('html')).toHaveAttribute('data-component-depth-ready','true');
@@ -31,10 +34,10 @@ test('v1.1 component demo depth audit covers the exact 47-component explorer',as
   await expect(subscription).toHaveAttribute('data-demo-depth-first-batch','true');
   await expect(subscription).toHaveAttribute('data-demo-implementation-evidence','true');
   await subscription.locator('[data-component-depth-audit] summary').click();
-  await expect(subscription.locator('.cx-depth-chip[data-depth-status="complete"]',{hasText:/^Canonical states$/})).toBeVisible();
-  await expect(subscription.locator('.cx-depth-chip[data-depth-status="complete"]',{hasText:/^Action contracts$/})).toBeVisible();
-  await expect(subscription.locator('.cx-depth-chip[data-depth-status="complete"]',{hasText:/^Design tokens used$/})).toBeVisible();
-  await expect(subscription.locator('.cx-depth-chip[data-depth-status="complete"]',{hasText:/^Copy-ready HTML \/ CSS \/ JS$/})).toBeVisible();
+  await expect(depthChip(subscription,'complete','Canonical states')).toBeVisible();
+  await expect(depthChip(subscription,'complete','Action contracts')).toBeVisible();
+  await expect(depthChip(subscription,'complete','Design tokens used')).toBeVisible();
+  await expect(depthChip(subscription,'complete','Copy-ready HTML / CSS / JS')).toBeVisible();
   await expect(subscription.locator('[data-demo-token-list] .cx-depth-token')).toHaveCount(6);
   await expect(subscription.locator('[data-copy-ready-kind="html"]')).toContainText('data-subscription-state');
   await expect(subscription.locator('[data-copy-ready-kind="css"]')).toContainText('@neobrutal/commerce/styles.css');
@@ -52,10 +55,10 @@ test('v1.1 component demo depth audit covers the exact 47-component explorer',as
   const trust=page.locator('[data-component-id="trust-strip"]');
   await expect(trust).toHaveAttribute('data-demo-implementation-evidence','false');
   await trust.locator('[data-component-depth-audit] summary').click();
-  await expect(trust.locator('.cx-depth-chip[data-depth-status="not-applicable"]',{hasText:/^Canonical states$/})).toBeVisible();
-  await expect(trust.locator('.cx-depth-chip[data-depth-status="not-applicable"]',{hasText:/^Action contracts$/})).toBeVisible();
-  await expect(trust.locator('.cx-depth-chip[data-depth-status="missing"]',{hasText:/^Design tokens used$/})).toBeVisible();
-  await expect(trust.locator('.cx-depth-chip[data-depth-status="missing"]',{hasText:/^Copy-ready HTML \/ CSS \/ JS$/})).toBeVisible();
+  await expect(depthChip(trust,'not-applicable','Canonical states')).toBeVisible();
+  await expect(depthChip(trust,'not-applicable','Action contracts')).toBeVisible();
+  await expect(depthChip(trust,'missing','Design tokens used')).toBeVisible();
+  await expect(depthChip(trust,'missing','Copy-ready HTML / CSS / JS')).toBeVisible();
   await expect(trust.locator('[data-demo-implementation-evidence]')).toHaveCount(0);
 
   const results=await new AxeBuilder({page}).withTags(['wcag2a','wcag2aa','wcag21a','wcag21aa']).analyze();
