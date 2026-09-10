@@ -97,9 +97,12 @@ for(const marker of orderedSteps){
   previous=index;
 }
 for(const marker of [
+  'runs-on: ubuntu-latest',
+  'timeout-minutes: 30',
   'actions/checkout@v6',
   'actions/setup-node@v6',
   'node-version: 24',
+  'package-manager-cache: false',
   'registry-url: https://registry.npmjs.org',
   `process.env.GITHUB_REF_NAME!=='v'+p.version`,
   'run: npm ci --ignore-scripts --no-audit --no-fund',
