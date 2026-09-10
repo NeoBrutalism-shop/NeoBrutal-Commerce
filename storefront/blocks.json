@@ -84,6 +84,30 @@
       "themeMode": "semantic-surface"
     },
     {
+      "id": "product-detail",
+      "title": "Product details",
+      "category": "product",
+      "description": "Reusable product identity, description, scope, proof context, and purchase-path composition backed by the frozen product-detail contract.",
+      "components": ["product-detail"],
+      "route": "./product/soft/",
+      "responsiveMode": "grid-to-stack",
+      "a11y": ["heading-order", "semantic-group", "consequence-visible"],
+      "themeMode": "semantic-surface",
+      "promotedFrom": "product-media"
+    },
+    {
+      "id": "product-gallery",
+      "title": "Product gallery",
+      "category": "product",
+      "description": "Keyboard-operable product-media gallery with a primary preview and named selectable thumbnails, promoted as a reusable product Block.",
+      "components": ["product-gallery"],
+      "route": "./product/soft/",
+      "responsiveMode": "contained-scroll",
+      "a11y": ["named-controls", "keyboard", "programmatic-state"],
+      "themeMode": "semantic-surface",
+      "promotedFrom": "product-media"
+    },
+    {
       "id": "license-purchase",
       "title": "License purchase panel",
       "category": "product",
