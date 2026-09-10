@@ -12,10 +12,12 @@
   <link rel="stylesheet" href="./storefront/store.css" />
   <link rel="stylesheet" href="./component-explorer.css" />
   <link rel="stylesheet" href="./component-showcase.css" />
+  <link rel="stylesheet" href="./component-depth-audit.css" />
   <link rel="stylesheet" href="./showcase-fixes.css" />
   <script type="module" src="./component-explorer.js"></script>
   <script type="module" src="./block-expansion.js"></script>
   <script type="module" src="./component-showcase.js"></script>
+  <script type="module" src="./component-depth-audit.js"></script>
   <script type="module">
     let demoControlId=0;
     function normalizePreviewSemantics(){
@@ -75,7 +77,7 @@
       </nav>
       <div class="cx-sidebar-note">
         <span class="nbc-badge nbc-badge--lime">LIVE CONTRACTS</span>
-        <p>Execution comes from <code>storefront/components.json</code>. v1.1 design guidance comes from <code>component-showcase.json</code> and <code>blocks.json</code>. CI keeps all three aligned.</p>
+        <p>Execution comes from <code>storefront/components.json</code>. v1.1 design guidance comes from <code>component-showcase.json</code> and <code>blocks.json</code>. Demo-depth evidence is audited separately so incomplete implementation guidance stays visible instead of being overclaimed.</p>
       </div>
     </aside>
 
@@ -84,7 +86,7 @@
         <div class="cx-hero-copy">
           <p class="cx-kicker">PUBLIC EXPLORER · SHOWCASE v1.1 · COMMERCE v1.0</p>
           <h1>47 contracts.<br /><span>Real pixels.</span></h1>
-          <p>Learn Commerce by touching it. Browse every frozen component, inspect normalized model/action/state contracts plus variants, responsive rules, theming, and accessibility guidance, then jump into reusable blocks and the real ten-route storefront lab.</p>
+          <p>Learn Commerce by touching it. Browse every frozen component, inspect normalized model/action/state contracts plus variants, responsive rules, theming, accessibility guidance, and the live demo-depth audit, then jump into reusable blocks and the real ten-route storefront lab.</p>
           <div class="cx-hero-actions"><a class="nbc-button nbc-button--primary nbc-tactile" href="#componentsPanel">BROWSE COMPONENTS</a><a class="nbc-button nbc-tactile" href="./demo/v10.html">OPEN PAGE LAB →</a></div>
         </div>
         <div class="cx-stats" aria-label="Explorer coverage">
@@ -98,7 +100,7 @@
       <section class="cx-panel" id="componentsPanel" role="tabpanel" aria-labelledby="componentsTab">
         <div class="cx-section-head">
           <div><p class="cx-kicker">COMPONENTS</p><h2>Every public Commerce pattern.</h2></div>
-          <p>Search by name, model, action, state, variant, accessibility rule, responsive mode, or category. Each card shows the machine contract beside a working visual sample.</p>
+          <p>Search by name, model, action, state, variant, accessibility rule, responsive mode, or category. Each card shows the machine contract beside a working visual sample and an evidence-based demo-depth audit.</p>
         </div>
         <div class="cx-result-meta" aria-live="polite"><strong id="resultCount">47 components</strong><span id="resultHint">Showing the complete frozen registry.</span></div>
         <div class="cx-component-grid" id="componentGrid"><div class="cx-loading">Loading the Commerce v1.0 registry + v1.1 showcase contracts…</div></div>

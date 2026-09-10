@@ -8,13 +8,16 @@ const required=[
   'AGENTS.md','LLMS.md','COMPONENTS.md',
   'docs/ADOPTION.md','docs/AGENT-PLAYBOOK.md','docs/AI-COMPONENT-NOTES.md',
   'docs/RECIPES.md','docs/THEMING.md','docs/MIGRATION.md','docs/PROVIDER-EXAMPLES.md','docs/RELEASE-CANDIDATE.md','docs/PUBLIC-RELEASE.md',
-  'storefront/components.json','storefront/component-showcase.json','storefront/component-states.json','storefront/blocks.json'
+  'docs/V1.1-COMPONENT-DEMO-DEPTH-AUDIT.md',
+  'storefront/components.json','storefront/component-showcase.json','storefront/component-states.json','storefront/component-demo-depth.json','storefront/blocks.json',
+  'component-depth-audit.js','component-depth-audit.css','tests/component-demo-depth-v11.spec.mjs'
 ];
 for(const file of required){if(!fs.existsSync(path.join(root,file))){console.error(`Missing adoption file: ${file}`);process.exit(1);}}
 
 const manifest=json('storefront/components.json');
 const showcase=json('storefront/component-showcase.json');
 const stateExamples=json('storefront/component-states.json');
+const demoDepth=json('storefront/component-demo-depth.json');
 const blocks=json('storefront/blocks.json');
 const packageManifest=json('package.json');
 const routes=json('storefront/routes.json');
@@ -29,6 +32,7 @@ for(const route of routes.routes){for(const id of route.primaryComponents||[]){i
 
 if(showcase.schema!=='neobrutal-commerce/component-showcase@1'||showcase.showcaseVersion!=='1.1.0'||showcase.commerceVersion!==packageManifest.version){console.error('v1.1 component showcase contract is missing or version-inconsistent');process.exit(1);}
 if(stateExamples.schema!=='neobrutal-commerce/component-states@1'||stateExamples.showcaseVersion!=='1.1.0'||stateExamples.commerceVersion!==packageManifest.version){console.error('v1.1 component state showcase contract is missing or version-inconsistent');process.exit(1);}
+if(demoDepth.schema!=='neobrutal-commerce/component-demo-depth@1'||demoDepth.showcaseVersion!=='1.1.0'||demoDepth.commerceVersion!==packageManifest.version||demoDepth.role!=='audit-evidence-only'){console.error('v1.1 component demo depth audit is missing or version-inconsistent');process.exit(1);}
 if(blocks.schema!=='neobrutal-commerce/blocks@1'||blocks.showcaseVersion!=='1.1.0'||blocks.commerceVersion!==packageManifest.version){console.error('v1.1 blocks showcase contract is missing or version-inconsistent');process.exit(1);}
 
 const canonicalActions=new Set(manifest.canonicalActions||[]);
@@ -42,10 +46,62 @@ for(const component of manifest.components){
   for(const state of component.states){if(!canonicalStates.has(state)){console.error(`${component.id} uses unknown state ${state}`);process.exit(1);}}
 }
 
+const expectedDepthCriteria=['preview','variants','canonical-states','edge-states','themes','devices','interaction','accessibility','tokens','api','actions','copy-ready','llm-usage'];
+const allowedDepthStatuses=['complete','partial','missing','not-applicable'];
+const depthCriteria=(demoDepth.criteria||[]).map(item=>item.id);
+if(JSON.stringify(depthCriteria)!==JSON.stringify(expectedDepthCriteria)){console.error(`Component demo depth criteria drifted: ${depthCriteria.join(', ')}`);process.exit(1);}
+if(JSON.stringify(demoDepth.statuses)!==JSON.stringify(allowedDepthStatuses)){console.error('Component demo depth status taxonomy drifted');process.exit(1);}
+for(const criterion of demoDepth.criteria){if(!criterion.label?.trim()||!criterion.evidenceAuthority?.trim()){console.error(`Component demo depth criterion missing label/evidence authority: ${criterion.id}`);process.exit(1);}}
+if(Object.keys(demoDepth.defaultStatus||{}).sort().join(',')!==[...expectedDepthCriteria].sort().join(',')){console.error('Component demo depth default status must cover every checklist criterion exactly');process.exit(1);}
+for(const [criterion,status] of Object.entries(demoDepth.defaultStatus)){if(!allowedDepthStatuses.includes(status)){console.error(`Component demo depth default uses unknown status: ${criterion}:${status}`);process.exit(1);}}
+const depthComponents=demoDepth.components||[];
+const depthIds=depthComponents.map(component=>component.id);
+if(depthIds.length!==ids.length||new Set(depthIds).size!==depthIds.length||[...depthIds].sort().join(',')!==[...ids].sort().join(',')){console.error('Component demo depth audit must cover the exact frozen 47-component registry');process.exit(1);}
+const manifestById=new Map(manifest.components.map(component=>[component.id,component]));
+const resolvedDepth=new Map();
+for(const audit of depthComponents){
+  const source=manifestById.get(audit.id);
+  if(!source){console.error(`Component demo depth audit references unknown component: ${audit.id}`);process.exit(1);}
+  const overrides=audit.overrides||{};
+  for(const [criterion,status] of Object.entries(overrides)){
+    if(!expectedDepthCriteria.includes(criterion)){console.error(`Component demo depth override uses unknown criterion: ${audit.id}:${criterion}`);process.exit(1);}
+    if(!allowedDepthStatuses.includes(status)){console.error(`Component demo depth override uses unknown status: ${audit.id}:${criterion}:${status}`);process.exit(1);}
+  }
+  const resolved={...demoDepth.defaultStatus,...overrides};
+  const expectedStateStatus=source.states.length?'complete':'not-applicable';
+  const expectedActionStatus=source.actions.length?'complete':'not-applicable';
+  if(resolved['canonical-states']!==expectedStateStatus){console.error(`Component demo state applicability drifted: ${audit.id} expected ${expectedStateStatus}`);process.exit(1);}
+  if(resolved.actions!==expectedActionStatus){console.error(`Component demo action applicability drifted: ${audit.id} expected ${expectedActionStatus}`);process.exit(1);}
+  resolvedDepth.set(audit.id,resolved);
+}
+const statefulIds=manifest.components.filter(component=>component.states.length).map(component=>component.id).sort();
+const stateExampleIds=(stateExamples.components||[]).map(component=>component.id).sort();
+if(statefulIds.join(',')!==stateExampleIds.join(',')){console.error('Component demo depth stateful set drifted from live canonical-state evidence');process.exit(1);}
+if([...(demoDepth.nextImplementationBatch||[])].sort().join(',')!==statefulIds.join(',')){console.error('First component demo depth implementation batch must equal the exact stateful component set');process.exit(1);}
+const depthCounts=Object.fromEntries(expectedDepthCriteria.map(criterion=>[criterion,Object.fromEntries(allowedDepthStatuses.map(status=>[status,0]))]));
+for(const resolved of resolvedDepth.values())for(const criterion of expectedDepthCriteria)depthCounts[criterion][resolved[criterion]]++;
+if(depthCounts.preview.complete!==47||depthCounts.accessibility.complete!==47){console.error('Existing 47/47 preview and accessibility coverage must remain complete');process.exit(1);}
+if(depthCounts['canonical-states'].complete!==12||depthCounts['canonical-states']['not-applicable']!==35){console.error('Canonical-state audit must remain 12 complete / 35 not-applicable until the frozen registry changes');process.exit(1);}
+if(depthCounts.actions.complete!==16||depthCounts.actions['not-applicable']!==31){console.error('Action-contract audit must remain 16 complete / 31 not-applicable until the frozen registry changes');process.exit(1);}
+if(depthCounts.tokens.missing!==47||depthCounts['copy-ready'].missing!==47){console.error('Audit baseline must not overclaim per-component tokens or copy-ready implementation before evidence ships');process.exit(1);}
+
+const depthClient=read('component-depth-audit.js');
+const depthCss=read('component-depth-audit.css');
+const depthBrowser=read('tests/component-demo-depth-v11.spec.mjs');
+try{new Function(depthClient)}catch(error){console.error(`component-depth-audit.js syntax error: ${error.message}`);process.exit(1);}
+if(/transition\s*:\s*all/i.test(depthCss)||/:hover[^\{]*\{[^\}]*translate(?:Y)?\(\s*-/i.test(depthCss)){console.error('Component demo depth UI violates motion/tactile laws');process.exit(1);}
+for(const marker of ['component-demo-depth.json','data-component-depth-audit','dataset.componentDepthReady','dataset.componentDepthAudited','nextImplementationBatch']){if(!depthClient.includes(marker)){console.error(`Component demo depth runtime missing marker: ${marker}`);process.exit(1);}}
+for(const marker of ['47*13','data-demo-depth-first-batch','Canonical states','Action contracts','Design tokens used','Copy-ready HTML / CSS / JS','AxeBuilder']){if(!depthBrowser.includes(marker)){console.error(`Component demo depth Browser QA missing marker: ${marker}`);process.exit(1);}}
+const explorerHtml=read('components.html');
+for(const marker of ['./component-depth-audit.css','./component-depth-audit.js','demo-depth audit']){if(!explorerHtml.includes(marker)){console.error(`components.html missing component demo depth marker: ${marker}`);process.exit(1);}}
+
 const componentsDoc=read('COMPONENTS.md');
 const documentedBlockCount=`${blocks.blocks.length} / ${blocks.blocks.length}`;
 for(const marker of ['Showcase v1.1 / Commerce v1.0','47 / 47',documentedBlockCount,'42 / 42','storefront/component-showcase.json','storefront/component-states.json','storefront/blocks.json','scripts/showcase-check.mjs']){if(!componentsDoc.includes(marker)){console.error(`COMPONENTS.md missing v1.1 showcase marker: ${marker}`);process.exit(1);}}
 for(const block of blocks.blocks){if(!componentsDoc.includes(`\`${block.id}\``)){console.error(`COMPONENTS.md missing current Block id: ${block.id}`);process.exit(1);}}
+const depthDoc=read('docs/V1.1-COMPONENT-DEMO-DEPTH-AUDIT.md');
+for(const marker of ['v1.1 Component demo depth audit','audit evidence only','47','12','16','Design tokens used','Copy-ready HTML / CSS / JS','First implementation-depth batch','storefront/component-demo-depth.json']){if(!depthDoc.includes(marker)){console.error(`Component demo depth audit doc missing marker: ${marker}`);process.exit(1);}}
+for(const id of demoDepth.nextImplementationBatch){if(!depthDoc.includes(`\`${id}\``)){console.error(`Component demo depth audit doc missing first-batch component: ${id}`);process.exit(1);}}
 const agents=read('AGENTS.md');
 for(const marker of ['storefront/components.json','docs/AGENT-PLAYBOOK.md','docs/AI-COMPONENT-NOTES.md','Read before write','Do not guess']){if(!agents.includes(marker)){console.error(`AGENTS.md missing adoption marker: ${marker}`);process.exit(1);}}
 const adoption=read('docs/ADOPTION.md');
@@ -64,4 +120,4 @@ const providers=read('docs/PROVIDER-EXAMPLES.md');
 for(const marker of ['createEddCommerceAdapter','createLicensingBridgeAdapter','capabilities','normalize','cancel_at_period_end']){if(!providers.includes(marker)){console.error(`PROVIDER-EXAMPLES.md missing marker: ${marker}`);process.exit(1);}}
 
 const documentedStates=stateExamples.components.reduce((sum,component)=>sum+component.states.length,0);
-console.log(`NeoBrutal Commerce v1.0 adoption docs + Showcase v1.1 passed · ${manifest.components.length} components · ${blocks.blocks.length} blocks · ${documentedStates} live states · ${routes.routes.length} production routes`);
+console.log(`NeoBrutal Commerce v1.0 adoption docs + Showcase v1.1 passed · ${manifest.components.length} components · ${blocks.blocks.length} blocks · ${documentedStates} live states · ${routes.routes.length} production routes · component demo depth audit ${depthComponents.length}/${manifest.components.length}`);
