@@ -196,6 +196,18 @@
       "themeMode": "semantic-status"
     },
     {
+      "id": "order-confirmation",
+      "title": "Order confirmation",
+      "category": "checkout",
+      "description": "Standalone normalized order-result confirmation that states transaction completion without conflating receipt, entitlement, or billing records.",
+      "components": ["order-confirmation"],
+      "route": "./order/success/",
+      "responsiveMode": "state-panel",
+      "a11y": ["status-live", "data-authoritative", "heading-order"],
+      "themeMode": "semantic-status",
+      "promotedFrom": "order-success"
+    },
+    {
       "id": "account-dashboard",
       "title": "Account dashboard",
       "category": "account",
