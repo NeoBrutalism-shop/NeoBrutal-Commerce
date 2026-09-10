@@ -43,10 +43,18 @@ exactIds('page ids',pageIds,routeIds);
 
 const routeMap=new Map(routeDocs.map(route=>[route.id,route]));
 const blockMap=new Map(blockDocs.map(block=>[block.id,block]));
+const statefulRouteIds=[];
 for(const route of routeDocs){
   if(!Array.isArray(route.primaryComponents)||route.primaryComponents.length===0)fail(`frozen route ${route.id} must expose primaryComponents`);
   unique(route.primaryComponents,`frozen route ${route.id} primaryComponents`);
+  if(route.states!==undefined){
+    if(!Array.isArray(route.states)||route.states.length===0)fail(`frozen route ${route.id} states must be a non-empty array when declared`);
+    route.states.forEach((state,index)=>requiredText(state,`frozen route ${route.id} state ${index}`));
+    unique(route.states,`frozen route ${route.id} states`);
+    statefulRouteIds.push(route.id);
+  }
 }
+exactIds('routes with canonical states',statefulRouteIds,['product-soft','checkout','account-license']);
 for(const block of blockDocs){
   if(!Array.isArray(block.components)||block.components.length===0)fail(`block ${block.id} must reference at least one component`);
   unique(block.components,`block ${block.id} components`);
@@ -81,12 +89,15 @@ for(const marker of [
   "dataset.pageLibraryReady='true'",
   'data-page-id',
   'data-page-block',
+  'data-route-state',
+  'data-route-state-empty',
+  'current.states',
   'LEGACY_ROUTE_ALIASES',
   'page library ids drifted from frozen routes',
   'page library must compose all 18 documented blocks'
 ])if(!lab.includes(marker))fail(`Page Lab runtime contract missing marker: ${marker}`);
 try{new Function(lab)}catch(error){fail(`demo/v10.js syntax error: ${error.message}`)}
 
-for(const marker of ['PAGE LAB v1.2','id="currentIntent"','id="currentBlocks"','id="pageCountBadge"'])if(!html.includes(marker))fail(`Page Lab HTML missing v1.2 marker: ${marker}`);
+for(const marker of ['PAGE LAB v1.2','id="currentIntent"','id="currentBlocks"','id="currentStates"','ROUTE STATES','id="pageCountBadge"'])if(!html.includes(marker))fail(`Page Lab HTML missing v1.2 marker: ${marker}`);
 
-console.log(`NeoBrutal Commerce Pages v${expectedPageLibrary} passed · 10/10 route-complete page contracts · 18/18 Blocks → Pages coverage · Page Lab derives frozen routes`);
+console.log(`NeoBrutal Commerce Pages v${expectedPageLibrary} passed · 10/10 route-complete page contracts · 18/18 Blocks → Pages coverage · 3 stateful routes · Page Lab derives frozen routes/states`);
