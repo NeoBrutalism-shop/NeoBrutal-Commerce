@@ -1,0 +1,43 @@
+/* GitHub Pages showcase hardening.
+   Keep these corrections outside the frozen npm/runtime CSS contract. */
+
+/* The pink showcase band pins its own dark foreground. Route cards use theme
+   surfaces, so reset their content back to the active theme foreground. */
+.store-section--pink .store-route{
+  color:var(--nbc-text);
+  background:var(--nbc-surface);
+  border-color:var(--nbc-border);
+}
+.store-section--pink .store-route code{color:var(--nbc-text)}
+.store-section--pink .store-route span{color:var(--nbc-muted)}
+
+/* The explorer's generic anchor inheritance is intentionally broad for docs
+   links, but it must not override component-local contrast on accent buttons. */
+.cx-page a.nbc-button--primary,
+.cx-page a.nbc-button--coral{color:#151515}
+.cx-page a.nbc-button--dark{color:#fff7e8}
+
+/* Receipt cells intentionally use a fixed light surface in the frozen
+   component CSS. Keep their foreground fixed as well when the explorer shell
+   switches to dark mode. */
+:is(.cx-preview,.cx-block-preview) .nbc-receipt-grid > div{color:#151515}
+
+/* Primary + helper copy must read as two deliberate lines, never one fused
+   label. Do not recolor helper text here: checked license/payment controls own
+   their accent-surface foreground and must remain the contrast authority. */
+:is(.cx-preview,.cx-block-preview) strong + small{
+  display:block;
+  margin-top:.22rem;
+  line-height:1.35;
+}
+.cx-mini-row > span{
+  display:grid;
+  gap:.22rem;
+  min-width:0;
+}
+.cx-mini-row > span > :is(strong,small){min-width:0}
+.cx-mini-row > span > small{
+  display:block;
+  margin:0;
+  line-height:1.35;
+}
