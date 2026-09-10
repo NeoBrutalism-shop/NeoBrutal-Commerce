@@ -96,6 +96,7 @@
     {
       "id": "product-card",
       "overrides": {
+        "variants": "complete",
         "actions": "complete",
         "tokens": "complete",
         "copy-ready": "complete"
@@ -104,16 +105,21 @@
     {
       "id": "trust-strip",
       "overrides": {
+        "variants": "complete",
         "tokens": "complete",
         "copy-ready": "complete"
       }
     },
     {
-      "id": "promo-band"
+      "id": "promo-band",
+      "overrides": {
+        "variants": "complete"
+      }
     },
     {
       "id": "badge",
       "overrides": {
+        "variants": "complete",
         "tokens": "complete",
         "copy-ready": "complete"
       }
@@ -121,6 +127,7 @@
     {
       "id": "price-block",
       "overrides": {
+        "variants": "complete",
         "tokens": "complete",
         "copy-ready": "complete"
       }
