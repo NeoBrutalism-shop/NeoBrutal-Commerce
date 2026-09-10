@@ -27,9 +27,11 @@ if(pages.schema!=='neobrutal-commerce/pages@1')fail(`unexpected page library sch
 if(pages.commerceVersion!==expectedCommerce)fail(`pages must target frozen Commerce ${expectedCommerce}`);
 if(pages.pageLibraryVersion!==expectedPageLibrary)fail(`page library must use exact ${expectedPageLibrary}`);
 
-const routeIds=(routes.routes||[]).map(route=>route.id);
-const blockIds=(blocks.blocks||[]).map(block=>block.id);
+const routeDocs=routes.routes||[];
+const blockDocs=blocks.blocks||[];
 const pageDocs=pages.pages||[];
+const routeIds=routeDocs.map(route=>route.id);
+const blockIds=blockDocs.map(block=>block.id);
 const pageIds=pageDocs.map(page=>page.id);
 if(routeIds.length!==10)fail(`expected exactly 10 frozen production routes, received ${routeIds.length}`);
 if(pageIds.length!==10)fail(`expected exactly 10 page contracts, received ${pageIds.length}`);
@@ -39,6 +41,17 @@ unique(blockIds,'block manifest');
 unique(pageIds,'page library');
 exactIds('page ids',pageIds,routeIds);
 
+const routeMap=new Map(routeDocs.map(route=>[route.id,route]));
+const blockMap=new Map(blockDocs.map(block=>[block.id,block]));
+for(const route of routeDocs){
+  if(!Array.isArray(route.primaryComponents)||route.primaryComponents.length===0)fail(`frozen route ${route.id} must expose primaryComponents`);
+  unique(route.primaryComponents,`frozen route ${route.id} primaryComponents`);
+}
+for(const block of blockDocs){
+  if(!Array.isArray(block.components)||block.components.length===0)fail(`block ${block.id} must reference at least one component`);
+  unique(block.components,`block ${block.id} components`);
+}
+
 const knownBlocks=new Set(blockIds);
 const usedBlocks=new Set();
 for(const page of pageDocs){
@@ -46,10 +59,16 @@ for(const page of pageDocs){
   requiredText(page.description,`page ${page.id} description`);
   if(!Array.isArray(page.blocks)||page.blocks.length===0)fail(`page ${page.id} must compose at least one block`);
   unique(page.blocks,`page ${page.id} block composition`);
+  const route=routeMap.get(page.id);
+  if(!route)fail(`page ${page.id} has no frozen route contract`);
+  const composedComponents=new Set();
   for(const blockId of page.blocks){
     if(!knownBlocks.has(blockId))fail(`page ${page.id} references unknown block ${blockId}`);
     usedBlocks.add(blockId);
+    for(const componentId of blockMap.get(blockId).components)composedComponents.add(componentId);
   }
+  const missing=route.primaryComponents.filter(componentId=>!composedComponents.has(componentId));
+  if(missing.length)fail(`page ${page.id} Blocks → Pages composition missing frozen route components: ${missing.join(', ')}`);
 }
 exactIds('Blocks → Pages coverage',[...usedBlocks],blockIds);
 
@@ -70,4 +89,4 @@ try{new Function(lab)}catch(error){fail(`demo/v10.js syntax error: ${error.messa
 
 for(const marker of ['PAGE LAB v1.2','id="currentIntent"','id="currentBlocks"','id="pageCountBadge"'])if(!html.includes(marker))fail(`Page Lab HTML missing v1.2 marker: ${marker}`);
 
-console.log(`NeoBrutal Commerce Pages v${expectedPageLibrary} passed · 10/10 page contracts · 18/18 Blocks → Pages coverage · Page Lab derives frozen routes`);
+console.log(`NeoBrutal Commerce Pages v${expectedPageLibrary} passed · 10/10 route-complete page contracts · 18/18 Blocks → Pages coverage · Page Lab derives frozen routes`);
