@@ -9,8 +9,8 @@ const required=[
   'docs/ADOPTION.md','docs/AGENT-PLAYBOOK.md','docs/AI-COMPONENT-NOTES.md',
   'docs/RECIPES.md','docs/THEMING.md','docs/MIGRATION.md','docs/PROVIDER-EXAMPLES.md','docs/RELEASE-CANDIDATE.md','docs/PUBLIC-RELEASE.md',
   'docs/V1.1-COMPONENT-DEMO-DEPTH-AUDIT.md',
-  'storefront/components.json','storefront/component-showcase.json','storefront/component-states.json','storefront/component-demo-depth.json','storefront/blocks.json',
-  'component-depth-audit.js','component-depth-audit.css','tests/component-demo-depth-v11.spec.mjs'
+  'storefront/components.json','storefront/component-showcase.json','storefront/component-states.json','storefront/component-demo-depth.json','storefront/component-demo-implementation.json','storefront/blocks.json',
+  'component-depth-audit.js','component-depth-audit.css','tests/component-demo-depth-v11.spec.mjs','scripts/component-demo-implementation-check.mjs'
 ];
 for(const file of required){if(!fs.existsSync(path.join(root,file))){console.error(`Missing adoption file: ${file}`);process.exit(1);}}
 
@@ -78,12 +78,17 @@ const statefulIds=manifest.components.filter(component=>component.states.length)
 const stateExampleIds=(stateExamples.components||[]).map(component=>component.id).sort();
 if(statefulIds.join(',')!==stateExampleIds.join(',')){console.error('Component demo depth stateful set drifted from live canonical-state evidence');process.exit(1);}
 if([...(demoDepth.nextImplementationBatch||[])].sort().join(',')!==statefulIds.join(',')){console.error('First component demo depth implementation batch must equal the exact stateful component set');process.exit(1);}
+const firstBatch=new Set(demoDepth.nextImplementationBatch||[]);
+for(const [id,resolved] of resolvedDepth){
+  const expectedImplementationStatus=firstBatch.has(id)?'complete':'missing';
+  if(resolved.tokens!==expectedImplementationStatus||resolved['copy-ready']!==expectedImplementationStatus){console.error(`Component implementation evidence status drifted: ${id} expected ${expectedImplementationStatus}`);process.exit(1);}
+}
 const depthCounts=Object.fromEntries(expectedDepthCriteria.map(criterion=>[criterion,Object.fromEntries(allowedDepthStatuses.map(status=>[status,0]))]));
 for(const resolved of resolvedDepth.values())for(const criterion of expectedDepthCriteria)depthCounts[criterion][resolved[criterion]]++;
 if(depthCounts.preview.complete!==47||depthCounts.accessibility.complete!==47){console.error('Existing 47/47 preview and accessibility coverage must remain complete');process.exit(1);}
 if(depthCounts['canonical-states'].complete!==12||depthCounts['canonical-states']['not-applicable']!==35){console.error('Canonical-state audit must remain 12 complete / 35 not-applicable until the frozen registry changes');process.exit(1);}
 if(depthCounts.actions.complete!==16||depthCounts.actions['not-applicable']!==31){console.error('Action-contract audit must remain 16 complete / 31 not-applicable until the frozen registry changes');process.exit(1);}
-if(depthCounts.tokens.missing!==47||depthCounts['copy-ready'].missing!==47){console.error('Audit baseline must not overclaim per-component tokens or copy-ready implementation before evidence ships');process.exit(1);}
+if(depthCounts.tokens.complete!==12||depthCounts.tokens.missing!==35||depthCounts['copy-ready'].complete!==12||depthCounts['copy-ready'].missing!==35){console.error('Stateful demo implementation evidence must remain exact at 12 complete / 35 missing until the next audited batch ships');process.exit(1);}
 
 const depthClient=read('component-depth-audit.js');
 const depthCss=read('component-depth-audit.css');
@@ -100,7 +105,7 @@ const documentedBlockCount=`${blocks.blocks.length} / ${blocks.blocks.length}`;
 for(const marker of ['Showcase v1.1 / Commerce v1.0','47 / 47',documentedBlockCount,'42 / 42','storefront/component-showcase.json','storefront/component-states.json','storefront/blocks.json','scripts/showcase-check.mjs']){if(!componentsDoc.includes(marker)){console.error(`COMPONENTS.md missing v1.1 showcase marker: ${marker}`);process.exit(1);}}
 for(const block of blocks.blocks){if(!componentsDoc.includes(`\`${block.id}\``)){console.error(`COMPONENTS.md missing current Block id: ${block.id}`);process.exit(1);}}
 const depthDoc=read('docs/V1.1-COMPONENT-DEMO-DEPTH-AUDIT.md');
-for(const marker of ['v1.1 Component demo depth audit','audit evidence only','47','12','16','Design tokens used','Copy-ready HTML / CSS / JS','First implementation-depth batch','storefront/component-demo-depth.json']){if(!depthDoc.includes(marker)){console.error(`Component demo depth audit doc missing marker: ${marker}`);process.exit(1);}}
+for(const marker of ['v1.1 Component demo depth audit','audit evidence only','47','12','16','Design tokens used','Copy-ready HTML / CSS / JS','First implementation-depth batch','storefront/component-demo-depth.json','storefront/component-demo-implementation.json']){if(!depthDoc.includes(marker)){console.error(`Component demo depth audit doc missing marker: ${marker}`);process.exit(1);}}
 for(const id of demoDepth.nextImplementationBatch){if(!depthDoc.includes(`\`${id}\``)){console.error(`Component demo depth audit doc missing first-batch component: ${id}`);process.exit(1);}}
 const agents=read('AGENTS.md');
 for(const marker of ['storefront/components.json','docs/AGENT-PLAYBOOK.md','docs/AI-COMPONENT-NOTES.md','Read before write','Do not guess']){if(!agents.includes(marker)){console.error(`AGENTS.md missing adoption marker: ${marker}`);process.exit(1);}}
@@ -119,5 +124,6 @@ for(const marker of ['v0.5 → v0.6','v0.6 → v0.7','v0.7 → v0.8','v0.8 → v
 const providers=read('docs/PROVIDER-EXAMPLES.md');
 for(const marker of ['createEddCommerceAdapter','createLicensingBridgeAdapter','capabilities','normalize','cancel_at_period_end']){if(!providers.includes(marker)){console.error(`PROVIDER-EXAMPLES.md missing marker: ${marker}`);process.exit(1);}}
 
+await import('./component-demo-implementation-check.mjs');
 const documentedStates=stateExamples.components.reduce((sum,component)=>sum+component.states.length,0);
 console.log(`NeoBrutal Commerce v1.0 adoption docs + Showcase v1.1 passed · ${manifest.components.length} components · ${blocks.blocks.length} blocks · ${documentedStates} live states · ${routes.routes.length} production routes · component demo depth audit ${depthComponents.length}/${manifest.components.length}`);
