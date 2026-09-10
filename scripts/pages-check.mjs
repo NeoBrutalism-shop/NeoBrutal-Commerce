@@ -15,6 +15,9 @@ const requiredText=(value,label)=>{if(typeof value!=='string'||!value.trim())fai
 
 const expectedCommerce='1.0.0';
 const expectedPageLibrary='1.2.0';
+const expectedBlockCount=21;
+const expectedPageComposedBlockCount=18;
+const expectedPromotedBlockCount=3;
 const routes=json('storefront/routes.json');
 const blocks=json('storefront/blocks.json');
 const pages=json('storefront/pages.json');
@@ -35,7 +38,7 @@ const blockIds=blockDocs.map(block=>block.id);
 const pageIds=pageDocs.map(page=>page.id);
 if(routeIds.length!==10)fail(`expected exactly 10 frozen production routes, received ${routeIds.length}`);
 if(pageIds.length!==10)fail(`expected exactly 10 page contracts, received ${pageIds.length}`);
-if(blockIds.length!==18)fail(`expected exactly 18 reusable block contracts, received ${blockIds.length}`);
+if(blockIds.length!==expectedBlockCount)fail(`expected exactly ${expectedBlockCount} reusable block contracts, received ${blockIds.length}`);
 unique(routeIds,'route manifest');
 unique(blockIds,'block manifest');
 unique(pageIds,'page library');
@@ -78,7 +81,20 @@ for(const page of pageDocs){
   const missing=route.primaryComponents.filter(componentId=>!composedComponents.has(componentId));
   if(missing.length)fail(`page ${page.id} Blocks → Pages composition missing frozen route components: ${missing.join(', ')}`);
 }
-exactIds('Blocks → Pages coverage',[...usedBlocks],blockIds);
+
+if(usedBlocks.size!==expectedPageComposedBlockCount)fail(`expected ${expectedPageComposedBlockCount} Page-composed compatibility Blocks, received ${usedBlocks.size}`);
+const promotedBlocks=blockDocs.filter(block=>!usedBlocks.has(block.id));
+if(promotedBlocks.length!==expectedPromotedBlockCount)fail(`expected ${expectedPromotedBlockCount} promoted reusable Blocks outside current Page composition, received ${promotedBlocks.length}`);
+for(const block of promotedBlocks){
+  requiredText(block.promotedFrom,`uncomposed block ${block.id} promotedFrom`);
+  if(block.promotedFrom===block.id)fail(`uncomposed block ${block.id} cannot promote from itself`);
+  const parent=blockMap.get(block.promotedFrom);
+  if(!parent)fail(`uncomposed block ${block.id} promotes from unknown compatibility Block ${block.promotedFrom}`);
+  if(!usedBlocks.has(parent.id))fail(`uncomposed block ${block.id} compatibility parent ${parent.id} must remain Page-composed`);
+  const outsideParent=block.components.filter(componentId=>!parent.components.includes(componentId));
+  if(outsideParent.length)fail(`uncomposed block ${block.id} escapes compatibility parent ${parent.id}: ${outsideParent.join(', ')}`);
+}
+if(usedBlocks.size+promotedBlocks.length!==blockIds.length)fail('Page composition and promoted compatibility accounting must cover every documented Block');
 
 if(/\bconst\s+ROUTES\s*=\s*\[/.test(lab))fail('Page Lab must not hard-code a duplicate route catalog');
 for(const marker of [
@@ -87,6 +103,7 @@ for(const marker of [
   "fetchJson('../storefront/blocks.json')",
   "pageLibrary.schema==='neobrutal-commerce/pages@1'",
   "dataset.pageLibraryReady='true'",
+  'dataset.pageLibraryComposedBlocks',
   'data-page-id',
   'data-page-block',
   'data-route-state',
@@ -94,10 +111,11 @@ for(const marker of [
   'current.states',
   'LEGACY_ROUTE_ALIASES',
   'page library ids drifted from frozen routes',
-  'page library must compose all 18 documented blocks'
+  'promoted compatibility accounting',
+  'compatibility parent'
 ])if(!lab.includes(marker))fail(`Page Lab runtime contract missing marker: ${marker}`);
 try{new Function(lab)}catch(error){fail(`demo/v10.js syntax error: ${error.message}`)}
 
 for(const marker of ['PAGE LAB v1.2','id="currentIntent"','id="currentBlocks"','id="currentStates"','ROUTE STATES','id="pageCountBadge"'])if(!html.includes(marker))fail(`Page Lab HTML missing v1.2 marker: ${marker}`);
 
-console.log(`NeoBrutal Commerce Pages v${expectedPageLibrary} passed · 10/10 route-complete page contracts · 18/18 Blocks → Pages coverage · 3 stateful routes · Page Lab derives frozen routes/states`);
+console.log(`NeoBrutal Commerce Pages v${expectedPageLibrary} passed · 10/10 route-complete page contracts · ${expectedPageComposedBlockCount} Page-composed compatibility Blocks + ${expectedPromotedBlockCount} promoted reusable Blocks · 3 stateful routes · Page Lab derives frozen routes/states`);

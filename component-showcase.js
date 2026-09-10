@@ -1,5 +1,6 @@
 const EXPECTED_SHOWCASE_VERSION='1.1.0';
 const EXPECTED_COMMERCE_VERSION='1.0.0';
+const EXPECTED_BLOCK_COUNT=21;
 const escapeHtml=value=>String(value).replace(/[&<>'"]/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[char]));
 const normalize=value=>String(value||'').trim().toLowerCase();
 const BLOCK_MEDIA_COPY={
@@ -30,7 +31,7 @@ function sameIds(actual,expected){
 }
 
 function waitForExplorer(){
-  const ready=()=>document.querySelectorAll('[data-component-card]').length===47&&document.querySelectorAll('[data-block-card]').length===18;
+  const ready=()=>document.querySelectorAll('[data-component-card]').length===47&&document.querySelectorAll('[data-block-card]').length===EXPECTED_BLOCK_COUNT;
   if(ready())return Promise.resolve();
   return new Promise(resolve=>{
     const observer=new MutationObserver(()=>{
@@ -88,7 +89,7 @@ function validateContracts(registry,contract,blocks,stateExamples){
   assert(registry.commerceVersion===EXPECTED_COMMERCE_VERSION,'component registry Commerce version mismatch');
   assert(registry.components?.length===47,'expected 47 frozen component contracts');
   assert(contract.components?.length===47,'expected 47 showcase component docs');
-  assert(blocks.blocks?.length===18,'expected 18 reusable block docs');
+  assert(blocks.blocks?.length===EXPECTED_BLOCK_COUNT,`expected ${EXPECTED_BLOCK_COUNT} reusable block docs`);
   assertUnique(registry.components,'component registry');
   assertUnique(contract.components,'component showcase');
   assertUnique(blocks.blocks,'blocks showcase');
@@ -114,6 +115,7 @@ function validateContracts(registry,contract,blocks,stateExamples){
   const responsiveIds=new Set(Object.keys(contract.responsiveModes));
   const themeIds=new Set(Object.keys(contract.themeModes));
   const a11yIds=new Set(Object.keys(contract.a11yRules));
+  const blockMap=new Map(blocks.blocks.map(block=>[block.id,block]));
   for(const doc of contract.components){
     assert(categoryIds.has(doc.category),`unknown component category: ${doc.id}:${doc.category}`);
     assert(responsiveIds.has(doc.responsiveMode),`unknown responsive mode: ${doc.id}:${doc.responsiveMode}`);
@@ -126,6 +128,13 @@ function validateContracts(registry,contract,blocks,stateExamples){
     assert(themeIds.has(block.themeMode),`unknown block theme mode: ${block.id}:${block.themeMode}`);
     for(const code of block.a11y)assert(a11yIds.has(code),`unknown block a11y rule: ${block.id}:${code}`);
     for(const id of block.components)assert(registryIds.includes(id),`block ${block.id} references unknown component ${id}`);
+    if(block.promotedFrom!==undefined){
+      assert(typeof block.promotedFrom==='string'&&block.promotedFrom.trim(),`block ${block.id} promotedFrom must be a non-empty block id`);
+      assert(block.promotedFrom!==block.id,`block ${block.id} cannot promote from itself`);
+      const parent=blockMap.get(block.promotedFrom);
+      assert(parent,`block ${block.id} promotes from unknown block ${block.promotedFrom}`);
+      assert(block.components.every(id=>parent.components.includes(id)),`block ${block.id} must remain a component subset of compatibility parent ${parent.id}`);
+    }
   }
 }
 
@@ -203,7 +212,7 @@ function decorateBlocks(blocks,contract){
     card.dataset.category=block.category;
     card.dataset.responsiveMode=block.responsiveMode;
     card.dataset.themeMode=block.themeMode;
-    card.dataset.search=normalize([block.id,block.title,block.category,block.description,...block.components,block.responsiveMode,block.themeMode,...block.a11y].join(' '));
+    card.dataset.search=normalize([block.id,block.title,block.category,block.description,...block.components,block.responsiveMode,block.themeMode,...block.a11y,block.promotedFrom||''].join(' '));
     const preview=card.querySelector('.cx-block-preview');
     assert(preview,`rendered block missing live preview: ${block.id}`);
     preview.dataset.blockPreviewFor=block.id;
@@ -221,8 +230,8 @@ function decorateBlocks(blocks,contract){
     if(link)link.href=block.route;
     if(link)link.insertAdjacentHTML('beforebegin',designDetails(block,contract));
   }
-  assert(seen.size===18,'rendered block set did not match 18-block showcase contract');
-  assert(document.querySelectorAll('[data-block-preview-for]').length===18,'expected 18 explicit live block previews');
+  assert(seen.size===EXPECTED_BLOCK_COUNT,`rendered block set did not match ${EXPECTED_BLOCK_COUNT}-block showcase contract`);
+  assert(document.querySelectorAll('[data-block-preview-for]').length===EXPECTED_BLOCK_COUNT,`expected ${EXPECTED_BLOCK_COUNT} explicit live block previews`);
 }
 
 function wireStateMatrices(stateExamples){
@@ -293,7 +302,7 @@ async function initShowcaseContracts(){
     updateCounts(contract,blocks,stateExamples);
     document.documentElement.dataset.showcaseVersion=EXPECTED_SHOWCASE_VERSION;
     document.documentElement.dataset.showcaseReady='true';
-    document.dispatchEvent(new CustomEvent('nbc:showcase-ready',{detail:{showcaseVersion:EXPECTED_SHOWCASE_VERSION,components:47,blocks:18,statefulComponents:stateExamples.components.length}}));
+    document.dispatchEvent(new CustomEvent('nbc:showcase-ready',{detail:{showcaseVersion:EXPECTED_SHOWCASE_VERSION,components:47,blocks:EXPECTED_BLOCK_COUNT,statefulComponents:stateExamples.components.length}}));
   }catch(error){
     document.documentElement.dataset.showcaseReady='error';
     const main=document.querySelector('#content');

@@ -1,5 +1,8 @@
 const EXPECTED_PAGE_LIBRARY_VERSION='1.2.0';
 const EXPECTED_COMMERCE_VERSION='1.0.0';
+const EXPECTED_BLOCK_COUNT=21;
+const EXPECTED_PAGE_COMPOSED_BLOCK_COUNT=18;
+const EXPECTED_PROMOTED_BLOCK_COUNT=3;
 const VIEWPORTS={desktop:{label:'1280px preview'},tablet:{label:'834px preview'},mobile:{label:'390px preview'}};
 const FROZEN_V10_ROUTE_IDS=[
   {id:'home',canonical:'home'},
@@ -45,11 +48,14 @@ function buildPageLibrary(routeManifest,pageLibrary,blockManifest){
   assert(blockManifest.commerceVersion===EXPECTED_COMMERCE_VERSION,'blocks Commerce version mismatch');
   assert(routeManifest.routes?.length===10,'expected 10 frozen production routes');
   assert(pageLibrary.pages?.length===10,'expected 10 page library contracts');
+  assert(blockManifest.blocks?.length===EXPECTED_BLOCK_COUNT,`expected ${EXPECTED_BLOCK_COUNT} documented Blocks`);
   const routeIds=routeManifest.routes.map(route=>route.id);
   const pagesById=new Map(pageLibrary.pages.map(page=>[page.id,page]));
   assert(pagesById.size===10,'page library contains duplicate ids');
   assert(sameIds([...pagesById.keys()],routeIds),'page library ids drifted from frozen routes');
-  const blockIds=new Set(blockManifest.blocks.map(block=>block.id));
+  const blockMap=new Map(blockManifest.blocks.map(block=>[block.id,block]));
+  const blockIds=new Set(blockMap.keys());
+  assert(blockIds.size===EXPECTED_BLOCK_COUNT,'block library contains duplicate ids');
   const usedBlocks=new Set();
   for(const page of pageLibrary.pages){
     assert(page.title?.trim(),`missing page title: ${page.id}`);
@@ -60,12 +66,22 @@ function buildPageLibrary(routeManifest,pageLibrary,blockManifest){
       usedBlocks.add(blockId);
     }
   }
-  assert(usedBlocks.size===blockIds.size&&sameIds(usedBlocks,blockIds),'page library must compose all 18 documented blocks');
+  assert(usedBlocks.size===EXPECTED_PAGE_COMPOSED_BLOCK_COUNT,`expected ${EXPECTED_PAGE_COMPOSED_BLOCK_COUNT} Page-composed compatibility Blocks`);
+  const promotedBlocks=blockManifest.blocks.filter(block=>!usedBlocks.has(block.id));
+  assert(promotedBlocks.length===EXPECTED_PROMOTED_BLOCK_COUNT,`expected ${EXPECTED_PROMOTED_BLOCK_COUNT} promoted reusable Blocks`);
+  for(const block of promotedBlocks){
+    assert(typeof block.promotedFrom==='string'&&block.promotedFrom.trim(),`uncomposed block ${block.id} must declare promotedFrom`);
+    const parent=blockMap.get(block.promotedFrom);
+    assert(parent,`uncomposed block ${block.id} references unknown compatibility parent ${block.promotedFrom}`);
+    assert(usedBlocks.has(parent.id),`uncomposed block ${block.id} compatibility parent ${parent.id} must remain Page-composed`);
+    assert(block.components.every(componentId=>parent.components.includes(componentId)),`uncomposed block ${block.id} must remain a component subset of compatibility parent ${parent.id}`);
+  }
+  assert(usedBlocks.size+promotedBlocks.length===blockIds.size,'promoted compatibility accounting must cover every documented Block');
   ROUTES=routeManifest.routes.map(route=>{
     const page=pagesById.get(route.id);
     return {...route,...page,src:routeSrc(route)};
   });
-  return {blockCount:blockIds.size};
+  return {blockCount:blockIds.size,composedBlockCount:usedBlocks.size};
 }
 function routeButton(route,index){
   return `<button class="lab-route-button" type="button" data-route="${route.id}" data-page-id="${route.id}" aria-current="${route.id===current.id?'page':'false'}"><span class="lab-route-index">${String(index+1).padStart(2,'0')}</span><span class="lab-route-copy"><strong>${route.title}</strong><code>${route.path}</code></span></button>`;
@@ -141,7 +157,7 @@ async function init(){
       fetchJson('../storefront/pages.json'),
       fetchJson('../storefront/blocks.json')
     ]);
-    const {blockCount}=buildPageLibrary(routeManifest,pageLibrary,blockManifest);
+    const {blockCount,composedBlockCount}=buildPageLibrary(routeManifest,pageLibrary,blockManifest);
     const params=new URLSearchParams(location.search);
     const requestedId=LEGACY_ROUTE_ALIASES[params.get('route')]||params.get('route');
     current=ROUTES.find(route=>route.id===requestedId)||ROUTES[0];
@@ -168,8 +184,9 @@ async function init(){
     document.documentElement.dataset.pageLibraryVersion=EXPECTED_PAGE_LIBRARY_VERSION;
     document.documentElement.dataset.pageLibraryPages=String(ROUTES.length);
     document.documentElement.dataset.pageLibraryBlocks=String(blockCount);
+    document.documentElement.dataset.pageLibraryComposedBlocks=String(composedBlockCount);
     document.documentElement.dataset.pageLibraryReady='true';
-    document.dispatchEvent(new CustomEvent('nbc:page-library-ready',{detail:{pageLibraryVersion:EXPECTED_PAGE_LIBRARY_VERSION,pages:ROUTES.length,blocks:blockCount}}));
+    document.dispatchEvent(new CustomEvent('nbc:page-library-ready',{detail:{pageLibraryVersion:EXPECTED_PAGE_LIBRARY_VERSION,pages:ROUTES.length,blocks:blockCount,composedBlocks:composedBlockCount}}));
   }catch(error){
     document.documentElement.dataset.pageLibraryReady='error';
     qs('#labStatus').textContent=`Page library failed: ${error.message}`;
