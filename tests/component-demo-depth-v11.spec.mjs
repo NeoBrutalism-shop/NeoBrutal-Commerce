@@ -27,7 +27,7 @@ test('v1.1 component demo depth audit covers the exact 47-component explorer',as
   await expect(page.locator('[data-component-card][data-demo-implementation-evidence="true"]')).toHaveCount(12);
   await expect(page.locator('[data-component-card][data-demo-depth-missing="0"]')).toHaveCount(12);
   await expect(page.locator('[data-component-card][data-demo-depth-missing="2"]')).toHaveCount(35);
-  await expect(page.locator('[data-demo-implementation-evidence]')).toHaveCount(12);
+  await expect(page.locator('.cx-depth-evidence[data-demo-implementation-evidence]')).toHaveCount(12);
   await expect(page.locator('[data-copy-ready-kind]')).toHaveCount(12*3);
 
   const subscription=page.locator('[data-component-id="subscription-management"]');
