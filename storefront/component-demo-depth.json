@@ -208,20 +208,32 @@
     {
       "id": "cart-item",
       "overrides": {
-        "actions": "complete"
+        "actions": "complete",
+        "tokens": "complete",
+        "copy-ready": "complete"
       }
     },
     {
-      "id": "order-summary"
+      "id": "order-summary",
+      "overrides": {
+        "tokens": "complete",
+        "copy-ready": "complete"
+      }
     },
     {
       "id": "coupon",
       "overrides": {
-        "actions": "complete"
+        "actions": "complete",
+        "tokens": "complete",
+        "copy-ready": "complete"
       }
     },
     {
-      "id": "checkout-field"
+      "id": "checkout-field",
+      "overrides": {
+        "tokens": "complete",
+        "copy-ready": "complete"
+      }
     },
     {
       "id": "invoice-details"
@@ -235,7 +247,11 @@
       }
     },
     {
-      "id": "payment-method"
+      "id": "payment-method",
+      "overrides": {
+        "tokens": "complete",
+        "copy-ready": "complete"
+      }
     },
     {
       "id": "payment-failure",
@@ -263,10 +279,18 @@
       }
     },
     {
-      "id": "order-confirmation"
+      "id": "order-confirmation",
+      "overrides": {
+        "tokens": "complete",
+        "copy-ready": "complete"
+      }
     },
     {
-      "id": "receipt"
+      "id": "receipt",
+      "overrides": {
+        "tokens": "complete",
+        "copy-ready": "complete"
+      }
     },
     {
       "id": "download-entitlement",
@@ -432,6 +456,21 @@
         "pricing-tier",
         "plan-comparison",
         "bundle-builder"
+      ]
+    },
+    {
+      "id": "cart-checkout",
+      "ordinal": 4,
+      "label": "Cart / checkout",
+      "evidenceFile": "storefront/component-demo-implementation-cart-checkout.json",
+      "componentIds": [
+        "cart-item",
+        "order-summary",
+        "coupon",
+        "checkout-field",
+        "payment-method",
+        "order-confirmation",
+        "receipt"
       ]
     }
   ],
