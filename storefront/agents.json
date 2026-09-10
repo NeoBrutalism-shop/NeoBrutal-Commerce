@@ -1,0 +1,150 @@
+{
+  "schema": "neobrutal-commerce/agents@1",
+  "agentContractVersion": "1.4.0",
+  "commerceVersion": "1.0.0",
+  "distribution": "repository-source",
+  "architecture": ["Components", "Blocks", "Pages", "Applications"],
+  "readOrder": [
+    "AGENTS.md",
+    "LLMS.md",
+    "docs/AGENT-PLAYBOOK.md",
+    "storefront/routes.json",
+    "storefront/components.json",
+    "storefront/blocks.json",
+    "storefront/pages.json",
+    "storefront/states.json",
+    "storefront/component-showcase.json",
+    "storefront/component-states.json",
+    "storefront/interactions.json",
+    "storefront/catalog.json",
+    "docs/AI-COMPONENT-NOTES.md"
+  ],
+  "authorities": [
+    {
+      "concern": "route-intent",
+      "source": "storefront/routes.json",
+      "rule": "Routes own production path, intent, required primary components, and any route-level state set."
+    },
+    {
+      "concern": "route-states",
+      "source": "storefront/routes.json",
+      "rule": "Do not copy route state arrays into Page contracts; Pages remain composition metadata."
+    },
+    {
+      "concern": "page-composition",
+      "source": "storefront/pages.json",
+      "rule": "Pages own route-keyed metadata and Block composition without redefining route intent or runtime states."
+    },
+    {
+      "concern": "block-composition",
+      "source": "storefront/blocks.json",
+      "rule": "Blocks own reusable component membership plus responsive, theme, and accessibility composition expectations."
+    },
+    {
+      "concern": "component-contracts",
+      "source": "storefront/components.json",
+      "rule": "Components own normalized model, canonical action, canonical state, kind, and per-component agent guidance."
+    },
+    {
+      "concern": "runtime-state-semantics",
+      "source": "storefront/states.json",
+      "rule": "Runtime state IDs and recovery semantics come from the canonical state taxonomy; agents do not invent synonyms."
+    },
+    {
+      "concern": "interaction-behavior",
+      "source": "storefront/interactions.json",
+      "rule": "Interaction physics, token roles, reduced-motion behavior, forced-colors behavior, and exceptions come from the v1.3 interaction authority."
+    },
+    {
+      "concern": "normalized-models",
+      "source": "src/contracts/index.d.ts",
+      "rule": "Normalized Commerce models and capability boundaries outrank provider payload shapes."
+    },
+    {
+      "concern": "canonical-actions",
+      "source": "src/actions/runtime.js",
+      "rule": "Mutations use canonical Commerce action names and dispatch semantics; agents do not invent provider verbs."
+    },
+    {
+      "concern": "reference-commerce-content",
+      "source": "storefront/catalog.json",
+      "rule": "Reference product, license, price, lifecycle, and capability content may be rendered but must not be fabricated."
+    }
+  ],
+  "workflow": [
+    {
+      "id": "resolve-route",
+      "sources": ["storefront/routes.json"],
+      "produces": ["route", "intent", "primaryComponents", "routeStates"]
+    },
+    {
+      "id": "resolve-page-composition",
+      "sources": ["storefront/pages.json", "storefront/blocks.json"],
+      "produces": ["page", "blocks", "blockComponents"]
+    },
+    {
+      "id": "resolve-component-contracts",
+      "sources": ["storefront/components.json"],
+      "produces": ["componentContracts", "normalizedModels", "canonicalActions", "canonicalStates", "agentRules"]
+    },
+    {
+      "id": "resolve-runtime-semantics",
+      "sources": ["storefront/states.json", "src/contracts/index.d.ts", "src/actions/runtime.js"],
+      "produces": ["stateSemantics", "modelFields", "capabilityFlags", "actionSemantics"]
+    },
+    {
+      "id": "resolve-interactions",
+      "sources": ["storefront/interactions.json"],
+      "produces": ["interactionPatterns", "tokenRoles", "reducedMotion", "forcedColors"]
+    },
+    {
+      "id": "validate",
+      "sources": ["scripts/agents-check.mjs"],
+      "produces": ["agentContractConformance"]
+    }
+  ],
+  "outputContract": [
+    "routesAffected",
+    "pageContracts",
+    "blockContracts",
+    "componentContracts",
+    "normalizedModels",
+    "canonicalActions",
+    "canonicalStates",
+    "capabilityGates",
+    "interactionPatterns",
+    "accessibility",
+    "responsiveBehavior",
+    "testsChanged"
+  ],
+  "prohibitions": [
+    {
+      "id": "no-provider-shaped-contracts",
+      "description": "Do not change Commerce component or runtime contracts merely to mirror a provider payload."
+    },
+    {
+      "id": "no-invented-actions",
+      "description": "Do not invent mutation names when a canonical Commerce action exists."
+    },
+    {
+      "id": "no-invented-states",
+      "description": "Do not invent state synonyms when the canonical state taxonomy defines the meaning."
+    },
+    {
+      "id": "no-page-state-duplication",
+      "description": "Do not add route runtime state arrays to storefront/pages.json."
+    },
+    {
+      "id": "no-interaction-taxonomy-duplication",
+      "description": "Do not create a second interaction taxonomy outside storefront/interactions.json."
+    },
+    {
+      "id": "no-capability-by-provider-name",
+      "description": "Do not infer optional behavior from provider identity; read normalized capability flags."
+    },
+    {
+      "id": "no-fabricated-commerce-facts",
+      "description": "Do not fabricate price, tax, reviews, guarantees, invoices, ownership history, license scope, entitlement, or subscription outcomes."
+    }
+  ]
+}
