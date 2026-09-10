@@ -1,0 +1,142 @@
+{
+  "schema": "neobrutal-commerce/component-demo-implementation@1",
+  "showcaseVersion": "1.1.0",
+  "commerceVersion": "1.0.0",
+  "role": "implementation-evidence-only",
+  "description": "Source-backed implementation evidence for the first v1.1 component demo-depth batch. This file does not redefine component models, actions, states, or interaction laws.",
+  "styleImport": "@neobrutal/commerce/styles.css",
+  "components": [
+    {
+      "id": "product-media",
+      "sourceFiles": ["src/components/media.css", "component-explorer.js"],
+      "selectors": [".nbc-media", ".nbc-media-tab", ".nbc-media-panel"],
+      "tokens": ["--nbc-border", "--nbc-surface", "--nbc-text", "--nbc-yellow", "--nbc-shadow", "--nbc-text-sm", "--nbc-bg"],
+      "copyReady": {
+        "html": "<div class=\"nbc-media\" data-commerce-component=\"product-media\">\n  <div class=\"nbc-media-tabs\" role=\"tablist\" aria-label=\"Product media\">\n    <button class=\"nbc-media-tab\" role=\"tab\" aria-selected=\"true\" aria-controls=\"media-preview\" data-media-state=\"preview\">Preview</button>\n    <button class=\"nbc-media-tab\" role=\"tab\" aria-selected=\"false\" aria-controls=\"media-code\" data-media-state=\"code\">Code</button>\n    <button class=\"nbc-media-tab\" role=\"tab\" aria-selected=\"false\" aria-controls=\"media-files\" data-media-state=\"files\">Files</button>\n  </div>\n  <section class=\"nbc-media-panel\" id=\"media-preview\" role=\"tabpanel\" data-media-panel=\"preview\">Preview content</section>\n  <section class=\"nbc-media-panel\" id=\"media-code\" role=\"tabpanel\" data-media-panel=\"code\" hidden>Code content</section>\n  <section class=\"nbc-media-panel\" id=\"media-files\" role=\"tabpanel\" data-media-panel=\"files\" hidden>Files content</section>\n</div>",
+        "css": "@import '@neobrutal/commerce/styles.css';",
+        "js": "const root=document.querySelector('[data-commerce-component=\"product-media\"]');\nconst tabs=[...root.querySelectorAll('[role=\"tab\"]')];\nconst panels=[...root.querySelectorAll('[role=\"tabpanel\"]')];\nfunction selectMedia(state){\n  if(!['preview','code','files'].includes(state))throw new Error(`Unknown media state: ${state}`);\n  for(const tab of tabs)tab.setAttribute('aria-selected',String(tab.dataset.mediaState===state));\n  for(const panel of panels)panel.hidden=panel.dataset.mediaPanel!==state;\n}\nfor(const tab of tabs)tab.addEventListener('click',()=>selectMedia(tab.dataset.mediaState));"
+      }
+    },
+    {
+      "id": "checkout-steps",
+      "sourceFiles": ["src/components/checkout.css", "component-explorer.js"],
+      "selectors": [".nbc-checkout-steps", ".nbc-checkout-step", ".nbc-checkout-step[aria-current=\"step\"]"],
+      "tokens": ["--nbc-border", "--nbc-surface-2", "--nbc-text-xs", "--nbc-yellow"],
+      "copyReady": {
+        "html": "<div class=\"nbc-checkout-steps\" data-commerce-component=\"checkout-steps\" data-state=\"ready\">\n  <div class=\"nbc-checkout-step\" aria-current=\"step\"><span>01</span><strong>Contact</strong></div>\n  <div class=\"nbc-checkout-step\"><span>02</span><strong>Payment</strong></div>\n  <div class=\"nbc-checkout-step\"><span>03</span><strong>Done</strong></div>\n</div>",
+        "css": "@import '@neobrutal/commerce/styles.css';",
+        "js": "const steps=document.querySelector('[data-commerce-component=\"checkout-steps\"]');\nfunction setCheckoutState(state){\n  if(!['ready','processing','failed','recovered'].includes(state))throw new Error(`Unknown checkout state: ${state}`);\n  steps.dataset.state=state;\n}\nsetCheckoutState('ready');"
+      }
+    },
+    {
+      "id": "payment-failure",
+      "sourceFiles": ["src/components/state.css", "component-explorer.js"],
+      "selectors": [".nbc-state", ".nbc-state[data-state=\"error\"]", ".nbc-state-actions"],
+      "tokens": ["--nbc-border", "--nbc-surface", "--nbc-shadow", "--nbc-coral"],
+      "copyReady": {
+        "html": "<article class=\"nbc-state\" data-state=\"error\" data-commerce-component=\"payment-failure\" data-commerce-state=\"failed\">\n  <strong>Payment was not completed.</strong>\n  <span>Your quote and customer input remain available for recovery.</span>\n  <div class=\"nbc-state-actions\"><button class=\"nbc-button nbc-tactile\" type=\"button\">Try another method</button></div>\n</article>",
+        "css": "@import '@neobrutal/commerce/styles.css';",
+        "js": "const failure=document.querySelector('[data-commerce-component=\"payment-failure\"]');\nfailure.dataset.commerceState='failed';"
+      }
+    },
+    {
+      "id": "payment-recovery",
+      "sourceFiles": ["src/components/state.css", "component-explorer.js", "src/actions/runtime.js"],
+      "selectors": [".nbc-state", ".nbc-state[data-state=\"success\"]", ".nbc-state-actions"],
+      "tokens": ["--nbc-border", "--nbc-surface", "--nbc-shadow", "--nbc-lime"],
+      "copyReady": {
+        "html": "<article class=\"nbc-state\" data-state=\"success\" data-commerce-component=\"payment-recovery\" data-commerce-state=\"recovered\">\n  <strong>Payment details recovered.</strong>\n  <span>Review the preserved quote before resubmitting.</span>\n  <div class=\"nbc-state-actions\">\n    <button class=\"nbc-button nbc-tactile\" type=\"button\" data-action=\"requote\">Refresh quote</button>\n    <button class=\"nbc-button nbc-button--primary nbc-tactile\" type=\"button\" data-action=\"submit\">Submit again</button>\n  </div>\n</article>",
+        "css": "@import '@neobrutal/commerce/styles.css';",
+        "js": "import {createCommerceAction} from '@neobrutal/commerce/actions';\nconst root=document.querySelector('[data-commerce-component=\"payment-recovery\"]');\nroot.querySelector('[data-action=\"requote\"]').addEventListener('click',()=>actions.dispatch(createCommerceAction('checkout.quote',quoteInput)));\nroot.querySelector('[data-action=\"submit\"]').addEventListener('click',()=>actions.dispatch(createCommerceAction('checkout.submit',checkoutInput)));"
+      }
+    },
+    {
+      "id": "processing-state",
+      "sourceFiles": ["src/components/state.css", "component-explorer.js"],
+      "selectors": [".nbc-state[data-state=\"loading\"]", ".nbc-skeleton", ".nbc-skeleton span"],
+      "tokens": ["--nbc-border", "--nbc-surface", "--nbc-shadow", "--nbc-surface-2"],
+      "copyReady": {
+        "html": "<article class=\"nbc-state\" data-state=\"loading\" data-commerce-component=\"processing-state\" data-commerce-state=\"processing\" aria-live=\"polite\">\n  <strong>Submitting order…</strong>\n  <span>Repeat submit is blocked while processing.</span>\n  <div class=\"nbc-skeleton\" aria-hidden=\"true\"><span></span><span></span><span></span></div>\n</article>",
+        "css": "@import '@neobrutal/commerce/styles.css';",
+        "js": "const processing=document.querySelector('[data-commerce-component=\"processing-state\"]');\nprocessing.dataset.commerceState='processing';"
+      }
+    },
+    {
+      "id": "license-status",
+      "sourceFiles": ["src/components/license.css", "component-explorer.js"],
+      "selectors": [".nbc-license-status", ".nbc-license-status--warning", ".nbc-license-status--expired"],
+      "tokens": ["--nbc-lime", "--nbc-yellow", "--nbc-coral", "--nbc-text-xs"],
+      "copyReady": {
+        "html": "<span class=\"nbc-license-status\" data-commerce-component=\"license-status\" data-commerce-state=\"active\">Active</span>",
+        "css": "@import '@neobrutal/commerce/styles.css';",
+        "js": "const badge=document.querySelector('[data-commerce-component=\"license-status\"]');\nconst styles={active:'',grace:'nbc-license-status--warning',expired:'nbc-license-status--expired',cancelled:'nbc-license-status--expired',refunded:'nbc-license-status--expired'};\nfunction renderLicenseState(state){\n  if(!(state in styles))throw new Error(`Unknown ownership state: ${state}`);\n  badge.className=`nbc-license-status ${styles[state]}`.trim();\n  badge.dataset.commerceState=state;\n  badge.textContent=state.replace('_',' ');\n}\nrenderLicenseState('active');"
+      }
+    },
+    {
+      "id": "update-eligibility",
+      "sourceFiles": ["src/components/license.css", "component-explorer.js"],
+      "selectors": [".nbc-update-card", ".nbc-update-card[data-eligible=\"true\"]", ".nbc-update-card[data-eligible=\"false\"]"],
+      "tokens": ["--nbc-space-3", "--nbc-border", "--nbc-radius-md", "--nbc-surface-2", "--nbc-success", "--nbc-danger", "--nbc-muted"],
+      "copyReady": {
+        "html": "<div class=\"nbc-update-card\" data-eligible=\"true\" data-commerce-component=\"update-eligibility\" data-commerce-state=\"active\">\n  <div><strong>Updates available</strong><small>Render the entitlement consequence returned by the normalized model.</small></div>\n  <span class=\"nbc-license-status\">Eligible</span>\n</div>",
+        "css": "@import '@neobrutal/commerce/styles.css';",
+        "js": "const eligibility=document.querySelector('[data-commerce-component=\"update-eligibility\"]');\nfunction renderEligibility(state,allowed){\n  if(!['active','grace','expired'].includes(state))throw new Error(`Unknown eligibility state: ${state}`);\n  eligibility.dataset.commerceState=state;\n  eligibility.dataset.eligible=String(Boolean(allowed));\n}"
+      }
+    },
+    {
+      "id": "renewal-state",
+      "sourceFiles": ["src/components/lifecycle.css", "component-explorer.js", "src/actions/runtime.js"],
+      "selectors": [".nbc-lifecycle", ".nbc-lifecycle-badge", ".nbc-lifecycle-badge[data-state=\"active\"]"],
+      "tokens": ["--nbc-space-4", "--nbc-border", "--nbc-surface", "--nbc-shadow", "--nbc-yellow", "--nbc-lime", "--nbc-coral"],
+      "copyReady": {
+        "html": "<section class=\"nbc-lifecycle\" data-commerce-component=\"renewal-state\">\n  <div class=\"nbc-lifecycle-head\"><strong>Renewal</strong><span class=\"nbc-lifecycle-badge\" data-state=\"active\">Active</span></div>\n  <p class=\"nbc-lifecycle-note\">Keep the next billing or entitlement date visible when the normalized model provides it.</p>\n  <button class=\"nbc-button nbc-tactile\" type=\"button\" data-action=\"renew\">Renew</button>\n</section>",
+        "css": "@import '@neobrutal/commerce/styles.css';",
+        "js": "import {createCommerceAction} from '@neobrutal/commerce/actions';\ndocument.querySelector('[data-commerce-component=\"renewal-state\"] [data-action=\"renew\"]').addEventListener('click',()=>actions.dispatch(createCommerceAction('license.renew',{licenseId})));"
+      }
+    },
+    {
+      "id": "plan-change",
+      "sourceFiles": ["src/components/lifecycle.css", "component-explorer.js", "src/actions/runtime.js"],
+      "selectors": [".nbc-operation-form", ".nbc-operation-result", ".nbc-lifecycle-badge"],
+      "tokens": ["--nbc-border", "--nbc-bg", "--nbc-text", "--nbc-yellow", "--nbc-lime", "--nbc-coral"],
+      "copyReady": {
+        "html": "<form class=\"nbc-operation-form\" data-commerce-component=\"plan-change\">\n  <label>Target plan <select name=\"toOfferId\"><option value=\"individual\">Individual</option></select></label>\n  <label>Effective <select name=\"effective\"><option value=\"next_term\">Next term</option></select></label>\n  <button class=\"nbc-button nbc-button--primary nbc-tactile\" type=\"button\" data-action=\"quote\">Quote change</button>\n  <div class=\"nbc-operation-result\" data-result hidden></div>\n</form>",
+        "css": "@import '@neobrutal/commerce/styles.css';",
+        "js": "import {createCommerceAction} from '@neobrutal/commerce/actions';\nconst form=document.querySelector('[data-commerce-component=\"plan-change\"]');\nconst quote=await actions.dispatch(createCommerceAction('license.change.quote',{licenseId,toOfferId:form.elements.toOfferId.value,effective:form.elements.effective.value}));\nif(quote)await actions.dispatch(createCommerceAction('license.change.submit',{licenseId,toOfferId:form.elements.toOfferId.value,effective:form.elements.effective.value,quoteId:quote.id}));"
+      }
+    },
+    {
+      "id": "ownership-transfer",
+      "sourceFiles": ["src/components/lifecycle.css", "component-explorer.js", "src/actions/runtime.js"],
+      "selectors": [".nbc-operation-form", ".nbc-transfer-list", ".nbc-operation-result"],
+      "tokens": ["--nbc-border", "--nbc-bg", "--nbc-text", "--nbc-muted"],
+      "copyReady": {
+        "html": "<form class=\"nbc-operation-form\" data-commerce-component=\"ownership-transfer\">\n  <label>Recipient <input name=\"recipient\" type=\"email\" autocomplete=\"email\"></label>\n  <button class=\"nbc-button nbc-button--primary nbc-tactile\" type=\"button\" data-action=\"invite\">Create invitation</button>\n  <p class=\"nbc-lifecycle-note\">A pending invitation does not mean ownership moved.</p>\n</form>",
+        "css": "@import '@neobrutal/commerce/styles.css';",
+        "js": "import {createCommerceAction} from '@neobrutal/commerce/actions';\nconst transfers=await actions.dispatch(createCommerceAction('license.transfers.list',{licenseId}));\nconst invitation=await actions.dispatch(createCommerceAction('license.transfer.create',{licenseId,recipient}));\nif(shouldCancel)await actions.dispatch(createCommerceAction('license.transfer.cancel',{licenseId,transferId:invitation.id}));"
+      }
+    },
+    {
+      "id": "subscription-management",
+      "sourceFiles": ["src/components/lifecycle.css", "component-explorer.js", "src/actions/runtime.js"],
+      "selectors": [".nbc-lifecycle", ".nbc-subscription-actions", ".nbc-lifecycle-badge[data-state=\"cancel_at_period_end\"]"],
+      "tokens": ["--nbc-space-4", "--nbc-border", "--nbc-surface", "--nbc-shadow", "--nbc-yellow", "--nbc-coral"],
+      "copyReady": {
+        "html": "<section class=\"nbc-lifecycle\" data-commerce-component=\"subscription-management\" data-subscription-state=\"active\">\n  <div class=\"nbc-lifecycle-head\"><strong>Subscription</strong><span class=\"nbc-lifecycle-badge\" data-state=\"active\">Active</span></div>\n  <p class=\"nbc-lifecycle-note\">When cancellation is scheduled, keep already-paid access and the provider-returned term end visible.</p>\n  <div class=\"nbc-subscription-actions\"><button class=\"nbc-button nbc-tactile\" type=\"button\" data-action=\"cancel\">Cancel renewal</button><button class=\"nbc-button nbc-tactile\" type=\"button\" data-action=\"resume\">Resume renewal</button></div>\n</section>",
+        "css": "@import '@neobrutal/commerce/styles.css';",
+        "js": "import {createCommerceAction} from '@neobrutal/commerce/actions';\nconst subscription=await actions.dispatch(createCommerceAction('subscription.get',{subscriptionId}));\nawait actions.dispatch(createCommerceAction('subscription.cancel',{subscriptionId}));\nawait actions.dispatch(createCommerceAction('subscription.resume',{subscriptionId}));"
+      }
+    },
+    {
+      "id": "system-states",
+      "sourceFiles": ["src/components/state.css", "component-explorer.js"],
+      "selectors": [".nbc-state", ".nbc-state[data-state=\"empty\"]", ".nbc-state[data-state=\"error\"]"],
+      "tokens": ["--nbc-border", "--nbc-surface", "--nbc-shadow", "--nbc-surface-2", "--nbc-coral", "--nbc-yellow", "--nbc-pink"],
+      "copyReady": {
+        "html": "<article class=\"nbc-state\" data-commerce-component=\"system-states\" data-state=\"empty\">\n  <strong>Nothing here yet.</strong>\n  <span>Provide the next meaningful action when one exists.</span>\n</article>",
+        "css": "@import '@neobrutal/commerce/styles.css';",
+        "js": "const statePanel=document.querySelector('[data-commerce-component=\"system-states\"]');\nfunction renderSystemState(state){\n  if(!['empty','loading','error','offline','permission','unsupported'].includes(state))throw new Error(`Unknown system state: ${state}`);\n  statePanel.dataset.state=state;\n}\nrenderSystemState('empty');"
+      }
+    }
+  ]
+}
