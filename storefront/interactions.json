@@ -99,7 +99,7 @@
       "forcedColors": "text-and-programmatic-state-remain-authoritative",
       "evidence": [
         {"file": "storefront/store.js", "marker": "setLifecycleBadge"},
-        {"file": "storefront/store.js", "marker": "data-subscription-state"}
+        {"file": "storefront/store.js", "marker": "dataset.subscriptionState"}
       ]
     }
   ],
