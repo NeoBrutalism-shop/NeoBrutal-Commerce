@@ -9,7 +9,8 @@ const required=[
   'docs/ADOPTION.md','docs/AGENT-PLAYBOOK.md','docs/AI-COMPONENT-NOTES.md',
   'docs/RECIPES.md','docs/THEMING.md','docs/MIGRATION.md','docs/PROVIDER-EXAMPLES.md','docs/RELEASE-CANDIDATE.md','docs/PUBLIC-RELEASE.md',
   'docs/V1.1-COMPONENT-DEMO-DEPTH-AUDIT.md',
-  'storefront/components.json','storefront/component-showcase.json','storefront/component-states.json','storefront/component-demo-depth.json','storefront/blocks.json'
+  'storefront/components.json','storefront/component-showcase.json','storefront/component-states.json','storefront/component-demo-depth.json','storefront/blocks.json',
+  'component-depth-audit.js','component-depth-audit.css','tests/component-demo-depth-v11.spec.mjs'
 ];
 for(const file of required){if(!fs.existsSync(path.join(root,file))){console.error(`Missing adoption file: ${file}`);process.exit(1);}}
 
@@ -83,6 +84,16 @@ if(depthCounts.preview.complete!==47||depthCounts.accessibility.complete!==47){c
 if(depthCounts['canonical-states'].complete!==12||depthCounts['canonical-states']['not-applicable']!==35){console.error('Canonical-state audit must remain 12 complete / 35 not-applicable until the frozen registry changes');process.exit(1);}
 if(depthCounts.actions.complete!==16||depthCounts.actions['not-applicable']!==31){console.error('Action-contract audit must remain 16 complete / 31 not-applicable until the frozen registry changes');process.exit(1);}
 if(depthCounts.tokens.missing!==47||depthCounts['copy-ready'].missing!==47){console.error('Audit baseline must not overclaim per-component tokens or copy-ready implementation before evidence ships');process.exit(1);}
+
+const depthClient=read('component-depth-audit.js');
+const depthCss=read('component-depth-audit.css');
+const depthBrowser=read('tests/component-demo-depth-v11.spec.mjs');
+try{new Function(depthClient)}catch(error){console.error(`component-depth-audit.js syntax error: ${error.message}`);process.exit(1);}
+if(/transition\s*:\s*all/i.test(depthCss)||/:hover[^\{]*\{[^\}]*translate(?:Y)?\(\s*-/i.test(depthCss)){console.error('Component demo depth UI violates motion/tactile laws');process.exit(1);}
+for(const marker of ['component-demo-depth.json','data-component-depth-audit','dataset.componentDepthReady','dataset.componentDepthAudited','nextImplementationBatch']){if(!depthClient.includes(marker)){console.error(`Component demo depth runtime missing marker: ${marker}`);process.exit(1);}}
+for(const marker of ['47*13','data-demo-depth-first-batch','Canonical states','Action contracts','Design tokens used','Copy-ready HTML / CSS / JS','AxeBuilder']){if(!depthBrowser.includes(marker)){console.error(`Component demo depth Browser QA missing marker: ${marker}`);process.exit(1);}}
+const explorerHtml=read('components.html');
+for(const marker of ['./component-depth-audit.css','./component-depth-audit.js','demo-depth audit']){if(!explorerHtml.includes(marker)){console.error(`components.html missing component demo depth marker: ${marker}`);process.exit(1);}}
 
 const componentsDoc=read('COMPONENTS.md');
 const documentedBlockCount=`${blocks.blocks.length} / ${blocks.blocks.length}`;
