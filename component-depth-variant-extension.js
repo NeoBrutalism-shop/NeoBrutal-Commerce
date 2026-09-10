@@ -3,6 +3,7 @@ const depthExtensionAssert=(condition,message)=>{if(!condition)throw new Error(m
 
 function waitForRootDataset(key){
   if(document.documentElement.dataset[key]==='true')return Promise.resolve();
+  if(document.documentElement.dataset[key]==='error')return Promise.reject(new Error(`${key} failed before Account depth extension`));
   return new Promise((resolve,reject)=>{
     const observer=new MutationObserver(()=>{
       if(document.documentElement.dataset[key]==='true'){observer.disconnect();resolve()}
