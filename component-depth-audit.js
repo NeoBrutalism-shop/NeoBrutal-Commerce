@@ -93,7 +93,7 @@ async function initComponentDepthAudit(){
       partialCells+=partial;
       card.dataset.demoDepthMissing=String(missing);
       card.dataset.demoDepthPartial=String(partial);
-      card.dataset.demoDepthFirstBatch=String(firstBatch.has(card.dataset.componentId));
+      card.setAttribute('data-demo-depth-first-batch',String(firstBatch.has(card.dataset.componentId)));
       card.dataset.demoDepthBatch=batch?.id||'none';
       card.dataset.demoImplementationEvidence=String(implementationById.has(card.dataset.componentId));
       card.querySelector('[data-component-depth-audit]')?.remove();
