@@ -9,36 +9,34 @@ const waitForLab=async page=>{
   await expect(page.locator('html')).toHaveAttribute('data-interaction-exceptions','1');
 };
 
-for(const project of ['all']){
-  test(`v1.3 Motion Lab is manifest-backed accessible and viewport-tight`,async({page})=>{
-    const httpFailures=[];const runtimeFailures=[];
-    page.on('response',response=>{if(response.status()>=400)httpFailures.push(`${response.status()} ${response.url()}`)});
-    page.on('pageerror',error=>runtimeFailures.push(error.message));
-    page.on('console',message=>{if(message.type()==='error')runtimeFailures.push(message.text())});
-    await page.goto('/demo/v13.html',{waitUntil:'networkidle'});
-    await waitForLab(page);
+test('v1.3 Motion Lab is manifest-backed accessible and viewport-tight',async({page})=>{
+  const httpFailures=[];const runtimeFailures=[];
+  page.on('response',response=>{if(response.status()>=400)httpFailures.push(`${response.status()} ${response.url()}`)});
+  page.on('pageerror',error=>runtimeFailures.push(error.message));
+  page.on('console',message=>{if(message.type()==='error')runtimeFailures.push(message.text())});
+  await page.goto('/demo/v13.html',{waitUntil:'networkidle'});
+  await waitForLab(page);
 
-    const renderedIds=await page.locator('[data-interaction-pattern]').evaluateAll(nodes=>nodes.map(node=>node.dataset.interactionPattern));
-    expect(renderedIds).toEqual(expectedPatternIds);
-    await expect(page.locator('[data-interaction-exception="drag-lift"]')).toHaveCount(1);
-    await expect(page.locator('[data-interaction-exception="drag-lift"]')).toContainText('NOT A PRODUCTION PATTERN');
-    const contract=await page.evaluate(()=>fetch('../storefront/interactions.json').then(response=>response.json()));
-    expect(contract.schema).toBe('neobrutal-commerce/interactions@1');
-    expect(contract.interactionVersion).toBe('1.3.0');
-    expect(contract.commerceVersion).toBe('1.0.0');
-    expect(contract.patterns.map(pattern=>pattern.id)).toEqual(renderedIds);
-    expect(contract.exceptions.map(exception=>exception.id)).toEqual(['drag-lift']);
-    expect(contract.exceptions[0].productionPattern).toBe(false);
-    await expect(page.locator('[data-token-role]')).toHaveCount(7);
+  const renderedIds=await page.locator('[data-interaction-pattern]').evaluateAll(nodes=>nodes.map(node=>node.dataset.interactionPattern));
+  expect(renderedIds).toEqual(expectedPatternIds);
+  await expect(page.locator('[data-interaction-exception="drag-lift"]')).toHaveCount(1);
+  await expect(page.locator('[data-interaction-exception="drag-lift"]')).toContainText('NOT A PRODUCTION PATTERN');
+  const contract=await page.evaluate(()=>fetch('../storefront/interactions.json').then(response=>response.json()));
+  expect(contract.schema).toBe('neobrutal-commerce/interactions@1');
+  expect(contract.interactionVersion).toBe('1.3.0');
+  expect(contract.commerceVersion).toBe('1.0.0');
+  expect(contract.patterns.map(pattern=>pattern.id)).toEqual(renderedIds);
+  expect(contract.exceptions.map(exception=>exception.id)).toEqual(['drag-lift']);
+  expect(contract.exceptions[0].productionPattern).toBe(false);
+  await expect(page.locator('[data-token-role]')).toHaveCount(7);
 
-    const axe=await new AxeBuilder({page}).withTags(['wcag2a','wcag2aa','wcag21a','wcag21aa']).analyze();
-    expect(axe.violations,'Motion Lab WCAG A/AA violations').toEqual([]);
-    const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth);
-    expect(overflow,'Motion Lab horizontal overflow').toBeLessThanOrEqual(1);
-    expect(httpFailures,'Motion Lab HTTP failures').toEqual([]);
-    expect(runtimeFailures,'Motion Lab runtime/console failures').toEqual([]);
-  });
-}
+  const axe=await new AxeBuilder({page}).withTags(['wcag2a','wcag2aa','wcag21a','wcag21aa']).analyze();
+  expect(axe.violations,'Motion Lab WCAG A/AA violations').toEqual([]);
+  const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth);
+  expect(overflow,'Motion Lab horizontal overflow').toBeLessThanOrEqual(1);
+  expect(httpFailures,'Motion Lab HTTP failures').toEqual([]);
+  expect(runtimeFailures,'Motion Lab runtime/console failures').toEqual([]);
+});
 
 test('v1.3 Motion Lab reuses production latched media selection for pointer and keyboard',async({page})=>{
   await page.goto('/demo/v13.html',{waitUntil:'networkidle'});
@@ -100,8 +98,8 @@ test('v1.3 actual reduced-motion preference removes tactile and processing anima
   await expect(page.locator('[data-system-motion]')).toHaveAttribute('data-system-motion','reduce');
   const tactile=await page.locator('#pressDemo').evaluate(node=>getComputedStyle(node).transitionDuration.split(',').map(value=>Number.parseFloat(value)||0));
   expect(Math.max(...tactile),'tactile transition must collapse under actual reduced motion').toBeLessThanOrEqual(.01);
-  const skeleton=await page.locator('.nbc-skeleton span').first().evaluate(node=>({name:getComputedStyle(node).animationName,duration:getComputedStyle(node).animationDuration}));
-  expect(skeleton.name).toBe('none');
+  const animationName=await page.locator('.nbc-skeleton span').first().evaluate(node=>getComputedStyle(node).animationName);
+  expect(animationName).toBe('none');
 });
 
 test('v1.3 forced colors removes decorative depth and keeps keyboard focus visible',async({page},testInfo)=>{
