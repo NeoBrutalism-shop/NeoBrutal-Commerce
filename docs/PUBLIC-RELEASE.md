@@ -25,6 +25,35 @@ npm trusted publishing must be configured for this repository and the exact work
 - repository: `NeoBrutal-Commerce`
 - workflow: `release.yml`
 
+## Production activation boundary
+
+Publishing a GitHub Release is the production activation event for npm publication. The workflow intentionally has no push, pull-request, schedule or manual-dispatch publish trigger. A Release should therefore never be published merely to test the pipeline.
+
+The release workflow keeps the activation boundary narrow:
+
+- trigger: `release` with `types: [published]` only
+- repository permission: `contents: read`
+- npm trusted-publishing permission: `id-token: write`
+- release tag guard: `GITHUB_REF_NAME` must equal `v` + `package.json#version`
+- dependency install: exact lockfile install with scripts/audit/funding disabled
+- publication gate order: release tag → quality/package gates → four-engine Browser QA → npm publish
+- authentication: OIDC trusted publishing only; no `NPM_TOKEN`, `NODE_AUTH_TOKEN` or repository secret is accepted by the release contract
+
+A draft GitHub Release does not satisfy the `published` event. Publishing the draft does, so the publish action itself must be treated as irreversible production intent.
+
+## Safe preflight
+
+Before publishing the first `v1.0.0` GitHub Release:
+
+1. Verify the npm trusted-publisher configuration outside this repository matches `NeoBrutalism-shop / NeoBrutal-Commerce / release.yml` exactly.
+2. Confirm the intended release commit is the reviewed `main` commit and that current Quality, Browser QA and package gates are green on that exact SHA.
+3. Run `npm run check:release`; this statically verifies the frozen API plus the release-only trigger, exact OIDC permission boundary, tag guard, ordered gates and tokenless publish command.
+4. Run `npm pack --dry-run --json` and inspect the allowlisted package contents.
+5. Use the normal pull-request CI path for preflight changes. Do not add a temporary publish trigger and do not publish/unpublish a GitHub Release as a dry run.
+6. Only after the external trusted-publisher identity is confirmed should the exact `v1.0.0` Release be published.
+
+Repository CI can prove the repository-side contract, but it cannot prove the npm account-side trusted-publisher configuration. That external configuration remains a genuine human-controlled prerequisite.
+
 ## v1 API freeze
 
 `tests/public-api-v10.json` freezes the exact public contract that survived v0.9 RC: package exports, canonical actions, state IDs, route IDs, component IDs, semantic tokens, license plan IDs and normalized TypeScript model markers.
@@ -38,11 +67,13 @@ The reviewed v1.0 Linux visual baseline is locked in `tests/visual-baselines-v10
 ## Release gates
 
 1. `npm run check` passes, including package tarball inspection and the v1 API freeze.
-2. Browser QA passes on Chromium, mobile Chromium, Firefox and WebKit.
-3. The reviewed v1 canonical Linux visual fingerprints pass exactly against `tests/visual-baselines-v10.json`.
-4. `npm pack --dry-run --json` contains only the intended public package surface.
-5. Package/runtime/types/manifests and visible storefront chrome all agree on `1.0.0` / `COMMERCE v1.0`.
-6. The GitHub Release tag must be exactly `v1.0.0` before registry publication.
+2. `npm run check:release` proves the release-only trigger, exact OIDC permissions, dynamic version/tag guard, ordered quality/browser gates and tokenless trusted-publishing command.
+3. Browser QA passes on Chromium, mobile Chromium, Firefox and WebKit.
+4. The reviewed v1 canonical Linux visual fingerprints pass exactly against `tests/visual-baselines-v10.json`.
+5. `npm pack --dry-run --json` contains only the intended public package surface.
+6. Package/runtime/types/manifests and visible storefront chrome all agree on `1.0.0` / `COMMERCE v1.0`.
+7. The npm trusted-publisher identity is externally verified for this repository and `release.yml`.
+8. The GitHub Release tag must be exactly `v1.0.0` before registry publication.
 
 ## Post-v1 compatibility
 
