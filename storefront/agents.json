@@ -2,6 +2,7 @@
   "schema": "neobrutal-commerce/agents@1",
   "agentContractVersion": "1.4.0",
   "commerceVersion": "1.0.0",
+  "distribution": "repository-source",
   "architecture": ["Components", "Blocks", "Pages", "Applications"],
   "readOrder": [
     "AGENTS.md",
