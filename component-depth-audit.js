@@ -1,5 +1,5 @@
 const DEPTH_STATUS_ORDER=['complete','partial','missing','not-applicable'];
-const escapeDepth=value=>String(value).replace(/[&<>'"]/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[char]));
+const escapeDepth=value=>String(value).replace(/[&<>'\"]/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','\"':'&quot;'}[char]));
 const sameDepthIds=(a,b)=>JSON.stringify([...a].sort())===JSON.stringify([...b].sort());
 const depthAssert=(condition,message)=>{if(!condition)throw new Error(message)};
 
@@ -17,15 +17,16 @@ function waitForShowcaseReady(){
   });
 }
 
-function renderImplementationEvidence(evidence){
+function renderImplementationEvidence(evidence,batch){
   if(!evidence)return '';
   const tokens=evidence.tokens.map(token=>`<code class="cx-depth-token">${escapeDepth(token)}</code>`).join('');
   const sources=evidence.sourceFiles.map(file=>`<code>${escapeDepth(file)}</code>`).join(' · ');
   const codeBlocks=['html','css','js'].map(kind=>`<section class="cx-depth-code" data-copy-ready-kind="${kind}"><strong>${kind.toUpperCase()}</strong><pre tabindex="0"><code>${escapeDepth(evidence.copyReady[kind])}</code></pre></section>`).join('');
-  return `<div class="cx-depth-evidence" data-demo-implementation-evidence><div class="cx-depth-evidence-head"><div><strong>Implementation evidence</strong><p>Source-backed tokens and copy-ready anatomy. Runtime meaning still comes from the frozen Commerce authorities.</p></div><span>12-COMPONENT BATCH</span></div><div class="cx-depth-source"><strong>Sources</strong><p>${sources}</p></div><div class="cx-depth-token-list" data-demo-token-list>${tokens}</div><div class="cx-depth-code-grid">${codeBlocks}</div></div>`;
+  const badge=`BATCH ${batch.ordinal} · ${batch.label.toUpperCase()}`;
+  return `<div class="cx-depth-evidence" data-demo-implementation-evidence data-demo-implementation-batch="${escapeDepth(batch.id)}"><div class="cx-depth-evidence-head"><div><strong>Implementation evidence</strong><p>Source-backed tokens and copy-ready anatomy. Runtime meaning still comes from the frozen Commerce authorities.</p></div><span>${escapeDepth(badge)}</span></div><div class="cx-depth-source"><strong>Sources</strong><p>${sources}</p></div><div class="cx-depth-token-list" data-demo-token-list>${tokens}</div><div class="cx-depth-code-grid">${codeBlocks}</div></div>`;
 }
 
-function renderDepthAudit(audit,criteria,firstBatch,evidence){
+function renderDepthAudit(audit,criteria,batch,evidence){
   const groups=DEPTH_STATUS_ORDER.map(status=>{
     const matches=criteria.filter(criterion=>audit[criterion.id]===status);
     if(!matches.length)return '';
@@ -34,19 +35,15 @@ function renderDepthAudit(audit,criteria,firstBatch,evidence){
   const complete=criteria.filter(criterion=>audit[criterion.id]==='complete').length;
   const partial=criteria.filter(criterion=>audit[criterion.id]==='partial').length;
   const missing=criteria.filter(criterion=>audit[criterion.id]==='missing').length;
-  const batch=firstBatch?'<p class="cx-depth-first-batch">FIRST DEPTH BATCH · canonical stateful/high-risk component</p>':'';
-  return `<details class="cx-depth-audit" data-component-depth-audit><summary><span>Demo depth audit</span><span class="cx-depth-summary">${complete} complete · ${partial} partial · ${missing} missing</span></summary><div class="cx-depth-grid">${groups}</div>${batch}${renderImplementationEvidence(evidence)}</details>`;
+  const batchNote=batch?`<p class="cx-depth-first-batch">DEPTH BATCH ${batch.ordinal} · ${escapeDepth(batch.label)}</p>`:'';
+  return `<details class="cx-depth-audit" data-component-depth-audit><summary><span>Demo depth audit</span><span class="cx-depth-summary">${complete} complete · ${partial} partial · ${missing} missing</span></summary><div class="cx-depth-grid">${groups}</div>${batchNote}${renderImplementationEvidence(evidence,batch)}</details>`;
 }
 
 async function initComponentDepthAudit(){
   try{
-    const [auditResponse,implementationResponse]=await Promise.all([
-      fetch('./storefront/component-demo-depth.json',{cache:'no-store'}),
-      fetch('./storefront/component-demo-implementation.json',{cache:'no-store'})
-    ]);
+    const auditResponse=await fetch('./storefront/component-demo-depth.json',{cache:'no-store'});
     if(!auditResponse.ok)throw new Error(`Component demo depth request failed: ${auditResponse.status}`);
-    if(!implementationResponse.ok)throw new Error(`Component demo implementation request failed: ${implementationResponse.status}`);
-    const [manifest,implementation]=await Promise.all([auditResponse.json(),implementationResponse.json()]);
+    const manifest=await auditResponse.json();
     depthAssert(manifest.schema==='neobrutal-commerce/component-demo-depth@1','unexpected component demo depth schema');
     depthAssert(manifest.showcaseVersion==='1.1.0','component demo depth must remain Showcase v1.1');
     depthAssert(manifest.commerceVersion==='1.0.0','component demo depth must target frozen Commerce v1.0');
@@ -54,18 +51,36 @@ async function initComponentDepthAudit(){
     depthAssert(sameDepthIds(manifest.statuses||[],DEPTH_STATUS_ORDER),'component demo depth status taxonomy drifted');
     depthAssert(manifest.criteria?.length===13,'component demo depth must cover the 13 v1.1 audit criteria');
     depthAssert(manifest.components?.length===47,'component demo depth must audit all 47 components');
-    depthAssert(implementation.schema==='neobrutal-commerce/component-demo-implementation@1','unexpected component demo implementation schema');
-    depthAssert(implementation.showcaseVersion==='1.1.0'&&implementation.commerceVersion==='1.0.0','component demo implementation versions drifted');
-    depthAssert(implementation.role==='implementation-evidence-only','component demo implementation must remain evidence only');
-    depthAssert(sameDepthIds(implementation.components.map(component=>component.id),manifest.nextImplementationBatch||[]),'component demo implementation must cover the exact first batch');
+    const batches=manifest.implementationBatches||[];
+    depthAssert(batches.length===2,'component demo depth must expose two implementation batches');
+    depthAssert(batches.map(batch=>batch.ordinal).join(',')==='1,2','component implementation batch ordinals drifted');
+    depthAssert(sameDepthIds(batches[0].componentIds||[],manifest.nextImplementationBatch||[]),'legacy first-batch alias drifted');
+    const implementationFiles=await Promise.all(batches.map(async batch=>{
+      const response=await fetch(`./${batch.evidenceFile}`,{cache:'no-store'});
+      if(!response.ok)throw new Error(`Component demo implementation request failed: ${batch.evidenceFile} ${response.status}`);
+      const implementation=await response.json();
+      depthAssert(implementation.schema==='neobrutal-commerce/component-demo-implementation@1','unexpected component demo implementation schema');
+      depthAssert(implementation.showcaseVersion==='1.1.0'&&implementation.commerceVersion==='1.0.0','component demo implementation versions drifted');
+      depthAssert(implementation.role==='implementation-evidence-only','component demo implementation must remain evidence only');
+      if(implementation.batchId)depthAssert(implementation.batchId===batch.id,`component demo implementation batch id drifted: ${batch.id}`);
+      depthAssert(sameDepthIds(implementation.components.map(component=>component.id),batch.componentIds||[]),`component demo implementation coverage drifted: ${batch.id}`);
+      return {batch,implementation};
+    }));
+    const implementationById=new Map();
+    const batchById=new Map();
+    for(const {batch,implementation} of implementationFiles)for(const evidence of implementation.components){
+      depthAssert(!implementationById.has(evidence.id),`duplicate component implementation evidence: ${evidence.id}`);
+      implementationById.set(evidence.id,evidence);
+      batchById.set(evidence.id,batch);
+    }
+    depthAssert(implementationById.size===19,'component demo implementation must cover exact accumulated 19-component evidence set');
     await waitForShowcaseReady();
     const cards=[...document.querySelectorAll('[data-component-card]')];
     depthAssert(cards.length===47,'component demo depth requires 47 rendered component cards');
     const cardIds=cards.map(card=>card.dataset.componentId);
     depthAssert(sameDepthIds(cardIds,manifest.components.map(component=>component.id)),'component demo depth ids drifted from rendered component cards');
-    const firstBatch=new Set(manifest.nextImplementationBatch||[]);
+    const firstBatch=new Set(batches[0].componentIds||[]);
     const entries=new Map(manifest.components.map(component=>[component.id,component]));
-    const implementationById=new Map(implementation.components.map(component=>[component.id,component]));
     let missingCells=0;
     let partialCells=0;
     for(const card of cards){
@@ -73,23 +88,26 @@ async function initComponentDepthAudit(){
       const audit={...manifest.defaultStatus,...(entry.overrides||{})};
       const missing=manifest.criteria.filter(criterion=>audit[criterion.id]==='missing').length;
       const partial=manifest.criteria.filter(criterion=>audit[criterion.id]==='partial').length;
+      const batch=batchById.get(card.dataset.componentId);
       missingCells+=missing;
       partialCells+=partial;
       card.dataset.demoDepthMissing=String(missing);
       card.dataset.demoDepthPartial=String(partial);
       card.dataset.demoDepthFirstBatch=String(firstBatch.has(card.dataset.componentId));
+      card.dataset.demoDepthBatch=batch?.id||'none';
       card.dataset.demoImplementationEvidence=String(implementationById.has(card.dataset.componentId));
       card.querySelector('[data-component-depth-audit]')?.remove();
       const contract=card.querySelector('.cx-contract');
       depthAssert(contract,`component depth audit missing contract panel: ${card.dataset.componentId}`);
-      contract.insertAdjacentHTML('beforeend',renderDepthAudit(audit,manifest.criteria,firstBatch.has(card.dataset.componentId),implementationById.get(card.dataset.componentId)));
+      contract.insertAdjacentHTML('beforeend',renderDepthAudit(audit,manifest.criteria,batch,implementationById.get(card.dataset.componentId)));
     }
     document.documentElement.dataset.componentDepthReady='true';
     document.documentElement.dataset.componentDepthAudited=String(cards.length);
     document.documentElement.dataset.componentDepthMissing=String(missingCells);
     document.documentElement.dataset.componentDepthPartial=String(partialCells);
     document.documentElement.dataset.componentImplementationReady='true';
-    document.documentElement.dataset.componentImplementationAudited=String(implementation.components.length);
+    document.documentElement.dataset.componentImplementationAudited=String(implementationById.size);
+    document.documentElement.dataset.componentImplementationBatches=String(batches.length);
   }catch(error){
     document.documentElement.dataset.componentDepthReady='error';
     document.documentElement.dataset.componentImplementationReady='error';
