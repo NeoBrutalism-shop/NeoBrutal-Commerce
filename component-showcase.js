@@ -1,6 +1,6 @@
 const EXPECTED_SHOWCASE_VERSION='1.1.0';
 const EXPECTED_COMMERCE_VERSION='1.0.0';
-const EXPECTED_BLOCK_COUNT=23;
+const EXPECTED_BLOCK_COUNT=24;
 const escapeHtml=value=>String(value).replace(/[&<>'"]/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[char]));
 const normalize=value=>String(value||'').trim().toLowerCase();
 const BLOCK_MEDIA_COPY={
