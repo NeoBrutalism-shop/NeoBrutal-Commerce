@@ -1,12 +1,13 @@
 {
-  "schema": "neobrutal-commerce/component-variant-evidence@2",
+  "schema": "neobrutal-commerce/component-variant-evidence@3",
   "showcaseVersion": "1.1.0",
   "commerceVersion": "1.0.0",
   "role": "variant-evidence-only",
-  "description": "Accumulated proof for documented component variants. Variant labels remain owned by storefront/component-showcase.json. Rendered proofs use shipping component anatomy; canonical-state proofs reference storefront/component-states.json instead of duplicating lifecycle/state truth.",
+  "description": "Accumulated proof for documented component variants. Variant labels remain owned by storefront/component-showcase.json. Rendered proofs use shipping component anatomy; canonical-state proofs reference storefront/component-states.json; responsive-backed proofs reference the existing live preview plus the authoritative responsive mode instead of duplicating markup.",
   "proofKinds": {
     "rendered": "Explicit declarative markup rendered inside Variant proof.",
-    "canonical-state": "References an existing canonical component state and its live state controls; no duplicate variant markup is created."
+    "canonical-state": "References an existing canonical component state and its live state controls; no duplicate variant markup is created.",
+    "responsive-backed": "References the existing live component preview, authoritative responsive mode, and an explicit viewport proof; no duplicate variant markup is created."
   },
   "batches": [
     {
@@ -34,6 +35,16 @@
         "guarantee",
         "license-selector",
         "renewal-note"
+      ]
+    },
+    {
+      "id": "pricing",
+      "ordinal": 3,
+      "label": "Pricing",
+      "componentIds": [
+        "pricing-tier",
+        "plan-comparison",
+        "bundle-builder"
       ]
     }
   ],
@@ -299,6 +310,70 @@
           "label": "renewal disclosure",
           "proofKind": "rendered",
           "markup": "<p class=\"nbc-renewal-note\" data-variant-sample=\"renewal-note:renewal-disclosure\"><strong>Recurring renewal</strong><span>Billing cadence and next renewal consequence must come from the supplied offer or billing model.</span></p>"
+        }
+      ]
+    },
+    {
+      "id": "pricing-tier",
+      "batchId": "pricing",
+      "variants": [
+        {
+          "id": "default",
+          "label": "default",
+          "proofKind": "rendered",
+          "markup": "<article class=\"nbc-plan-card\" data-variant-sample=\"pricing-tier:default\"><h3>Individual</h3><div class=\"nbc-price\"><strong>$49</strong></div><p>1 production site · 12 months updates</p><button class=\"nbc-button nbc-button--primary nbc-tactile\" type=\"button\">Choose plan</button></article>"
+        },
+        {
+          "id": "featured",
+          "label": "featured",
+          "proofKind": "rendered",
+          "markup": "<article class=\"nbc-plan-card\" data-featured=\"true\" data-variant-sample=\"pricing-tier:featured\"><span class=\"nbc-plan-ribbon\">POPULAR</span><h3>Team</h3><div class=\"nbc-price\"><strong>$149</strong></div><p>5 production sites · 12 months updates</p><button class=\"nbc-button nbc-button--primary nbc-tactile\" type=\"button\">Choose plan</button></article>"
+        }
+      ]
+    },
+    {
+      "id": "plan-comparison",
+      "batchId": "pricing",
+      "variants": [
+        {
+          "id": "desktop-table",
+          "label": "desktop table",
+          "proofKind": "responsive-backed",
+          "responsiveMode": "contained-scroll",
+          "viewport": "desktop",
+          "selectors": [
+            ".nbc-compare-wrap",
+            ".nbc-compare"
+          ]
+        },
+        {
+          "id": "narrow-scroll-container",
+          "label": "narrow scroll container",
+          "proofKind": "responsive-backed",
+          "responsiveMode": "contained-scroll",
+          "viewport": "narrow",
+          "selectors": [
+            ".nbc-compare-wrap",
+            ".nbc-compare"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "bundle-builder",
+      "batchId": "pricing",
+      "variants": [
+        {
+          "id": "no-extras",
+          "label": "no extras",
+          "proofKind": "rendered",
+          "markup": "<div class=\"nbc-bundle\" data-base-price=\"49\" data-variant-sample=\"bundle-builder:no-extras\"><label class=\"nbc-bundle-option\"><input type=\"checkbox\" value=\"20\"><span><strong>Figma source</strong><small>Optional extra</small></span><strong>+$20</strong></label><label class=\"nbc-bundle-option\"><input type=\"checkbox\" value=\"50\"><span><strong>Onboarding</strong><small>Optional session</small></span><strong>+$50</strong></label><div class=\"nbc-bundle-total\"><span>Total</span><strong data-bundle-total>$49</strong></div></div>"
+        },
+        {
+          "id": "selected-extras",
+          "label": "selected extras",
+          "proofKind": "rendered",
+          "markup": "<div class=\"nbc-bundle\" data-base-price=\"49\" data-variant-sample=\"bundle-builder:selected-extras\"><label class=\"nbc-bundle-option\"><input type=\"checkbox\" value=\"20\" checked><span><strong>Figma source</strong><small>Selected extra</small></span><strong>+$20</strong></label><label class=\"nbc-bundle-option\"><input type=\"checkbox\" value=\"50\"><span><strong>Onboarding</strong><small>Optional session</small></span><strong>+$50</strong></label><div class=\"nbc-bundle-total\"><span>Total</span><strong data-bundle-total>$69</strong></div></div>"
         }
       ]
     }

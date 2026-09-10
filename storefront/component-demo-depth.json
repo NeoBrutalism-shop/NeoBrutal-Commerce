@@ -200,6 +200,7 @@
     {
       "id": "pricing-tier",
       "overrides": {
+        "variants": "complete",
         "actions": "complete",
         "tokens": "complete",
         "copy-ready": "complete"
@@ -208,6 +209,7 @@
     {
       "id": "plan-comparison",
       "overrides": {
+        "variants": "complete",
         "tokens": "complete",
         "copy-ready": "complete"
       }
@@ -215,6 +217,7 @@
     {
       "id": "bundle-builder",
       "overrides": {
+        "variants": "complete",
         "actions": "complete",
         "tokens": "complete",
         "copy-ready": "complete"

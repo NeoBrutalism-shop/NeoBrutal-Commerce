@@ -1,7 +1,7 @@
 const variantAssert=(condition,message)=>{if(!condition)throw new Error(message)};
 const sameVariantIds=(a,b)=>JSON.stringify([...a].sort())===JSON.stringify([...b].sort());
 const escapeVariant=value=>String(value).replace(/[&<>'"]/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[char]));
-const PROOF_KINDS=new Set(['rendered','canonical-state']);
+const PROOF_KINDS=new Set(['rendered','canonical-state','responsive-backed']);
 
 function waitForVariantShowcase(){
   if(document.documentElement.dataset.showcaseReady==='true')return Promise.resolve();
@@ -21,13 +21,19 @@ function renderStateBackedProof(entry,variants){
   return `<div class="cx-variant-state-proof" data-variant-state-proof="${escapeVariant(entry.id)}"><p class="cx-variant-proof-note"><strong>Canonical state-backed</strong><span>These documented variants reuse the existing live state authority instead of duplicating state markup.</span></p><ul class="cx-variant-state-list">${variants.map(variant=>`<li class="cx-variant-state-ref" data-variant-state-ref="${escapeVariant(variant.id)}" data-state-id="${escapeVariant(variant.stateId)}"><code>${escapeVariant(variant.stateId)}</code><span>${escapeVariant(variant.label)}</span></li>`).join('')}</ul></div>`;
 }
 
+function renderResponsiveBackedProof(entry,variants){
+  return `<div class="cx-variant-state-proof" data-variant-responsive-proof="${escapeVariant(entry.id)}"><p class="cx-variant-proof-note"><strong>Responsive-backed</strong><span>These documented variants reuse the existing live preview and responsive contract; Browser QA changes viewport instead of cloning markup.</span></p><ul class="cx-variant-state-list">${variants.map(variant=>`<li class="cx-variant-state-ref" data-variant-responsive-ref="${escapeVariant(variant.id)}" data-responsive-mode="${escapeVariant(variant.responsiveMode)}" data-responsive-viewport="${escapeVariant(variant.viewport)}"><code>${escapeVariant(variant.viewport)}</code><span>${escapeVariant(variant.label)} · ${escapeVariant(variant.responsiveMode)}</span></li>`).join('')}</ul></div>`;
+}
+
 function renderVariantEvidence(entry){
   const rendered=entry.variants.filter(variant=>variant.proofKind==='rendered');
   const stateBacked=entry.variants.filter(variant=>variant.proofKind==='canonical-state');
+  const responsiveBacked=entry.variants.filter(variant=>variant.proofKind==='responsive-backed');
   const choices=rendered.map((variant,index)=>`<button class="cx-variant-choice nbc-tactile" type="button" data-variant-choice="${escapeVariant(variant.id)}" aria-pressed="${index===0?'true':'false'}">${escapeVariant(variant.label)}</button>`).join('');
   const renderedProof=rendered.length?`<div class="cx-variant-rendered-proof" data-variant-rendered-proof><div class="cx-variant-choices" role="group" aria-label="${escapeVariant(entry.id)} rendered variants">${choices}</div><div class="cx-variant-panel" data-variant-panel data-variant-current="${escapeVariant(rendered[0].id)}">${rendered[0].markup}</div></div>`:'';
   const stateProof=stateBacked.length?renderStateBackedProof(entry,stateBacked):'';
-  return `<details class="cx-variant-evidence" data-component-variant-evidence data-variant-batch="${escapeVariant(entry.batchId)}"><summary><span>Variant proof</span><span>${entry.variants.length}/${entry.variants.length}</span></summary><div class="cx-variant-body">${renderedProof}${stateProof}</div></details>`;
+  const responsiveProof=responsiveBacked.length?renderResponsiveBackedProof(entry,responsiveBacked):'';
+  return `<details class="cx-variant-evidence" data-component-variant-evidence data-variant-batch="${escapeVariant(entry.batchId)}"><summary><span>Variant proof</span><span>${entry.variants.length}/${entry.variants.length}</span></summary><div class="cx-variant-body">${renderedProof}${stateProof}${responsiveProof}</div></details>`;
 }
 
 function validateStateBackedProof(card,entry){
@@ -38,6 +44,16 @@ function validateStateBackedProof(card,entry){
   const liveStateIds=[...matrix.querySelectorAll('[data-showcase-state]')].map(button=>button.dataset.showcaseState);
   const referencedStateIds=stateBacked.map(variant=>variant.stateId);
   for(const stateId of referencedStateIds)variantAssert(liveStateIds.includes(stateId),`canonical-state variant evidence references missing live state: ${entry.id}:${stateId}`);
+}
+
+function validateResponsiveBackedProof(card,entry){
+  const responsiveBacked=entry.variants.filter(variant=>variant.proofKind==='responsive-backed');
+  if(!responsiveBacked.length)return;
+  const preview=card.querySelector(`[data-preview-for="${CSS.escape(entry.id)}"]`);
+  variantAssert(preview,`responsive-backed variant evidence missing live preview: ${entry.id}`);
+  for(const variant of responsiveBacked){
+    for(const selector of variant.selectors)variantAssert(preview.querySelector(selector),`responsive-backed variant evidence missing live selector: ${entry.id}:${variant.id}:${selector}`);
+  }
 }
 
 function bindVariantEvidence(card,entry){
@@ -57,7 +73,7 @@ function bindVariantEvidence(card,entry){
 }
 
 function validateManifest(manifest){
-  variantAssert(manifest.schema==='neobrutal-commerce/component-variant-evidence@2','unexpected component variant evidence schema');
+  variantAssert(manifest.schema==='neobrutal-commerce/component-variant-evidence@3','unexpected component variant evidence schema');
   variantAssert(manifest.showcaseVersion==='1.1.0'&&manifest.commerceVersion==='1.0.0','component variant evidence versions drifted');
   variantAssert(manifest.role==='variant-evidence-only','component variant evidence must remain evidence only');
   variantAssert(Array.isArray(manifest.batches)&&manifest.batches.length>0,'component variant evidence requires ordered batches');
@@ -84,6 +100,11 @@ function validateManifest(manifest){
       variantAssert(PROOF_KINDS.has(variant.proofKind),`unknown variant proof kind: ${entry.id}:${variant.id}:${variant.proofKind}`);
       if(variant.proofKind==='rendered')variantAssert(typeof variant.markup==='string'&&variant.markup.trim(),`rendered variant evidence missing markup: ${entry.id}:${variant.id}`);
       if(variant.proofKind==='canonical-state')variantAssert(typeof variant.stateId==='string'&&variant.stateId.trim(),`canonical-state variant evidence missing state id: ${entry.id}:${variant.id}`);
+      if(variant.proofKind==='responsive-backed'){
+        variantAssert(typeof variant.responsiveMode==='string'&&variant.responsiveMode.trim(),`responsive-backed variant evidence missing responsive mode: ${entry.id}:${variant.id}`);
+        variantAssert(['desktop','narrow'].includes(variant.viewport),`responsive-backed variant evidence uses unknown viewport: ${entry.id}:${variant.id}`);
+        variantAssert(Array.isArray(variant.selectors)&&variant.selectors.length>0&&variant.selectors.every(selector=>typeof selector==='string'&&selector.trim()),`responsive-backed variant evidence missing selectors: ${entry.id}:${variant.id}`);
+      }
     }
   }
 }
@@ -96,7 +117,9 @@ async function initComponentVariantEvidence(){
     validateManifest(manifest);
     const totalVariants=manifest.components.reduce((sum,entry)=>sum+entry.variants.length,0);
     const renderedVariants=manifest.components.reduce((sum,entry)=>sum+entry.variants.filter(variant=>variant.proofKind==='rendered').length,0);
-    const stateBackedVariants=totalVariants-renderedVariants;
+    const stateBackedVariants=manifest.components.reduce((sum,entry)=>sum+entry.variants.filter(variant=>variant.proofKind==='canonical-state').length,0);
+    const responsiveBackedVariants=manifest.components.reduce((sum,entry)=>sum+entry.variants.filter(variant=>variant.proofKind==='responsive-backed').length,0);
+    variantAssert(totalVariants===renderedVariants+stateBackedVariants+responsiveBackedVariants,'component variant evidence proof-kind counts do not reconcile');
     await waitForVariantShowcase();
     const cards=[...document.querySelectorAll('[data-component-card]')];
     variantAssert(cards.length===47,'component variant evidence requires 47 rendered component cards');
@@ -107,6 +130,7 @@ async function initComponentVariantEvidence(){
       card.querySelector('[data-component-variant-evidence]')?.remove();
       if(!entry)continue;
       validateStateBackedProof(card,entry);
+      validateResponsiveBackedProof(card,entry);
       const contract=card.querySelector('.cx-contract');
       variantAssert(contract,`component variant evidence missing contract panel: ${entry.id}`);
       contract.insertAdjacentHTML('beforeend',renderVariantEvidence(entry));
@@ -117,6 +141,7 @@ async function initComponentVariantEvidence(){
     document.documentElement.dataset.componentVariantCount=String(totalVariants);
     document.documentElement.dataset.componentVariantRenderedCount=String(renderedVariants);
     document.documentElement.dataset.componentVariantStateBackedCount=String(stateBackedVariants);
+    document.documentElement.dataset.componentVariantResponsiveBackedCount=String(responsiveBackedVariants);
     document.documentElement.dataset.componentVariantBatches=String(manifest.batches.length);
   }catch(error){
     document.documentElement.dataset.componentVariantReady='error';
