@@ -57,9 +57,10 @@
     }
   },
   "scripts": {
-    "check": "npm run check:static && npm run check:showcase && npm run check:pages && npm run check:interactions && npm run check:agents && npm run check:docs && npm run check:package && npm run check:release && npm run test:contracts && npm run test:renderers && npm run test:actions && npm run test:integrations && npm run test:ownership && npm run test:performance",
+    "check": "npm run check:static && npm run check:showcase && npm run check:showcase-hardening && npm run check:pages && npm run check:interactions && npm run check:agents && npm run check:docs && npm run check:package && npm run check:release && npm run test:contracts && npm run test:renderers && npm run test:actions && npm run test:integrations && npm run test:ownership && npm run test:performance",
     "check:static": "node scripts/check.mjs",
     "check:showcase": "node scripts/showcase-check.mjs",
+    "check:showcase-hardening": "node scripts/showcase-hardening-check.mjs",
     "check:pages": "node scripts/pages-check.mjs",
     "check:interactions": "node scripts/interactions-check.mjs",
     "check:agents": "node scripts/agents-check.mjs",
