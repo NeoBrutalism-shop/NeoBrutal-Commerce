@@ -124,6 +124,7 @@ function setTheme(next){
   const dark=theme==='dark';
   toggle.textContent=dark?'☀ Light':'◐ Dark';
   toggle.setAttribute('aria-pressed',String(dark));
+  applyThemeToFrame();
 }
 function setViewport(next){
   viewport=VIEWPORTS[next]?next:'desktop';
