@@ -18,6 +18,10 @@ const RENDERED_VARIANTS={
 const STATE_BACKED_VARIANTS={
   'product-media':['preview','code','files']
 };
+const RENDERED_BATCHES={
+  'storefront-core':['product-card','trust-strip','promo-band','badge','price-block'],
+  'product-and-trust':['product-detail','product-gallery','review-summary','testimonials','guarantee','license-selector','renewal-note']
+};
 
 const waitForVariantEvidence=async page=>{
   await expect(page.locator('html')).toHaveAttribute('data-showcase-ready','true');
@@ -28,6 +32,18 @@ const waitForVariantEvidence=async page=>{
   await expect(page.locator('html')).toHaveAttribute('data-component-variant-state-backed-count','3');
   await expect(page.locator('html')).toHaveAttribute('data-component-variant-batches','2');
   await expect(page.locator('html')).toHaveAttribute('data-component-depth-ready','true');
+};
+
+const loadVariantExplorer=async page=>{
+  await page.goto('/components.html',{waitUntil:'networkidle'});
+  await waitForVariantEvidence(page);
+};
+
+const collectRuntimeFailures=page=>{
+  const runtimeFailures=[];
+  page.on('pageerror',error=>runtimeFailures.push(error.message));
+  page.on('console',message=>{if(message.type()==='error')runtimeFailures.push(message.text())});
+  return runtimeFailures;
 };
 
 const openVariantProof=async(page,id)=>{
@@ -42,12 +58,18 @@ const expectAllVariantsComplete=async card=>{
   await expect(card.locator('[data-component-depth-audit] .cx-depth-chip[data-depth-status="complete"]').filter({hasText:/^All variants$/})).toHaveCount(1);
 };
 
-test('v1.1 accumulated variant evidence proves 31 authoritative variants without duplicating canonical states',async({page})=>{
-  const runtimeFailures=[];
-  page.on('pageerror',error=>runtimeFailures.push(error.message));
-  page.on('console',message=>{if(message.type()==='error')runtimeFailures.push(message.text())});
-  await page.goto('/components.html',{waitUntil:'networkidle'});
-  await waitForVariantEvidence(page);
+const exerciseRenderedVariant=async(details,panel,id,variant)=>{
+  const choice=details.locator(`[data-variant-choice="${variant}"]`);
+  await choice.click();
+  await expect(choice).toHaveAttribute('aria-pressed','true');
+  await expect(details.locator('[data-variant-choice][aria-pressed="true"]')).toHaveCount(1);
+  await expect(panel).toHaveAttribute('data-variant-current',variant);
+  await expect(panel.locator(`[data-variant-sample="${id}:${variant}"]`)).toHaveCount(1);
+};
+
+test('v1.1 accumulated variant evidence exposes 31 authoritative variants without duplicating canonical states',async({page})=>{
+  const runtimeFailures=collectRuntimeFailures(page);
+  await loadVariantExplorer(page);
 
   await expect(page.locator('[data-component-card]')).toHaveCount(47);
   await expect(page.locator('[data-component-card][data-demo-variant-evidence="true"]')).toHaveCount(13);
@@ -55,23 +77,32 @@ test('v1.1 accumulated variant evidence proves 31 authoritative variants without
   await expect(page.locator('[data-component-variant-evidence]')).toHaveCount(13);
   await expect(page.locator('[data-variant-choice]')).toHaveCount(28);
   await expect(page.locator('[data-variant-state-ref]')).toHaveCount(3);
+  expect(runtimeFailures).toEqual([]);
+});
 
-  for(const [id,variants] of Object.entries(RENDERED_VARIANTS)){
-    const {card,details,panel}=await openVariantProof(page,id);
-    await expect(details.locator('summary')).toContainText(`${variants.length}/${variants.length}`);
-    const choices=details.locator('[data-variant-choice]');
-    await expect(choices).toHaveCount(variants.length);
-    await expect(details.locator('[data-variant-state-ref]')).toHaveCount(0);
-    for(const variant of variants){
-      const choice=details.locator(`[data-variant-choice="${variant}"]`);
-      await choice.click();
-      await expect(choice).toHaveAttribute('aria-pressed','true');
-      await expect(details.locator('[data-variant-choice][aria-pressed="true"]')).toHaveCount(1);
-      await expect(panel).toHaveAttribute('data-variant-current',variant);
-      await expect(panel.locator(`[data-variant-sample="${id}:${variant}"]`)).toHaveCount(1);
+for(const [batch,ids] of Object.entries(RENDERED_BATCHES)){
+  test(`v1.1 ${batch} rendered variant evidence exercises every authoritative variant`,async({page})=>{
+    const runtimeFailures=collectRuntimeFailures(page);
+    await loadVariantExplorer(page);
+
+    for(const id of ids){
+      const variants=RENDERED_VARIANTS[id];
+      const {card,details,panel}=await openVariantProof(page,id);
+      await expect(details.locator('summary')).toContainText(`${variants.length}/${variants.length}`);
+      const choices=details.locator('[data-variant-choice]');
+      await expect(choices).toHaveCount(variants.length);
+      await expect(details.locator('[data-variant-state-ref]')).toHaveCount(0);
+      for(const variant of variants)await exerciseRenderedVariant(details,panel,id,variant);
+      await expectAllVariantsComplete(card);
     }
-    await expectAllVariantsComplete(card);
-  }
+
+    expect(runtimeFailures).toEqual([]);
+  });
+}
+
+test('v1.1 product-media variant evidence reuses all three canonical states',async({page})=>{
+  const runtimeFailures=collectRuntimeFailures(page);
+  await loadVariantExplorer(page);
 
   for(const [id,states] of Object.entries(STATE_BACKED_VARIANTS)){
     const {card,details}=await openVariantProof(page,id);
@@ -101,60 +132,73 @@ test('v1.1 accumulated variant evidence proves 31 authoritative variants without
     await expectAllVariantsComplete(card);
   }
 
-  const product=page.locator('[data-component-id="product-card"] [data-component-variant-evidence]');
-  await product.locator('[data-variant-choice="primary-action"]').click();
-  await expect(product.locator('[data-variant-panel] .nbc-button--primary.nbc-tactile')).toHaveCount(1);
+  expect(runtimeFailures).toEqual([]);
+});
 
-  const trust=page.locator('[data-component-id="trust-strip"] [data-component-variant-evidence]');
-  await trust.locator('[data-variant-choice="policy-support-fact"]').click();
-  await expect(trust.locator('[data-variant-panel]')).toContainText('Render only support terms supplied');
+test('v1.1 storefront-core variant samples preserve their shipping semantics',async({page})=>{
+  const runtimeFailures=collectRuntimeFailures(page);
+  await loadVariantExplorer(page);
 
-  const promo=page.locator('[data-component-id="promo-band"] [data-component-variant-evidence]');
-  await promo.locator('[data-variant-choice="highlighted-offer"]').click();
-  await expect(promo.locator('[data-variant-panel]')).toContainText('no countdown or fake scarcity');
+  const product=await openVariantProof(page,'product-card');
+  await product.details.locator('[data-variant-choice="primary-action"]').click();
+  await expect(product.details.locator('[data-variant-panel] .nbc-button--primary.nbc-tactile')).toHaveCount(1);
 
-  const detail=page.locator('[data-component-id="product-detail"] [data-component-variant-evidence]');
-  await detail.locator('[data-variant-choice="with-purchase-panel"]').click();
-  for(const selector of ['.nbc-product-detail','.nbc-product-buybox','.nbc-license-selector','.nbc-renewal-note','.nbc-purchase-actions','.nbc-button--primary'])await expect(detail.locator(`[data-variant-panel] ${selector}`)).toHaveCount(1);
+  const trust=await openVariantProof(page,'trust-strip');
+  await trust.details.locator('[data-variant-choice="policy-support-fact"]').click();
+  await expect(trust.panel).toContainText('Render only support terms supplied');
 
-  const gallery=page.locator('[data-component-id="product-gallery"] [data-component-variant-evidence]');
-  await gallery.locator('[data-variant-choice="selected-thumbnail"]').click();
-  await expect(gallery.locator('[data-variant-panel] .nbc-gallery-thumb')).toHaveAttribute('aria-pressed','true');
-  await gallery.locator('[data-variant-choice="unselected-thumbnail"]').click();
-  await expect(gallery.locator('[data-variant-panel] .nbc-gallery-thumb')).toHaveAttribute('aria-pressed','false');
+  const promo=await openVariantProof(page,'promo-band');
+  await promo.details.locator('[data-variant-choice="highlighted-offer"]').click();
+  await expect(promo.panel).toContainText('no countdown or fake scarcity');
 
-  const reviews=page.locator('[data-component-id="review-summary"] [data-component-variant-evidence]');
-  await reviews.locator('[data-variant-choice="rating-plus-count"]').click();
-  await expect(reviews.locator('[data-variant-panel]')).toContainText('128 supplied reviews');
+  expect(runtimeFailures).toEqual([]);
+});
 
-  const testimonials=page.locator('[data-component-id="testimonials"] [data-component-variant-evidence]');
-  await testimonials.locator('[data-variant-choice="stacked"]').click();
-  await expect(testimonials.locator('[data-variant-panel] .nbc-review')).toHaveCount(2);
+test('v1.1 product and trust variant samples preserve their shipping semantics',async({page})=>{
+  const runtimeFailures=collectRuntimeFailures(page);
+  await loadVariantExplorer(page);
 
-  const guarantee=page.locator('[data-component-id="guarantee"] [data-component-variant-evidence]');
-  await guarantee.locator('[data-variant-choice="refund-policy"]').click();
-  await expect(guarantee.locator('[data-variant-panel]')).toContainText('policy data');
+  const detail=await openVariantProof(page,'product-detail');
+  await detail.details.locator('[data-variant-choice="with-purchase-panel"]').click();
+  for(const selector of ['.nbc-product-detail','.nbc-product-buybox','.nbc-license-selector','.nbc-renewal-note','.nbc-purchase-actions','.nbc-button--primary'])await expect(detail.details.locator(`[data-variant-panel] ${selector}`)).toHaveCount(1);
 
-  const license=page.locator('[data-component-id="license-selector"] [data-component-variant-evidence]');
-  await license.locator('[data-variant-choice="selected"]').click();
-  await expect(license.locator('[data-variant-panel] input[type="radio"]')).toBeChecked();
-  await license.locator('[data-variant-choice="capacity-comparison"]').click();
-  await expect(license.locator('[data-variant-panel] .nbc-license-option')).toHaveCount(2);
-  await expect(license.locator('[data-variant-panel]')).toContainText('1 production site');
-  await expect(license.locator('[data-variant-panel]')).toContainText('5 production sites');
+  const gallery=await openVariantProof(page,'product-gallery');
+  await gallery.details.locator('[data-variant-choice="selected-thumbnail"]').click();
+  await expect(gallery.details.locator('[data-variant-panel] .nbc-gallery-thumb')).toHaveAttribute('aria-pressed','true');
+  await gallery.details.locator('[data-variant-choice="unselected-thumbnail"]').click();
+  await expect(gallery.details.locator('[data-variant-panel] .nbc-gallery-thumb')).toHaveAttribute('aria-pressed','false');
 
-  const renewal=page.locator('[data-component-id="renewal-note"] [data-component-variant-evidence]');
-  await renewal.locator('[data-variant-choice="one-time-updates-window"]').click();
-  await expect(renewal.locator('[data-variant-panel]')).toContainText('no automatic renewal');
-  await renewal.locator('[data-variant-choice="renewal-disclosure"]').click();
-  await expect(renewal.locator('[data-variant-panel]')).toContainText('supplied offer or billing model');
+  const reviews=await openVariantProof(page,'review-summary');
+  await reviews.details.locator('[data-variant-choice="rating-plus-count"]').click();
+  await expect(reviews.panel).toContainText('128 supplied reviews');
+
+  const testimonials=await openVariantProof(page,'testimonials');
+  await testimonials.details.locator('[data-variant-choice="stacked"]').click();
+  await expect(testimonials.details.locator('[data-variant-panel] .nbc-review')).toHaveCount(2);
+
+  const guarantee=await openVariantProof(page,'guarantee');
+  await guarantee.details.locator('[data-variant-choice="refund-policy"]').click();
+  await expect(guarantee.panel).toContainText('policy data');
+
+  const license=await openVariantProof(page,'license-selector');
+  await license.details.locator('[data-variant-choice="selected"]').click();
+  await expect(license.details.locator('[data-variant-panel] input[type="radio"]')).toBeChecked();
+  await license.details.locator('[data-variant-choice="capacity-comparison"]').click();
+  await expect(license.details.locator('[data-variant-panel] .nbc-license-option')).toHaveCount(2);
+  await expect(license.panel).toContainText('1 production site');
+  await expect(license.panel).toContainText('5 production sites');
+
+  const renewal=await openVariantProof(page,'renewal-note');
+  await renewal.details.locator('[data-variant-choice="one-time-updates-window"]').click();
+  await expect(renewal.panel).toContainText('no automatic renewal');
+  await renewal.details.locator('[data-variant-choice="renewal-disclosure"]').click();
+  await expect(renewal.panel).toContainText('supplied offer or billing model');
 
   expect(runtimeFailures).toEqual([]);
 });
 
 test('v1.1 variant controls are keyboard operable and preserve tactile down-press grammar',async({page},testInfo)=>{
-  await page.goto('/components.html',{waitUntil:'networkidle'});
-  await waitForVariantEvidence(page);
+  await loadVariantExplorer(page);
   const {details,panel}=await openVariantProof(page,'product-card');
   const accent=details.locator('[data-variant-choice="accent-badge"]');
   const primary=details.locator('[data-variant-choice="primary-action"]');
@@ -192,8 +236,7 @@ test('v1.1 variant controls are keyboard operable and preserve tactile down-pres
 
 test('v1.1 rendered and canonical-state variant evidence stays accessible in dark theme and at narrow width',async({page})=>{
   await page.setViewportSize({width:360,height:800});
-  await page.goto('/components.html',{waitUntil:'networkidle'});
-  await waitForVariantEvidence(page);
+  await loadVariantExplorer(page);
   await page.locator('#themeToggle').click();
   await expect(page.locator('html')).toHaveAttribute('data-theme','dark');
 
