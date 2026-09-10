@@ -176,9 +176,8 @@ const promotedPreviewSource=blockExpansion.slice(previewMapStart,previewMapEnd);
 const promotedPreviewIds=[...promotedPreviewSource.matchAll(/['"]([^'"]+)['"]\s*:/g)].map(match=>match[1]);
 unique(promotedPreviewIds,'promoted block previews');
 exactIds('promoted block preview ids',promotedPreviewIds,expectedPromotedBlockIds);
-for(const id of promotedPreviewIds){
-  if(!promotedPreviewSource.includes(`'${id}':\``))fail(`promoted block ${id} must use explicit rendered preview markup`);
-}
+const promotedPreviewMarkupCount=(promotedPreviewSource.match(/`<[\s\S]*?`/g)||[]).length;
+if(promotedPreviewMarkupCount!==expectedPromotedBlockIds.length)fail(`expected ${expectedPromotedBlockIds.length} explicit promoted block preview markup literals, received ${promotedPreviewMarkupCount}`);
 exactIds('all rendered block ids',[...renderedBaseBlockIds,...renderedPromotedIds],blockIds);
 exactIds('all explicit block preview ids',[...renderedBasePreviewIds,...promotedPreviewIds],blockIds);
 
