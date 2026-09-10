@@ -13,6 +13,7 @@ Coverage is enforced, not aspirational:
 - **25 / 25** reusable Commerce blocks are documented with component composition and live-route context.
 - **12 / 12** stateful component families expose interactive canonical-state inspectors.
 - **42 / 42** canonical component states declared by the frozen registry have explicit live examples and consequence copy.
+- **47 / 47** components are now represented in the v1.1 demo-depth audit, which reports incomplete implementation evidence instead of treating preview presence as roadmap completion.
 
 The explorer must not fall back to a generic “registered component” placeholder for a frozen component. `scripts/showcase-check.mjs` and Browser QA both enforce that rule.
 
@@ -27,7 +28,7 @@ The execution contract remains frozen in `storefront/components.json`:
 - `states` — canonical runtime state IDs the component renders
 - `agentRules` — non-obvious execution/generation constraints
 
-Showcase v1.1 adds three documentation contracts beside—not inside—the frozen npm API:
+Showcase v1.1 adds documentation and audit contracts beside—not inside—the frozen npm API.
 
 ### `storefront/component-showcase.json`
 
@@ -67,6 +68,12 @@ Live examples for every state declared by every stateful frozen component. Each 
 - semantic tone (`neutral`, `info`, `warning`, `danger`, or `success`)
 
 The state manifest must exactly match `storefront/components.json`; adding or removing a runtime state without updating the showcase fails Quality.
+
+### `storefront/component-demo-depth.json`
+
+Audit evidence for the v1.1 component-demo exit gate. It does **not** own runtime models, actions, states, interaction laws, or roadmap priority. Instead it records the evidence status of the roadmap's per-component demo criteria using `complete`, `partial`, `missing`, or `not-applicable`.
+
+The audit covers the exact frozen 47-component registry. `not-applicable` is deliberate: stateless/actionless components do not receive invented states or actions just to make the matrix look full. Current per-component token maps and copy-ready HTML/CSS/JS remain explicitly `missing` until those implementation surfaces ship. The human baseline and first implementation batch are documented in `docs/V1.1-COMPONENT-DEMO-DEPTH-AUDIT.md`.
 
 ## Showcase taxonomies
 
@@ -213,6 +220,6 @@ Their authoritative metadata is `storefront/blocks.json`; the public explorer re
 
 ## Verification
 
-`npm run check` includes `scripts/showcase-check.mjs`, which validates exact component/preview/docs/block/state coverage and contract references. Browser QA then exercises the live explorer across Chromium desktop, mobile Chromium, Firefox, and WebKit with Axe A/AA, interaction, state switching, theme, search/filter, horizontal-overflow, and screenshot review coverage.
+`npm run check` includes `scripts/showcase-check.mjs` and documentation conformance. The latter now validates the exact 47-component demo-depth audit, its applicability rules, and its explorer assets. Browser QA exercises the live explorer across Chromium desktop, mobile Chromium, Firefox, and WebKit with Axe A/AA, interaction, state switching, theme, search/filter, horizontal-overflow, demo-depth coverage, and screenshot review coverage.
 
 The frozen Commerce v1.0 package/API/visual-release checks continue to run alongside these v1.1 showcase checks.
