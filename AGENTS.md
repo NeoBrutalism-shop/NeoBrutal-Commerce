@@ -4,6 +4,10 @@ Use this file as the first read for coding agents working in this repository. `s
 
 This v1.4 workflow is **repository-source** guidance. The published npm package remains frozen at Commerce 1.0.0 and intentionally does not ship the v1.1–v1.4 documentation-layer manifests. Agents working from an installed package should use the public repository when they need the Blocks, Pages, Interactions, or Agent contracts.
 
+## Development roadmap authority
+
+Before choosing the next development slice, read `docs/DEVELOPMENT-ROADMAP.md`. It is the canonical product-development sequence and records both the shipped baseline and the target acceptance criteria for v1.0 → v1.5 → v2.0. Do not skip an earlier unfinished milestone merely because a later foundation already exists. Roadmap planning authority is separate from Commerce runtime/domain authority: the roadmap decides **what to build next**, while the machine-readable manifests below decide **how existing Commerce concepts are defined**.
+
 ## Architecture and authority by concern
 
 The composition hierarchy is:

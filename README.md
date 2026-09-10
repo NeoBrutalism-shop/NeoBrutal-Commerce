@@ -26,6 +26,8 @@ The public surfaces use the actual Commerce CSS, machine-readable contracts, and
 
 `1.0.0` — public release with the Commerce API frozen through the reviewed v0.9 RC, public npm packaging, source-available noncommercial licensing, trusted-publishing release automation, and the full production quality/browser contract. The design-system documentation layer continues independently through Components + Blocks v1.1, Pages v1.2, Motion & Interaction v1.3, and Agent/LLM Execution v1.4 without changing the frozen Commerce package/API version.
 
+The canonical development sequence and milestone acceptance targets live in `docs/DEVELOPMENT-ROADMAP.md`. Shipped foundations and roadmap target breadth are tracked separately so later work does not silently skip unfinished earlier acceptance criteria.
+
 ## Install
 
 ```bash
@@ -38,6 +40,7 @@ The public package is source-available under PolyForm Noncommercial 1.0.0. Comme
 
 ### Humans
 
+- `docs/DEVELOPMENT-ROADMAP.md` — canonical step-by-step milestone sequence, current baselines, target acceptance criteria and next-work rule
 - `components.html` — full interactive 47-component + 18-block public explorer
 - `demo/v10.html` — ten-route responsive Page Lab using the real production pages
 - `demo/v13.html` — manifest-backed Motion & Interaction Lab for tactile press, latched selection, processing, result feedback, reduced motion and forced colors
@@ -71,6 +74,8 @@ Read in this order:
 12. `storefront/interactions.json` — v1.3 interaction design authority: principles, shipping token bindings, production patterns, accessibility degradation, and explicit exceptions
 13. `storefront/catalog.json` — reference product/license/lifecycle content
 14. `docs/AI-COMPONENT-NOTES.md` when the target component is high-risk
+
+Before choosing a new milestone or slice, coding agents must also read `docs/DEVELOPMENT-ROADMAP.md`; it governs planning order, while the machine-readable manifests above govern domain truth and implementation authority.
 
 The composition hierarchy is `Components → Blocks → Pages → Applications`. `storefront/agents.json` coordinates agent execution by concern without copying domain data: Routes remain authoritative for route intent, required `primaryComponents`, and route states; Pages add metadata and Block composition without duplicating or renaming that route contract. `storefront/interactions.json` governs design-system interaction behavior across those layers but does not redefine runtime state or actions. Do not infer Commerce meaning from provider payloads or demo copy. Normalized contracts and machine-readable manifests are authoritative.
 
