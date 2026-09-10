@@ -13,7 +13,7 @@ const waitForPageLibrary=async page=>{
   await expect(page.locator('html')).toHaveAttribute('data-page-library-ready','true');
   await expect(page.locator('html')).toHaveAttribute('data-page-library-version','1.2.0');
   await expect(page.locator('html')).toHaveAttribute('data-page-library-pages','10');
-  await expect(page.locator('html')).toHaveAttribute('data-page-library-blocks','21');
+  await expect(page.locator('html')).toHaveAttribute('data-page-library-blocks','23');
   await expect(page.locator('html')).toHaveAttribute('data-page-library-composed-blocks','18');
 };
 const gridTrackCount=async locator=>locator.evaluate(node=>getComputedStyle(node).gridTemplateColumns.trim().split(/\s+/).filter(Boolean).length);
@@ -32,7 +32,7 @@ for(const route of showcaseRoutes){
       await expect(page.locator('[data-component-card] [data-doc-complete]')).toHaveCount(47);
       await expect(page.locator('[data-state-matrix]')).toHaveCount(12);
       await expect(page.locator('[data-showcase-state]')).toHaveCount(42);
-      await expect(page.locator('[data-block-preview-for]')).toHaveCount(21);
+      await expect(page.locator('[data-block-preview-for]')).toHaveCount(23);
     }else{
       await waitForPageLibrary(page);
     }
@@ -69,23 +69,27 @@ test('v1.1 component explorer renders complete frozen components and documented 
   await expect(comparison.locator('.cx-doc')).toContainText('Wide semantic content scrolls only inside a keyboard-reachable local container.');
 
   await page.getByRole('tab',{name:/Blocks/}).click();
-  await expect(page.locator('[data-block-card]')).toHaveCount(21);
-  await expect(page.locator('[data-block-id]')).toHaveCount(21);
-  await expect(page.locator('[data-block-preview-for]')).toHaveCount(21);
-  await expect(page.locator('[data-block-card] [data-doc-complete]')).toHaveCount(21);
+  await expect(page.locator('[data-block-card]')).toHaveCount(23);
+  await expect(page.locator('[data-block-id]')).toHaveCount(23);
+  await expect(page.locator('[data-block-preview-for]')).toHaveCount(23);
+  await expect(page.locator('[data-block-card] [data-doc-complete]')).toHaveCount(23);
   const blockIds=await page.locator('[data-block-id]').evaluateAll(nodes=>nodes.map(node=>node.dataset.blockId).sort());
   const blockPreviewIds=await page.locator('[data-block-preview-for]').evaluateAll(nodes=>nodes.map(node=>node.dataset.blockPreviewFor).sort());
-  expect(new Set(blockPreviewIds).size).toBe(21);
+  expect(new Set(blockPreviewIds).size).toBe(23);
   expect(blockPreviewIds).toEqual(blockIds);
   await expect(page.locator('[data-block-id="checkout-shell"]')).toBeVisible();
   await expect(page.locator('[data-block-id="ownership-operations"]')).toBeVisible();
-  for(const promotedId of ['trust-strip','testimonials','guarantee']){
+  for(const promotedId of ['trust-strip','testimonials','guarantee','product-detail','product-gallery']){
     await expect(page.locator(`[data-block-id="${promotedId}"]`)).toBeVisible();
     await expect(page.locator(`[data-block-preview-for="${promotedId}"]`)).toBeVisible();
   }
   await expect(page.locator('[data-block-id="trust-strip"] .nbc-trust')).toContainText('12 months of updates');
   await expect(page.locator('[data-block-id="testimonials"] .nbc-review-grid')).toBeVisible();
   await expect(page.locator('[data-block-id="guarantee"] .nbc-trust')).toContainText('Fit guarantee');
+  await expect(page.locator('[data-block-id="product-detail"]')).toContainText('NeoBrutal Soft.');
+  await expect(page.locator('[data-block-id="product-detail"] .nbc-feature-list')).toContainText('Light + dark themes');
+  await expect(page.locator('[data-block-id="product-gallery"] .nbc-product-art')).toBeVisible();
+  await expect(page.locator('[data-block-id="product-gallery"] button')).toHaveCount(3);
   const checkoutBlock=page.locator('[data-block-id="checkout-shell"]');
   await checkoutBlock.locator('.cx-doc summary').click();
   await expect(checkoutBlock.locator('.cx-doc')).toContainText('grid-to-stack');
