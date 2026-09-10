@@ -52,7 +52,7 @@ test('v1.2 block explorer exposes the added route-completeness component contrac
   };
 
   for(const [blockId,componentIds] of Object.entries(expected)){
-    const block=page.locator(`[data-block-preview="${blockId}"]`);
+    const block=page.locator(`[data-block-id="${blockId}"]`);
     await expect(block).toBeVisible();
     const chips=await block.locator('.cx-block-meta .cx-chip').allTextContents();
     expect(chips,blockId).toEqual(componentIds);
