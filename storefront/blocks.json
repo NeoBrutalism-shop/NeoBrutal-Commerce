@@ -37,6 +37,42 @@
       "themeMode": "semantic-surface"
     },
     {
+      "id": "trust-strip",
+      "title": "Trust strip",
+      "category": "product",
+      "description": "Compact evidence strip for supplied trust, support, update, or policy facts without fabricated claims.",
+      "components": ["trust-strip"],
+      "route": "./product/soft/",
+      "responsiveMode": "wrap",
+      "a11y": ["data-authoritative", "text-equivalent", "no-color-only"],
+      "themeMode": "semantic-surface",
+      "promotedFrom": "trust-band"
+    },
+    {
+      "id": "testimonials",
+      "title": "Testimonials",
+      "category": "product",
+      "description": "Supplied buyer quotes and attribution presented as a reusable proof section without inventing customers or claims.",
+      "components": ["testimonials"],
+      "route": "./product/soft/",
+      "responsiveMode": "grid-to-stack",
+      "a11y": ["semantic-group", "data-authoritative", "heading-order"],
+      "themeMode": "semantic-surface",
+      "promotedFrom": "trust-band"
+    },
+    {
+      "id": "guarantee",
+      "title": "Guarantee",
+      "category": "product",
+      "description": "Policy-backed guarantee or refund language kept explicit as a standalone reusable commerce proof section.",
+      "components": ["guarantee"],
+      "route": "./product/soft/",
+      "responsiveMode": "wrap",
+      "a11y": ["data-authoritative", "text-equivalent", "no-color-only"],
+      "themeMode": "semantic-surface",
+      "promotedFrom": "trust-band"
+    },
+    {
       "id": "product-media",
       "title": "Product media deck",
       "category": "product",
