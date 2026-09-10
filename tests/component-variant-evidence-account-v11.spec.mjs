@@ -58,7 +58,7 @@ const loadAccountEvidence=async page=>{
 const openVariantProof=async(page,id)=>{
   const card=page.locator(`[data-component-card][data-component-id="${id}"]`);
   const details=card.locator('[data-component-variant-evidence]');
-  await details.locator('summary').click();
+  if(!(await details.evaluate(element=>element.open)))await details.locator('summary').click();
   await expect(details).toHaveAttribute('open','');
   return {card,details,panel:details.locator('[data-variant-panel]')};
 };
