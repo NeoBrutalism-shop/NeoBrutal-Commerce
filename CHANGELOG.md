@@ -4,6 +4,9 @@ All notable NeoBrutal Commerce changes are recorded here. v1.0 freezes the publi
 
 ## [Unreleased]
 
+- Added `docs/DEVELOPMENT-ROADMAP.md` as the canonical milestone sequence from the v1.0 showcase freeze through v1.1 Components + Blocks, v1.2 Pages, v1.3 Interaction System, v1.4 Agent/LLM execution, v1.5 Theme + Brand, and v2.0 Commerce Platform.
+- Recorded current shipped baselines separately from roadmap targets so the existing 18-Block and 10-Page foundations do not silently satisfy the broader v1.1/v1.2 expansion goals.
+- Made the roadmap a planning authority in `AGENTS.md`: agents must reconcile earlier unfinished milestone acceptance criteria before advancing to later milestones.
 - Post-v1 changes must preserve the public API freeze unless they are explicitly scheduled for a major release.
 
 ## [1.0.0] — Public Release
