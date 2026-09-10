@@ -15,10 +15,13 @@ const exactIds=(label,actual,expected)=>{
 const requiredText=(value,label)=>{if(typeof value!=='string'||!value.trim())fail(`${label} must be a non-empty string`)};
 const expectedCommerce='1.0.0';
 const expectedShowcase='1.1.0';
+const expectedBlockCount=21;
+const expectedBaseBlockCount=18;
+const expectedPromotedBlockIds=['trust-strip','testimonials','guarantee'];
 const expectedCategories=['storefront','product','pricing','checkout','account','system'];
 const allowedStateTones=['neutral','info','warning','danger','success'];
 
-for(const file of ['storefront/components.json','storefront/component-showcase.json','storefront/component-states.json','storefront/blocks.json','component-explorer.js','component-showcase.js','component-showcase.css','components.html']){
+for(const file of ['storefront/components.json','storefront/component-showcase.json','storefront/component-states.json','storefront/blocks.json','component-explorer.js','block-expansion.js','component-showcase.js','component-showcase.css','components.html']){
   if(!exists(file))fail(`missing showcase file: ${file}`);
 }
 
@@ -27,6 +30,7 @@ const showcase=json('storefront/component-showcase.json');
 const stateExamples=json('storefront/component-states.json');
 const blocks=json('storefront/blocks.json');
 const explorer=read('component-explorer.js');
+const blockExpansion=read('block-expansion.js');
 const showcaseClient=read('component-showcase.js');
 const showcaseCss=read('component-showcase.css');
 const showcaseHtml=read('components.html');
@@ -38,6 +42,8 @@ const statefulComponents=components.filter(component=>Array.isArray(component.st
 const stateDocs=stateExamples.components||[];
 const blockDocs=blocks.blocks||[];
 const blockIds=blockDocs.map(block=>block.id);
+const baseBlockDocs=blockDocs.filter(block=>block.promotedFrom===undefined);
+const promotedBlockDocs=blockDocs.filter(block=>block.promotedFrom!==undefined);
 
 if(registry.commerceVersion!==expectedCommerce)fail(`expected Commerce ${expectedCommerce} registry`);
 if(showcase.schema!=='neobrutal-commerce/component-showcase@1')fail(`unexpected component showcase schema: ${showcase.schema}`);
@@ -49,7 +55,9 @@ for(const [label,manifest] of [['component showcase',showcase],['component state
 }
 if(componentIds.length!==47)fail(`expected exactly 47 registered components, received ${componentIds.length}`);
 if(docIds.length!==47)fail(`expected exactly 47 component showcase docs, received ${docIds.length}`);
-if(blockIds.length!==18)fail(`expected exactly 18 block showcase docs, received ${blockIds.length}`);
+if(blockIds.length!==expectedBlockCount)fail(`expected exactly ${expectedBlockCount} block showcase docs, received ${blockIds.length}`);
+if(baseBlockDocs.length!==expectedBaseBlockCount)fail(`expected ${expectedBaseBlockCount} compatibility Blocks, received ${baseBlockDocs.length}`);
+exactIds('promoted Block ids',promotedBlockDocs.map(block=>block.id),expectedPromotedBlockIds);
 unique(componentIds,'component registry');
 unique(docIds,'component showcase');
 unique(stateDocs.map(component=>component.id),'component states showcase');
@@ -107,11 +115,21 @@ const validateDoc=(doc,label)=>{
   for(const code of doc.a11y)if(!a11yIds.includes(code))fail(`${label} ${doc.id} references unknown a11y rule ${code}`);
 };
 for(const doc of docs)validateDoc(doc,'component');
+const blockMap=new Map(blockDocs.map(block=>[block.id,block]));
 for(const block of blockDocs){
   validateDoc({...block,variants:['composition']},'block');
   requiredText(block.title,`block ${block.id} title`);
   if(!Array.isArray(block.components)||block.components.length===0)fail(`block ${block.id} must reference component ids`);
+  unique(block.components,`block ${block.id} components`);
   for(const id of block.components)if(!componentIds.includes(id))fail(`block ${block.id} references unknown component ${id}`);
+  if(block.promotedFrom!==undefined){
+    requiredText(block.promotedFrom,`block ${block.id} promotedFrom`);
+    if(block.promotedFrom===block.id)fail(`block ${block.id} cannot promote from itself`);
+    const parent=blockMap.get(block.promotedFrom);
+    if(!parent)fail(`block ${block.id} promotes from unknown block ${block.promotedFrom}`);
+    const outsideParent=block.components.filter(id=>!parent.components.includes(id));
+    if(outsideParent.length)fail(`block ${block.id} contains components outside compatibility parent ${parent.id}: ${outsideParent.join(', ')}`);
+  }
 }
 
 const previewStart=explorer.indexOf('function previewFor(id){');
@@ -129,20 +147,40 @@ const blocksStart=explorer.indexOf('const BLOCKS=[');
 const blocksEnd=explorer.indexOf('\n];',blocksStart);
 if(blocksStart<0||blocksEnd<0)fail('could not locate rendered BLOCKS definitions');
 const renderedBlockSource=explorer.slice(blocksStart,blocksEnd);
-const renderedBlockIds=[...renderedBlockSource.matchAll(/\bid\s*:\s*['"]([^'"]+)['"]/g)].map(match=>match[1]);
-unique(renderedBlockIds,'rendered block definitions');
-exactIds('rendered block ids',renderedBlockIds,blockIds);
-if(renderedBlockIds.length!==18)fail(`expected exactly 18 rendered block definitions, received ${renderedBlockIds.length}`);
-const renderedBlockPreviews=[...renderedBlockSource.matchAll(/\{id\s*:\s*['"]([^'"]+)['"][\s\S]*?\bmarkup\s*:\s*`([^`]*)`\}/g)].map(match=>({id:match[1],markup:match[2]}));
-const renderedBlockPreviewIds=renderedBlockPreviews.map(block=>block.id);
-unique(renderedBlockPreviewIds,'rendered block previews');
-exactIds('rendered block preview ids',renderedBlockPreviewIds,blockIds);
-if(renderedBlockPreviews.length!==18)fail(`expected exactly 18 explicit rendered block previews, received ${renderedBlockPreviews.length}`);
-for(const block of renderedBlockPreviews){
+const renderedBaseBlockIds=[...renderedBlockSource.matchAll(/\bid\s*:\s*['"]([^'"]+)['"]/g)].map(match=>match[1]);
+unique(renderedBaseBlockIds,'rendered base block definitions');
+exactIds('rendered base block ids',renderedBaseBlockIds,baseBlockDocs.map(block=>block.id));
+if(renderedBaseBlockIds.length!==expectedBaseBlockCount)fail(`expected exactly ${expectedBaseBlockCount} base rendered block definitions, received ${renderedBaseBlockIds.length}`);
+const renderedBasePreviews=[...renderedBlockSource.matchAll(/\{id\s*:\s*['"]([^'"]+)['"][\s\S]*?\bmarkup\s*:\s*`([^`]*)`\}/g)].map(match=>({id:match[1],markup:match[2]}));
+const renderedBasePreviewIds=renderedBasePreviews.map(block=>block.id);
+unique(renderedBasePreviewIds,'rendered base block previews');
+exactIds('rendered base block preview ids',renderedBasePreviewIds,baseBlockDocs.map(block=>block.id));
+if(renderedBasePreviews.length!==expectedBaseBlockCount)fail(`expected exactly ${expectedBaseBlockCount} explicit base block previews, received ${renderedBasePreviews.length}`);
+for(const block of renderedBasePreviews){
   requiredText(block.markup,`block ${block.id} live preview markup`);
   if(!/<[a-z][\s\S]*>/i.test(block.markup))fail(`block ${block.id} live preview must contain rendered HTML`);
   if(block.markup.includes(fallback))fail(`block ${block.id} live preview must not use the component fallback`);
 }
+
+const promotedListStart=blockExpansion.indexOf('const PROMOTED_BLOCK_IDS=[');
+const promotedListEnd=blockExpansion.indexOf('];',promotedListStart);
+if(promotedListStart<0||promotedListEnd<0)fail('could not locate PROMOTED_BLOCK_IDS');
+const promotedListSource=blockExpansion.slice(promotedListStart,promotedListEnd);
+const renderedPromotedIds=[...promotedListSource.matchAll(/['"]([^'"]+)['"]/g)].map(match=>match[1]);
+unique(renderedPromotedIds,'promoted rendered block definitions');
+exactIds('promoted rendered block ids',renderedPromotedIds,expectedPromotedBlockIds);
+const previewMapStart=blockExpansion.indexOf('const BLOCK_PREVIEWS={');
+const previewMapEnd=blockExpansion.indexOf('\n};',previewMapStart);
+if(previewMapStart<0||previewMapEnd<0)fail('could not locate promoted BLOCK_PREVIEWS');
+const promotedPreviewSource=blockExpansion.slice(previewMapStart,previewMapEnd);
+const promotedPreviewIds=[...promotedPreviewSource.matchAll(/['"]([^'"]+)['"]\s*:/g)].map(match=>match[1]);
+unique(promotedPreviewIds,'promoted block previews');
+exactIds('promoted block preview ids',promotedPreviewIds,expectedPromotedBlockIds);
+for(const id of promotedPreviewIds){
+  if(!promotedPreviewSource.includes(`'${id}':\``))fail(`promoted block ${id} must use explicit rendered preview markup`);
+}
+exactIds('all rendered block ids',[...renderedBaseBlockIds,...renderedPromotedIds],blockIds);
+exactIds('all explicit block preview ids',[...renderedBasePreviewIds,...promotedPreviewIds],blockIds);
 
 for(const marker of [
   "fetchJson('./storefront/components.json')",
@@ -157,13 +195,17 @@ for(const marker of [
   'dataset.blockMediaState',
   'wireBlockInteractions',
   'live state component ids drifted from frozen registry',
-  'component showcase ids drifted from frozen registry'
+  'component showcase ids drifted from frozen registry',
+  'promotedFrom',
+  'component subset of compatibility parent'
 ])if(!showcaseClient.includes(marker))fail(`showcase runtime contract missing marker: ${marker}`);
+for(const marker of ['PROMOTED_BLOCK_IDS','BLOCK_PREVIEWS',"block.promotedFrom==='trust-band'","dataset.promotedBlocksReady='true'"])if(!blockExpansion.includes(marker))fail(`promoted Block runtime contract missing marker: ${marker}`);
 for(const marker of ['[data-block-preview-for][data-responsive-mode="contained-scroll"]','[data-block-card][data-responsive-mode="grid-to-stack"]','grid-template-columns:1fr'])if(!showcaseCss.includes(marker))fail(`showcase responsive proof missing marker: ${marker}`);
 try{new Function(showcaseClient)}catch(error){fail(`component-showcase.js syntax error: ${error.message}`)}
-for(const marker of ['./component-showcase.css','./component-showcase.js','SHOWCASE v1.1','component-showcase.json','blocks.json'])if(!showcaseHtml.includes(marker))fail(`components.html missing v1.1 marker: ${marker}`);
+try{new Function(blockExpansion)}catch(error){fail(`block-expansion.js syntax error: ${error.message}`)}
+for(const marker of ['./component-showcase.css','./block-expansion.js','./component-showcase.js','SHOWCASE v1.1','component-showcase.json','blocks.json','21 reusable blocks'])if(!showcaseHtml.includes(marker))fail(`components.html missing v1.1 marker: ${marker}`);
 
 const categoryCounts=Object.fromEntries(expectedCategories.map(category=>[category,docs.filter(doc=>doc.category===category).length]));
 if(Object.values(categoryCounts).reduce((sum,count)=>sum+count,0)!==47)fail('component category counts do not sum to 47');
 
-console.log(`NeoBrutal Commerce v${expectedShowcase} showcase contracts passed · 47/47 component previews · 47/47 documented components · 18/18 block previews · 18/18 documented blocks · ${statefulComponents.length} stateful components / ${totalStateExamples} live canonical states`);
+console.log(`NeoBrutal Commerce v${expectedShowcase} showcase contracts passed · 47/47 component previews · 47/47 documented components · ${expectedBlockCount}/${expectedBlockCount} block previews · ${expectedBlockCount}/${expectedBlockCount} documented blocks · ${promotedBlockDocs.length} promoted compatibility Blocks · ${statefulComponents.length} stateful components / ${totalStateExamples} live canonical states`);
