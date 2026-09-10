@@ -21,12 +21,12 @@
     {
       "id": "account-nav",
       "sourceFiles": ["src/components/account.css"],
-      "selectors": [".nbc-account-nav", ".nbc-account-tab", ".nbc-account-tab[aria-selected=\"true\"]"],
-      "tokens": ["--nbc-space-3", "--nbc-surface", "--nbc-border-w", "--nbc-border", "--nbc-radius-lg", "--nbc-shadow", "--nbc-text", "--nbc-yellow"],
+      "selectors": [".nbc-account-nav", ".nbc-account-tab"],
+      "tokens": ["--nbc-space-3", "--nbc-surface", "--nbc-border-w", "--nbc-border", "--nbc-radius-lg", "--nbc-shadow", "--nbc-text"],
       "copyReady": {
-        "html": "<nav class=\"nbc-account-nav\" data-commerce-component=\"account-nav\" aria-label=\"Account\"><a class=\"nbc-account-tab\" href=\"/account/\" aria-current=\"page\" aria-selected=\"true\">Downloads <span>2</span></a><a class=\"nbc-account-tab\" href=\"/account/?view=purchases\" aria-selected=\"false\">Purchases <span>4</span></a><a class=\"nbc-account-tab\" href=\"/account/?view=licenses\" aria-selected=\"false\">Licenses <span>1</span></a></nav>",
+        "html": "<nav class=\"nbc-account-nav\" data-commerce-component=\"account-nav\" aria-label=\"Account\"><a class=\"nbc-account-tab\" href=\"/account/\" aria-current=\"page\">Downloads <span>2</span></a><a class=\"nbc-account-tab\" href=\"/account/?view=purchases\">Purchases <span>4</span></a><a class=\"nbc-account-tab\" href=\"/account/?view=licenses\">Licenses <span>1</span></a></nav>",
         "css": "@import '@neobrutal/commerce/styles.css';",
-        "js": "const nav=document.querySelector('[data-commerce-component=\"account-nav\"]');\nfor(const item of nav.querySelectorAll('.nbc-account-tab'))item.addEventListener('click',()=>{for(const peer of nav.querySelectorAll('.nbc-account-tab'))peer.setAttribute('aria-selected',String(peer===item));});"
+        "js": "const nav=document.querySelector('[data-commerce-component=\"account-nav\"]');\nconst current=`${location.pathname}${location.search}`;\nfor(const item of nav.querySelectorAll('.nbc-account-tab')){const target=new URL(item.href,location.href);const active=`${target.pathname}${target.search}`===current;if(active)item.setAttribute('aria-current','page');else item.removeAttribute('aria-current');}"
       }
     },
     {
