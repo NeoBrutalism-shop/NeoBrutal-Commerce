@@ -88,8 +88,15 @@ test('v1.1 component explorer renders complete frozen components and documented 
   await expect(page.locator('[data-block-id="guarantee"] .nbc-trust')).toContainText('Fit guarantee');
   await expect(page.locator('[data-block-id="product-detail"]')).toContainText('NeoBrutal Soft.');
   await expect(page.locator('[data-block-id="product-detail"] .nbc-feature-list')).toContainText('Light + dark themes');
-  await expect(page.locator('[data-block-id="product-gallery"] .nbc-product-art')).toBeVisible();
-  await expect(page.locator('[data-block-id="product-gallery"] button')).toHaveCount(3);
+  const galleryBlock=page.locator('[data-block-id="product-gallery"]');
+  await expect(galleryBlock.locator('.nbc-product-art')).toBeVisible();
+  const galleryButtons=galleryBlock.locator('[data-block-gallery-index]');
+  await expect(galleryButtons).toHaveCount(3);
+  await expect(galleryButtons.nth(0)).toHaveAttribute('aria-pressed','true');
+  await galleryButtons.nth(1).click();
+  await expect(galleryButtons.nth(0)).toHaveAttribute('aria-pressed','false');
+  await expect(galleryButtons.nth(1)).toHaveAttribute('aria-pressed','true');
+  await expect(galleryBlock.locator('[data-block-gallery-current]')).toHaveText('SOFT. · 02');
   const checkoutBlock=page.locator('[data-block-id="checkout-shell"]');
   await checkoutBlock.locator('.cx-doc summary').click();
   await expect(checkoutBlock.locator('.cx-doc')).toContainText('grid-to-stack');
