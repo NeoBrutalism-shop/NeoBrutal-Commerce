@@ -18,11 +18,13 @@ Ordinary interactive surfaces move **into** their depth on hover/press. They do 
 
 **[Open the Motion & Interaction Lab →](https://neobrutalism-shop.github.io/NeoBrutal-Commerce/demo/v13.html)**
 
+**[Open the Agent Execution Lab →](https://neobrutalism-shop.github.io/NeoBrutal-Commerce/demo/v14.html)**
+
 The public surfaces use the actual Commerce CSS, machine-readable contracts, and real production behavior. They are covered by the same browser, interaction, responsive, and axe/WCAG quality gates as the shipping storefront rather than maintained as screenshot-only documentation.
 
 ## Status
 
-`1.0.0` — public release with the Commerce API frozen through the reviewed v0.9 RC, public npm packaging, source-available noncommercial licensing, trusted-publishing release automation, and the full production quality/browser contract. The design-system documentation layer continues independently through Components + Blocks v1.1, Pages v1.2, and Motion & Interaction v1.3 without changing the frozen Commerce package/API version.
+`1.0.0` — public release with the Commerce API frozen through the reviewed v0.9 RC, public npm packaging, source-available noncommercial licensing, trusted-publishing release automation, and the full production quality/browser contract. The design-system documentation layer continues independently through Components + Blocks v1.1, Pages v1.2, Motion & Interaction v1.3, and Agent/LLM Execution v1.4 without changing the frozen Commerce package/API version.
 
 ## Install
 
@@ -39,6 +41,7 @@ The public package is source-available under PolyForm Noncommercial 1.0.0. Comme
 - `components.html` — full interactive 47-component + 18-block public explorer
 - `demo/v10.html` — ten-route responsive Page Lab using the real production pages
 - `demo/v13.html` — manifest-backed Motion & Interaction Lab for tactile press, latched selection, processing, result feedback, reduced motion and forced colors
+- `demo/v14.html` — manifest-backed Agent Execution Lab for authority-by-concern, Route → Page → Block → Component tracing, workflow, review outputs, and anti-guess laws
 - `docs/INTERACTIONS.md` — human contract for v1.3 interaction laws and lab boundaries
 - `docs/ADOPTION.md` — architecture and adoption checklist
 - `docs/RECIPES.md` — copy-paste integration recipes
@@ -55,20 +58,21 @@ The public package is source-available under PolyForm Noncommercial 1.0.0. Comme
 Read in this order:
 
 1. `AGENTS.md`
-2. `LLMS.md`
-3. `docs/AGENT-PLAYBOOK.md`
-4. `storefront/routes.json` — authoritative route intent, required primary components, and canonical route states
-5. `storefront/components.json` — frozen component execution contracts
-6. `storefront/blocks.json` — reusable Blocks and their component membership
-7. `storefront/pages.json` — route-keyed Page metadata and Block compositions
-8. `storefront/states.json` — canonical runtime state semantics
-9. `storefront/component-showcase.json` — component presentation, responsive, theme, and accessibility guidance
-10. `storefront/component-states.json` — explicit live examples for stateful component states
-11. `storefront/interactions.json` — v1.3 interaction design authority: principles, shipping token bindings, production patterns, accessibility degradation, and explicit exceptions
-12. `storefront/catalog.json` — reference product/license/lifecycle content
-13. `docs/AI-COMPONENT-NOTES.md` when the target component is high-risk
+2. `storefront/agents.json` — v1.4 repository-source execution contract, authority-by-concern map, workflow, review outputs, and prohibitions
+3. `LLMS.md`
+4. `docs/AGENT-PLAYBOOK.md`
+5. `storefront/routes.json` — authoritative route intent, required primary components, and canonical route states
+6. `storefront/components.json` — frozen component execution contracts
+7. `storefront/blocks.json` — reusable Blocks and their component membership
+8. `storefront/pages.json` — route-keyed Page metadata and Block compositions
+9. `storefront/states.json` — canonical runtime state semantics
+10. `storefront/component-showcase.json` — component presentation, responsive, theme, and accessibility guidance
+11. `storefront/component-states.json` — explicit live examples for stateful component states
+12. `storefront/interactions.json` — v1.3 interaction design authority: principles, shipping token bindings, production patterns, accessibility degradation, and explicit exceptions
+13. `storefront/catalog.json` — reference product/license/lifecycle content
+14. `docs/AI-COMPONENT-NOTES.md` when the target component is high-risk
 
-The composition hierarchy is `Components → Blocks → Pages → Applications`. Routes remain authoritative for route intent, required `primaryComponents`, and route states; Pages add metadata and Block composition without duplicating or renaming that route contract. `storefront/interactions.json` governs design-system interaction behavior across those layers but does not redefine runtime state or actions. Do not infer Commerce meaning from provider payloads or demo copy. Normalized contracts and machine-readable manifests are authoritative.
+The composition hierarchy is `Components → Blocks → Pages → Applications`. `storefront/agents.json` coordinates agent execution by concern without copying domain data: Routes remain authoritative for route intent, required `primaryComponents`, and route states; Pages add metadata and Block composition without duplicating or renaming that route contract. `storefront/interactions.json` governs design-system interaction behavior across those layers but does not redefine runtime state or actions. Do not infer Commerce meaning from provider payloads or demo copy. Normalized contracts and machine-readable manifests are authoritative.
 
 ## Production surface
 
@@ -84,7 +88,7 @@ The composition hierarchy is `Components → Blocks → Pages → Applications`.
 - EDD transaction bridge and replaceable licensing-provider bridge
 - ownership lifecycle: upgrade/downgrade quote/apply, gift/transfer records, subscription cancel/resume, invoice history and ownership audit timeline
 - strict Axe AA, keyboard, reduced-motion, forced-colors, Chromium/Firefox/WebKit, responsive, CLS/static-payload and visual-fingerprint release gates
-- machine-readable component/adoption/interaction contracts for humans and agents
+- machine-readable component/adoption/interaction/agent contracts for humans and agents
 - v1.0 public API freeze, package tarball contract and connected production storefront stress contract
 
 ## Public documentation surfaces
@@ -93,10 +97,11 @@ The composition hierarchy is `Components → Blocks → Pages → Applications`.
 - full registry-backed component + block explorer: `components.html`
 - responsive ten-route Page Lab: `demo/v10.html`
 - manifest-backed Motion & Interaction Lab: `demo/v13.html`
+- manifest-backed Agent Execution Lab: `demo/v14.html`
 - production system-state showcase retained at: `components/index.html`
 - legacy `demo/v02.html` retained for regression coverage
 
-The component explorer combines `storefront/components.json`, `storefront/component-showcase.json`, `storefront/blocks.json`, and `storefront/component-states.json`, so all 47 frozen component contracts, all 18 reusable Blocks, and their live design/state guidance remain inspectable by humans and agents. The Page Lab combines the frozen route authority in `storefront/routes.json` with `storefront/pages.json` and `storefront/blocks.json`, then frames the real production routes instead of copying them, with desktop, tablet, mobile, light, and dark inspection controls. The Motion & Interaction Lab consumes `storefront/interactions.json` directly, uses shipping CSS/runtime behavior for its four production patterns, and keeps `drag-lift` visibly marked as a non-production exception rather than inventing a hover-lift demo.
+The component explorer combines `storefront/components.json`, `storefront/component-showcase.json`, `storefront/blocks.json`, and `storefront/component-states.json`, so all 47 frozen component contracts, all 18 reusable Blocks, and their live design/state guidance remain inspectable by humans and agents. The Page Lab combines the frozen route authority in `storefront/routes.json` with `storefront/pages.json` and `storefront/blocks.json`, then frames the real production routes instead of copying them, with desktop, tablet, mobile, light, and dark inspection controls. The Motion & Interaction Lab consumes `storefront/interactions.json` directly, uses shipping CSS/runtime behavior for its four production patterns, and keeps `drag-lift` visibly marked as a non-production exception rather than inventing a hover-lift demo. The Agent Execution Lab consumes `storefront/agents.json` directly and derives its route trace from the existing Route, Page, Block, and Component manifests, so the public agent workflow remains inspectable without creating a second taxonomy or route catalog.
 
 ## Production routes
 
@@ -174,6 +179,7 @@ React is injected by the consuming application; Commerce does not bundle or pin 
 
 ## Machine-readable contracts
 
+- `storefront/agents.json` — v1.4 repository-source agent execution contract: composition hierarchy, authority by concern, deterministic workflow, review outputs, and anti-guess prohibitions
 - `storefront/catalog.json` — product/license/lifecycle metadata
 - `storefront/routes.json` — authoritative route intent, required primary components, and canonical route states
 - `storefront/components.json` — component models, actions, states and agent rules
@@ -189,17 +195,18 @@ React is injected by the consuming application; Commerce does not bundle or pin 
 - `src/actions/` — canonical commands, lifecycle events and DOM bindings
 - `src/renderers/` — headless, React, action and ownership renderers
 
-`storefront/routes.json` is the route authority. A Page in `storefront/pages.json` composes registered Blocks, and the union of those Blocks' component contracts must cover every frozen `primaryComponent` required by that route. Interaction guidance stays orthogonal to that runtime/composition authority.
+`storefront/routes.json` is the route authority. A Page in `storefront/pages.json` composes registered Blocks, and the union of those Blocks' component contracts must cover every frozen `primaryComponent` required by that route. `storefront/agents.json` coordinates how agents resolve those authorities; it does not replace them. Interaction guidance stays orthogonal to runtime/composition authority.
 
 ## Quality contract
 
 ```bash
 npm run check
 npm run check:interactions
+npm run check:agents
 npm run test:browser
 ```
 
-`npm run check` enforces static conformance, documentation/component-registry consistency, the v1.0 public API freeze and package tarball contract, contract/action/adapter regressions, payload budgets, per-route `Pages → Blocks → Components` completeness, and exact v1.3 interaction/lab conformance. Browser QA runs desktop Chromium, mobile Chromium, Firefox and WebKit and includes strict WCAG A/AA Axe checks, keyboard journeys, real reduced-motion emulation, forced-colors, 320–1440px responsive checks, connected production-store stress, CLS, canonical visual regression, and the permanent GitHub Pages explorer/Page/Motion lab surfaces.
+`npm run check` enforces static conformance, documentation/component-registry consistency, the v1.0 public API freeze and package tarball contract, contract/action/adapter regressions, payload budgets, per-route `Pages → Blocks → Components` completeness, exact v1.3 interaction/lab conformance, and exact v1.4 agent/lab conformance. Browser QA runs desktop Chromium, mobile Chromium, Firefox and WebKit and includes strict WCAG A/AA Axe checks, keyboard journeys, real reduced-motion emulation, forced-colors, 320–1440px responsive checks, connected production-store stress, CLS, canonical visual regression, and the permanent GitHub Pages explorer/Page/Motion/Agent lab surfaces.
 
 No known failing commerce journey or documentation-surface interaction is accepted for merge.
 
