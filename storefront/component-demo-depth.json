@@ -135,6 +135,7 @@
     {
       "id": "product-detail",
       "overrides": {
+        "variants": "complete",
         "tokens": "complete",
         "copy-ready": "complete"
       }
@@ -142,6 +143,7 @@
     {
       "id": "product-gallery",
       "overrides": {
+        "variants": "complete",
         "tokens": "complete",
         "copy-ready": "complete"
       }
@@ -149,6 +151,7 @@
     {
       "id": "product-media",
       "overrides": {
+        "variants": "complete",
         "canonical-states": "complete",
         "tokens": "complete",
         "copy-ready": "complete"
@@ -157,6 +160,7 @@
     {
       "id": "review-summary",
       "overrides": {
+        "variants": "complete",
         "tokens": "complete",
         "copy-ready": "complete"
       }
@@ -164,6 +168,7 @@
     {
       "id": "testimonials",
       "overrides": {
+        "variants": "complete",
         "tokens": "complete",
         "copy-ready": "complete"
       }
@@ -171,6 +176,7 @@
     {
       "id": "guarantee",
       "overrides": {
+        "variants": "complete",
         "tokens": "complete",
         "copy-ready": "complete"
       }
@@ -178,6 +184,7 @@
     {
       "id": "license-selector",
       "overrides": {
+        "variants": "complete",
         "tokens": "complete",
         "copy-ready": "complete"
       }
@@ -185,6 +192,7 @@
     {
       "id": "renewal-note",
       "overrides": {
+        "variants": "complete",
         "tokens": "complete",
         "copy-ready": "complete"
       }
