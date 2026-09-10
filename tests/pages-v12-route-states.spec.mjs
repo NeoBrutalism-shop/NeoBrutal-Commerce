@@ -17,18 +17,24 @@ test('v1.2 Page Lab derives canonical route states without copying them into Pag
     expect(await chips.evaluateAll(nodes=>nodes.map(node=>node.dataset.routeState))).toEqual(states);
     await expect(page.locator('[data-route-state-empty]')).toHaveCount(0);
   };
+  const selectRoute=async routeId=>{
+    const control=page.locator(`[data-route="${routeId}"]`);
+    await expect(control).toBeVisible();
+    await control.click();
+    await expect(control).toHaveAttribute('aria-current','page');
+  };
 
   await expectStates(expectedStates['account-license']);
 
-  await page.locator('#routeSelect').selectOption('checkout');
+  await selectRoute('checkout');
   await expect(page.locator('#currentIntent')).toHaveText('checkout');
   await expectStates(expectedStates.checkout);
 
-  await page.locator('#routeSelect').selectOption('product-soft');
+  await selectRoute('product-soft');
   await expect(page.locator('#currentIntent')).toHaveText('product-detail');
   await expectStates(expectedStates['product-soft']);
 
-  await page.locator('#routeSelect').selectOption('home');
+  await selectRoute('home');
   await expect(page.locator('#currentIntent')).toHaveText('storefront-home');
   await expect(page.locator('[data-route-state]')).toHaveCount(0);
   await expect(page.locator('[data-route-state-empty]')).toHaveText('No explicit route states');
