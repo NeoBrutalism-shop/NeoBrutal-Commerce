@@ -1,6 +1,6 @@
 # Adopting NeoBrutal Commerce
 
-NeoBrutal Commerce is a provider-neutral UI/runtime layer for digital-product and software commerce. Adoption succeeds when the application renders normalized models, dispatches canonical actions, and keeps provider details behind adapters.
+NeoBrutal Commerce is a provider-neutral UI/runtime layer for digital-product and software commerce. Adoption succeeds when the application renders normalized models, dispatches canonical actions, keeps provider details behind adapters, and composes product surfaces through the shared `Components → Blocks → Pages → Applications` hierarchy.
 
 ## 1. Start from the normalized runtime
 
@@ -37,14 +37,24 @@ Do not branch component behavior on strings such as `edd`, `wordpress`, a gatewa
 
 ## 4. Build from the production manifests
 
-Use these machine-readable sources before hand-authoring a page:
+Use the machine-readable composition hierarchy before hand-authoring a page:
 
-- `storefront/routes.json` — route intent and required primary components
-- `storefront/components.json` — component models, canonical actions, states and agent rules
+`Components → Blocks → Pages → Applications`
+
+The manifests have distinct authority boundaries:
+
+- `storefront/routes.json` — authoritative route intent, required `primaryComponents`, examples, and canonical route states
+- `storefront/components.json` — frozen component models, canonical actions, states, and agent rules
+- `storefront/blocks.json` — the 18 reusable Block identities, component membership, responsive behavior, theme behavior, and accessibility expectations
+- `storefront/pages.json` — the ten route-keyed Page identities, descriptions, and Block compositions
 - `storefront/states.json` — canonical state semantics
+- `storefront/component-showcase.json` — v1.1 presentation/design guidance for frozen component contracts
+- `storefront/component-states.json` — explicit live examples for stateful component states
 - `storefront/catalog.json` — reference product/license metadata
 
-A route can add application-specific content, but the normalized commercial/ownership meaning must remain intact.
+Routes remain authoritative. Do not copy route intent, `primaryComponents`, or route states into `pages.json` under new names. A Page adds page-level metadata and composes registered Blocks; each Block composes frozen Components. For every Page, the union of components exposed by its Blocks must cover every `primaryComponent` required by the matching route.
+
+Applications then consume that Page composition while rendering the real production route. They may add application-specific content, but the normalized commercial/ownership meaning and route contract must remain intact.
 
 ## 5. Theme without forking component logic
 
@@ -77,7 +87,7 @@ npm run check
 npm run test:browser
 ```
 
-`npm run check` validates static conformance, documentation/component-registry consistency, contracts, renderers, actions, adapters, ownership lifecycle and payload/performance budgets. Browser QA validates the real production routes across Chromium, mobile Chromium, Firefox and WebKit, including strict accessibility and canonical visual surfaces.
+`npm run check` validates static conformance, documentation/component-registry consistency, contracts, renderers, actions, adapters, ownership lifecycle, payload/performance budgets, and per-route `Pages → Blocks → Components` completeness. Browser QA validates the real production routes across Chromium, mobile Chromium, Firefox and WebKit, including strict accessibility and canonical visual surfaces.
 
 ## Adoption checklist
 
@@ -86,6 +96,9 @@ npm run test:browser
 - canonical actions cross the mutation boundary
 - optional controls are capability-gated
 - canonical states are reused rather than renamed
+- Pages compose registered Blocks instead of duplicating component structure
+- the union of each Page's Blocks covers every matching route `primaryComponent`
+- route intent and route states remain authoritative in `storefront/routes.json`
 - price, renewal and license scope are inspectable before purchase
 - light/dark themes use semantic tokens
 - tactile controls compress rather than float
