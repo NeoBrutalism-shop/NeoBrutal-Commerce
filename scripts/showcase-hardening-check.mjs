@@ -28,7 +28,7 @@ const requiredCss=[
   '.cx-pagea.nbc-button--dark{color:#fff7e8}',
   ':is(.cx-preview,.cx-block-preview).nbc-receipt-grid>div{color:#151515}',
   ':is(.cx-preview,.cx-block-preview)strong+small{display:block;margin-top:.22rem;line-height:1.35;}',
-  '.cx-mini-row>span{display:grid;gap:.22rem;min-width:0}',
+  '.cx-mini-row>span{display:grid;gap:.22rem;min-width:0;}',
   '.cx-mini-row>span>:is(strong,small){min-width:0}',
   '.cx-mini-row>span>small{display:block;margin:0;line-height:1.35;}'
 ];
