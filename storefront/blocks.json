@@ -38,7 +38,7 @@
     },
     {
       "id": "product-media",
-      "title": "Product detail + media deck",
+      "title": "Product media deck",
       "category": "product",
       "description": "Product detail context with preview, code, and files as explicit media states.",
       "components": ["product-detail", "product-gallery", "product-media"],
@@ -192,7 +192,7 @@
     },
     {
       "id": "system-states",
-      "title": "System foundations + state matrix",
+      "title": "System-state matrix",
       "category": "system",
       "description": "Component contracts, tokens, ownership lifecycle, and empty/loading/error/offline system-state anatomy stay inspectable together.",
       "components": ["component-contract", "tokens", "system-states", "ownership-lifecycle"],
