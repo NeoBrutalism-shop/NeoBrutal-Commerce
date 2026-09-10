@@ -73,6 +73,10 @@ function routeButton(route,index){
 function renderPageContract(){
   qs('#currentIntent').textContent=current.intent;
   qs('#currentBlocks').innerHTML=current.blocks.map(block=>`<span class="lab-block-chip" data-page-block="${block}">${block}</span>`).join('');
+  const states=Array.isArray(current.states)?current.states:[];
+  qs('#currentStates').innerHTML=states.length
+    ? states.map(state=>`<span class="lab-state-chip" data-route-state="${state}">${state}</span>`).join('')
+    : '<span class="lab-state-empty" data-route-state-empty>No explicit route states</span>';
 }
 function syncRouteControls(){
   qsa('[data-route]').forEach(button=>button.setAttribute('aria-current',button.dataset.route===current.id?'page':'false'));
