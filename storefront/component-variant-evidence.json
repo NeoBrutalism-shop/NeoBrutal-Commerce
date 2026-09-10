@@ -1,1 +1,381 @@
-{"schema":"neobrutal-commerce/component-variant-evidence@3","showcaseVersion":"1.1.0","commerceVersion":"1.0.0","role":"variant-evidence-only","description":"Accumulated proof for documented component variants. Variant labels remain owned by storefront/component-showcase.json. Rendered proofs use shipping component anatomy; canonical-state proofs reference storefront/component-states.json; responsive-backed proofs reference the existing live preview plus the authoritative responsive mode instead of duplicating markup.","proofKinds":{"rendered":"Explicit declarative markup rendered inside Variant proof.","canonical-state":"References an existing canonical component state and its live state controls; no duplicate variant markup is created.","responsive-backed":"References the existing live component preview, authoritative responsive mode, and an explicit viewport proof; no duplicate variant markup is created."},"batches":[{"id":"storefront-core","ordinal":1,"label":"Storefront core","componentIds":["product-card","trust-strip","promo-band","badge","price-block"]},{"id":"product-trust","ordinal":2,"label":"Product + trust","componentIds":["product-detail","product-gallery","product-media","review-summary","testimonials","guarantee","license-selector","renewal-note"]},{"id":"pricing","ordinal":3,"label":"Pricing","componentIds":["pricing-tier","plan-comparison","bundle-builder"]}],"components":[{"id":"product-card","batchId":"storefront-core","variants":[{"id":"default","label":"default","proofKind":"rendered","markup":"<article class=\"nbc-product-card\" data-variant-sample=\"product-card:default\"><span class=\"nbc-badge\">Design system</span><div class=\"nbc-product-art\"><strong>SOFT.</strong></div><h3>NeoBrutal Soft</h3><div class=\"nbc-price\"><strong>$49</strong><span>Individual</span></div></article>"},{"id":"accent-badge","label":"accent badge","proofKind":"rendered","markup":"<article class=\"nbc-product-card\" data-variant-sample=\"product-card:accent-badge\"><span class=\"nbc-badge nbc-badge--coral\">Bundle</span><div class=\"nbc-product-art\"><strong>SOFT.</strong></div><h3>NeoBrutal Soft</h3><div class=\"nbc-price\"><strong>$49</strong><span>Individual</span></div></article>"},{"id":"primary-action","label":"primary action","proofKind":"rendered","markup":"<article class=\"nbc-product-card\" data-variant-sample=\"product-card:primary-action\"><span class=\"nbc-badge\">Design system</span><div class=\"nbc-product-art\"><strong>SOFT.</strong></div><h3>NeoBrutal Soft</h3><div class=\"nbc-price\"><strong>$49</strong><span>Individual</span></div><button class=\"nbc-button nbc-button--primary nbc-tactile\" type=\"button\">ADD TO CART →</button></article>"}]},{"id":"trust-strip","batchId":"storefront-core","variants":[{"id":"check-mark-fact","label":"check-mark fact","proofKind":"rendered","markup":"<div class=\"nbc-trust\" data-variant-sample=\"trust-strip:check-mark-fact\"><span class=\"nbc-trust-mark\" aria-hidden=\"true\">✓</span><div><strong>12 months of updates</strong><p>Supplied entitlement scope remains explicit before purchase.</p></div></div>"},{"id":"policy-support-fact","label":"policy/support fact","proofKind":"rendered","markup":"<div class=\"nbc-trust\" data-variant-sample=\"trust-strip:policy-support-fact\"><span class=\"nbc-trust-mark\" aria-hidden=\"true\">i</span><div><strong>Support policy</strong><p>Render only support terms supplied by the product or policy source.</p></div></div>"}]},{"id":"promo-band","batchId":"storefront-core","variants":[{"id":"informational","label":"informational","proofKind":"rendered","markup":"<div class=\"store-card\" data-tone=\"yellow\" data-variant-sample=\"promo-band:informational\"><p class=\"store-kicker\">PRODUCT UPDATE</p><h3>Team onboarding is now included.</h3><p>State the supplied commercial change without urgency or scarcity claims.</p></div>"},{"id":"highlighted-offer","label":"highlighted offer","proofKind":"rendered","markup":"<div class=\"store-card\" data-tone=\"pink\" data-variant-sample=\"promo-band:highlighted-offer\"><p class=\"store-kicker\">SUPPLIED OFFER</p><h3>Team license includes onboarding.</h3><p>The actual offer consequence stays visible; no countdown or fake scarcity.</p></div>"}]},{"id":"badge","batchId":"storefront-core","variants":[{"id":"default","label":"default","proofKind":"rendered","markup":"<span class=\"nbc-badge\" data-variant-sample=\"badge:default\">Design system</span>"},{"id":"coral","label":"coral","proofKind":"rendered","markup":"<span class=\"nbc-badge nbc-badge--coral\" data-variant-sample=\"badge:coral\">Bundle</span>"},{"id":"lime","label":"lime","proofKind":"rendered","markup":"<span class=\"nbc-badge nbc-badge--lime\" data-variant-sample=\"badge:lime\">Active</span>"}]},{"id":"price-block","batchId":"storefront-core","variants":[{"id":"one-time","label":"one-time","proofKind":"rendered","markup":"<div class=\"cx-mini-stack\" data-variant-sample=\"price-block:one-time\"><div class=\"nbc-price\"><strong>$49</strong><span>one-time</span></div><p class=\"store-kicker\">One-time purchase · no recurring charge</p></div>"},{"id":"recurring","label":"recurring","proofKind":"rendered","markup":"<div class=\"cx-mini-stack\" data-variant-sample=\"price-block:recurring\"><div class=\"nbc-price\"><strong>$149</strong><span>/ year</span></div><p class=\"store-kicker\">Renews annually until cancelled · current term remains explicit</p></div>"},{"id":"license-scoped","label":"license-scoped","proofKind":"rendered","markup":"<div class=\"cx-mini-stack\" data-variant-sample=\"price-block:license-scoped\"><div class=\"nbc-price\"><strong>$149</strong><span>Team</span></div><p class=\"store-kicker\">5 production sites · 12 months of updates</p></div>"}]},{"id":"product-detail","batchId":"product-trust","variants":[{"id":"default","label":"default","proofKind":"rendered","markup":"<section class=\"nbc-product-detail\" data-variant-sample=\"product-detail:default\"><div class=\"nbc-gallery\"><div class=\"nbc-gallery-stage\"><strong>SOFT.</strong><span>Product preview</span></div></div><div class=\"nbc-product-title\"><span class=\"nbc-badge\">Design system</span><h2>NeoBrutal Soft</h2><p>Product identity and supplied description remain primary.</p></div></section>"},{"id":"with-purchase-panel","label":"with purchase panel","proofKind":"rendered","markup":"<section class=\"nbc-product-detail\" data-variant-sample=\"product-detail:with-purchase-panel\"><div class=\"nbc-gallery\"><div class=\"nbc-gallery-stage\"><strong>SOFT.</strong><span>Product preview</span></div></div><aside class=\"nbc-product-buybox\"><div class=\"nbc-product-title\"><h2>NeoBrutal Soft</h2><p>Production UI system.</p></div><div class=\"nbc-price\"><strong>$149</strong><span>Team</span></div><div class=\"nbc-license-selector\"><label class=\"nbc-license-option\"><input type=\"radio\" name=\"variant-detail-license\" checked><span><strong>Team</strong><small>5 production sites</small></span><span class=\"price\">$149</span></label></div><p class=\"nbc-renewal-note\"><strong>12 months of updates included</strong><span>Renewal terms stay visible beside the purchase decision.</span></p><div class=\"nbc-purchase-actions\"><button class=\"nbc-button nbc-button--primary nbc-tactile\" type=\"button\">ADD TO CART →</button></div></aside></section>"}]},{"id":"product-gallery","batchId":"product-trust","variants":[{"id":"selected-thumbnail","label":"selected thumbnail","proofKind":"rendered","markup":"<div class=\"nbc-gallery\" data-variant-sample=\"product-gallery:selected-thumbnail\"><div class=\"nbc-gallery-stage\"><strong>SOFT.</strong><span>Selected preview</span></div><div class=\"nbc-gallery-thumbs\"><button class=\"nbc-gallery-thumb\" type=\"button\" aria-pressed=\"true\">Preview 1 · selected</button></div></div>"},{"id":"unselected-thumbnail","label":"unselected thumbnail","proofKind":"rendered","markup":"<div class=\"nbc-gallery\" data-variant-sample=\"product-gallery:unselected-thumbnail\"><div class=\"nbc-gallery-stage\"><strong>TOKENS</strong><span>Available preview</span></div><div class=\"nbc-gallery-thumbs\"><button class=\"nbc-gallery-thumb\" type=\"button\" aria-pressed=\"false\">Preview 2 · not selected</button></div></div>"}]},{"id":"product-media","batchId":"product-trust","variants":[{"id":"preview","label":"preview","proofKind":"canonical-state","stateId":"preview"},{"id":"code","label":"code","proofKind":"canonical-state","stateId":"code"},{"id":"files","label":"files","proofKind":"canonical-state","stateId":"files"}]},{"id":"review-summary","batchId":"product-trust","variants":[{"id":"rating-summary","label":"rating summary","proofKind":"rendered","markup":"<div class=\"nbc-rating\" data-variant-sample=\"review-summary:rating-summary\"><div class=\"nbc-stars\" aria-label=\"4.9 out of 5 stars\"><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span></div><strong>4.9 / 5</strong></div>"},{"id":"rating-plus-count","label":"rating plus count","proofKind":"rendered","markup":"<div class=\"nbc-rating\" data-variant-sample=\"review-summary:rating-plus-count\"><div class=\"nbc-stars\" aria-label=\"4.9 out of 5 stars\"><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span></div><strong>4.9 / 5</strong><small>128 supplied reviews</small></div>"}]},{"id":"testimonials","batchId":"product-trust","variants":[{"id":"single","label":"single","proofKind":"rendered","markup":"<div class=\"nbc-review-grid\" data-variant-sample=\"testimonials:single\"><article class=\"nbc-review\"><blockquote>Supplied testimonial quote</blockquote><footer><strong>Supplied customer</strong><span>Supplied attribution</span></footer></article></div>"},{"id":"stacked","label":"stacked","proofKind":"rendered","markup":"<div class=\"nbc-review-grid\" data-variant-sample=\"testimonials:stacked\"><article class=\"nbc-review\"><blockquote>Supplied testimonial quote A</blockquote><footer><strong>Supplied customer A</strong><span>Supplied attribution</span></footer></article><article class=\"nbc-review\"><blockquote>Supplied testimonial quote B</blockquote><footer><strong>Supplied customer B</strong><span>Supplied attribution</span></footer></article></div>"}]},{"id":"guarantee","batchId":"product-trust","variants":[{"id":"guarantee","label":"guarantee","proofKind":"rendered","markup":"<div class=\"nbc-trust\" data-variant-sample=\"guarantee:guarantee\"><span class=\"nbc-trust-mark\" aria-hidden=\"true\">✓</span><div><strong>Policy-backed guarantee</strong><p>Render only the guarantee scope supplied by policy data.</p></div></div>"},{"id":"refund-policy","label":"refund policy","proofKind":"rendered","markup":"<div class=\"nbc-trust\" data-variant-sample=\"guarantee:refund-policy\"><span class=\"nbc-trust-mark\" aria-hidden=\"true\">↺</span><div><strong>Refund policy</strong><p>Render only refund eligibility and timing supplied by policy data.</p></div></div>"}]},{"id":"license-selector","batchId":"product-trust","variants":[{"id":"unselected","label":"unselected","proofKind":"rendered","markup":"<div class=\"nbc-license-selector\" data-variant-sample=\"license-selector:unselected\"><label class=\"nbc-license-option\"><input type=\"radio\" name=\"variant-license-unselected\"><span><strong>Team</strong><small>5 production sites</small></span><span class=\"price\">$149</span></label></div>"},{"id":"selected","label":"selected","proofKind":"rendered","markup":"<div class=\"nbc-license-selector\" data-variant-sample=\"license-selector:selected\"><label class=\"nbc-license-option\"><input type=\"radio\" name=\"variant-license-selected\" checked><span><strong>Team</strong><small>5 production sites</small></span><span class=\"price\">$149</span></label></div>"},{"id":"capacity-comparison","label":"capacity comparison","proofKind":"rendered","markup":"<div class=\"nbc-license-selector\" data-variant-sample=\"license-selector:capacity-comparison\"><label class=\"nbc-license-option\"><input type=\"radio\" name=\"variant-license-comparison\" checked><span><strong>Individual</strong><small>1 production site</small></span><span class=\"price\">$49</span></label><label class=\"nbc-license-option\"><input type=\"radio\" name=\"variant-license-comparison\"><span><strong>Team</strong><small>5 production sites</small></span><span class=\"price\">$149</span></label></div>"}]},{"id":"renewal-note","batchId":"product-trust","variants":[{"id":"one-time-updates-window","label":"one-time updates window","proofKind":"rendered","markup":"<p class=\"nbc-renewal-note\" data-variant-sample=\"renewal-note:one-time-updates-window\"><strong>12 months of updates included</strong><span>One-time purchase · no automatic renewal in this offer.</span></p>"},{"id":"renewal-disclosure","label":"renewal disclosure","proofKind":"rendered","markup":"<p class=\"nbc-renewal-note\" data-variant-sample=\"renewal-note:renewal-disclosure\"><strong>Recurring renewal</strong><span>Billing cadence and next renewal consequence must come from the supplied offer or billing model.</span></p>"}]},{"id":"pricing-tier","batchId":"pricing","variants":[{"id":"default","label":"default","proofKind":"rendered","markup":"<article class=\"nbc-plan-card\" data-variant-sample=\"pricing-tier:default\"><h3>Individual</h3><div class=\"nbc-price\"><strong>$49</strong></div><p>1 production site · 12 months updates</p><button class=\"nbc-button nbc-button--primary nbc-tactile\" type=\"button\">Choose plan</button></article>"},{"id":"featured","label":"featured","proofKind":"rendered","markup":"<article class=\"nbc-plan-card\" data-featured=\"true\" data-variant-sample=\"pricing-tier:featured\"><span class=\"nbc-plan-ribbon\">POPULAR</span><h3>Team</h3><div class=\"nbc-price\"><strong>$149</strong></div><p>5 production sites · 12 months updates</p><button class=\"nbc-button nbc-button--primary nbc-tactile\" type=\"button\">Choose plan</button></article>"}]},{"id":"plan-comparison","batchId":"pricing","variants":[{"id":"desktop-table","label":"desktop table","proofKind":"responsive-backed","responsiveMode":"contained-scroll","viewport":"desktop","selectors":[".nbc-compare-wrap",".nbc-compare"]},{"id":"narrow-scroll-container","label":"narrow scroll container","proofKind":"responsive-backed","responsiveMode":"contained-scroll","viewport":"narrow","selectors":[".nbc-compare-wrap",".nbc-compare"]}]},{"id":"bundle-builder","batchId":"pricing","variants":[{"id":"no-extras","label":"no extras","proofKind":"rendered","markup":"<div class=\"nbc-bundle\" data-base-price=\"49\" data-variant-sample=\"bundle-builder:no-extras\"><label class=\"nbc-bundle-option\"><input type=\"checkbox\" value=\"20\"><span><strong>Figma source</strong><small>Optional extra</small></span><strong>+$20</strong></label><label class=\"nbc-bundle-option\"><input type=\"checkbox\" value=\"50\"><span><strong>Onboarding</strong><small>Optional session</small></span><strong>+$50</strong></label><div class=\"nbc-bundle-total\"><span>Total</span><strong data-bundle-total>$49</strong></div></div>"},{"id":"selected-extras","label":"selected extras","proofKind":"rendered","markup":"<div class=\"nbc-bundle\" data-base-price=\"49\" data-variant-sample=\"bundle-builder:selected-extras\"><label class=\"nbc-bundle-option\"><input type=\"checkbox\" value=\"20\" checked><span><strong>Figma source</strong><small>Selected extra</small></span><strong>+$20</strong></label><label class=\"nbc-bundle-option\"><input type=\"checkbox\" value=\"50\"><span><strong>Onboarding</strong><small>Optional session</small></span><strong>+$50</strong></label><div class=\"nbc-bundle-total\"><span>Total</span><strong data-bundle-total>$69</strong></div></div>"}]}]}
+{
+  "schema": "neobrutal-commerce/component-variant-evidence@3",
+  "showcaseVersion": "1.1.0",
+  "commerceVersion": "1.0.0",
+  "role": "variant-evidence-only",
+  "description": "Accumulated proof for documented component variants. Variant labels remain owned by storefront/component-showcase.json. Rendered proofs use shipping component anatomy; canonical-state proofs reference storefront/component-states.json; responsive-backed proofs reference the existing live preview plus the authoritative responsive mode instead of duplicating markup.",
+  "proofKinds": {
+    "rendered": "Explicit declarative markup rendered inside Variant proof.",
+    "canonical-state": "References an existing canonical component state and its live state controls; no duplicate variant markup is created.",
+    "responsive-backed": "References the existing live component preview, authoritative responsive mode, and an explicit viewport proof; no duplicate variant markup is created."
+  },
+  "batches": [
+    {
+      "id": "storefront-core",
+      "ordinal": 1,
+      "label": "Storefront core",
+      "componentIds": [
+        "product-card",
+        "trust-strip",
+        "promo-band",
+        "badge",
+        "price-block"
+      ]
+    },
+    {
+      "id": "product-trust",
+      "ordinal": 2,
+      "label": "Product + trust",
+      "componentIds": [
+        "product-detail",
+        "product-gallery",
+        "product-media",
+        "review-summary",
+        "testimonials",
+        "guarantee",
+        "license-selector",
+        "renewal-note"
+      ]
+    },
+    {
+      "id": "pricing",
+      "ordinal": 3,
+      "label": "Pricing",
+      "componentIds": [
+        "pricing-tier",
+        "plan-comparison",
+        "bundle-builder"
+      ]
+    }
+  ],
+  "components": [
+    {
+      "id": "product-card",
+      "batchId": "storefront-core",
+      "variants": [
+        {
+          "id": "default",
+          "label": "default",
+          "proofKind": "rendered",
+          "markup": "<article class=\"nbc-product-card\" data-variant-sample=\"product-card:default\"><span class=\"nbc-badge\">Design system</span><div class=\"nbc-product-art\"><strong>SOFT.</strong></div><h3>NeoBrutal Soft</h3><div class=\"nbc-price\"><strong>$49</strong><span>Individual</span></div></article>"
+        },
+        {
+          "id": "accent-badge",
+          "label": "accent badge",
+          "proofKind": "rendered",
+          "markup": "<article class=\"nbc-product-card\" data-variant-sample=\"product-card:accent-badge\"><span class=\"nbc-badge nbc-badge--coral\">Bundle</span><div class=\"nbc-product-art\"><strong>SOFT.</strong></div><h3>NeoBrutal Soft</h3><div class=\"nbc-price\"><strong>$49</strong><span>Individual</span></div></article>"
+        },
+        {
+          "id": "primary-action",
+          "label": "primary action",
+          "proofKind": "rendered",
+          "markup": "<article class=\"nbc-product-card\" data-variant-sample=\"product-card:primary-action\"><span class=\"nbc-badge\">Design system</span><div class=\"nbc-product-art\"><strong>SOFT.</strong></div><h3>NeoBrutal Soft</h3><div class=\"nbc-price\"><strong>$49</strong><span>Individual</span></div><button class=\"nbc-button nbc-button--primary nbc-tactile\" type=\"button\">ADD TO CART →</button></article>"
+        }
+      ]
+    },
+    {
+      "id": "trust-strip",
+      "batchId": "storefront-core",
+      "variants": [
+        {
+          "id": "check-mark-fact",
+          "label": "check-mark fact",
+          "proofKind": "rendered",
+          "markup": "<div class=\"nbc-trust\" data-variant-sample=\"trust-strip:check-mark-fact\"><span class=\"nbc-trust-mark\" aria-hidden=\"true\">✓</span><div><strong>12 months of updates</strong><p>Supplied entitlement scope remains explicit before purchase.</p></div></div>"
+        },
+        {
+          "id": "policy-support-fact",
+          "label": "policy/support fact",
+          "proofKind": "rendered",
+          "markup": "<div class=\"nbc-trust\" data-variant-sample=\"trust-strip:policy-support-fact\"><span class=\"nbc-trust-mark\" aria-hidden=\"true\">i</span><div><strong>Support policy</strong><p>Render only support terms supplied by the product or policy source.</p></div></div>"
+        }
+      ]
+    },
+    {
+      "id": "promo-band",
+      "batchId": "storefront-core",
+      "variants": [
+        {
+          "id": "informational",
+          "label": "informational",
+          "proofKind": "rendered",
+          "markup": "<div class=\"store-card\" data-tone=\"yellow\" data-variant-sample=\"promo-band:informational\"><p class=\"store-kicker\">PRODUCT UPDATE</p><h3>Team onboarding is now included.</h3><p>State the supplied commercial change without urgency or scarcity claims.</p></div>"
+        },
+        {
+          "id": "highlighted-offer",
+          "label": "highlighted offer",
+          "proofKind": "rendered",
+          "markup": "<div class=\"store-card\" data-tone=\"pink\" data-variant-sample=\"promo-band:highlighted-offer\"><p class=\"store-kicker\">SUPPLIED OFFER</p><h3>Team license includes onboarding.</h3><p>The actual offer consequence stays visible; no countdown or fake scarcity.</p></div>"
+        }
+      ]
+    },
+    {
+      "id": "badge",
+      "batchId": "storefront-core",
+      "variants": [
+        {
+          "id": "default",
+          "label": "default",
+          "proofKind": "rendered",
+          "markup": "<span class=\"nbc-badge\" data-variant-sample=\"badge:default\">Design system</span>"
+        },
+        {
+          "id": "coral",
+          "label": "coral",
+          "proofKind": "rendered",
+          "markup": "<span class=\"nbc-badge nbc-badge--coral\" data-variant-sample=\"badge:coral\">Bundle</span>"
+        },
+        {
+          "id": "lime",
+          "label": "lime",
+          "proofKind": "rendered",
+          "markup": "<span class=\"nbc-badge nbc-badge--lime\" data-variant-sample=\"badge:lime\">Active</span>"
+        }
+      ]
+    },
+    {
+      "id": "price-block",
+      "batchId": "storefront-core",
+      "variants": [
+        {
+          "id": "one-time",
+          "label": "one-time",
+          "proofKind": "rendered",
+          "markup": "<div class=\"cx-mini-stack\" data-variant-sample=\"price-block:one-time\"><div class=\"nbc-price\"><strong>$49</strong><span>one-time</span></div><p class=\"store-kicker\">One-time purchase · no recurring charge</p></div>"
+        },
+        {
+          "id": "recurring",
+          "label": "recurring",
+          "proofKind": "rendered",
+          "markup": "<div class=\"cx-mini-stack\" data-variant-sample=\"price-block:recurring\"><div class=\"nbc-price\"><strong>$149</strong><span>/ year</span></div><p class=\"store-kicker\">Renews annually until cancelled · current term remains explicit</p></div>"
+        },
+        {
+          "id": "license-scoped",
+          "label": "license-scoped",
+          "proofKind": "rendered",
+          "markup": "<div class=\"cx-mini-stack\" data-variant-sample=\"price-block:license-scoped\"><div class=\"nbc-price\"><strong>$149</strong><span>Team</span></div><p class=\"store-kicker\">5 production sites · 12 months of updates</p></div>"
+        }
+      ]
+    },
+    {
+      "id": "product-detail",
+      "batchId": "product-trust",
+      "variants": [
+        {
+          "id": "default",
+          "label": "default",
+          "proofKind": "rendered",
+          "markup": "<section class=\"nbc-product-detail\" data-variant-sample=\"product-detail:default\"><div class=\"nbc-gallery\"><div class=\"nbc-gallery-stage\"><strong>SOFT.</strong><span>Product preview</span></div></div><div class=\"nbc-product-title\"><span class=\"nbc-badge\">Design system</span><h2>NeoBrutal Soft</h2><p>Product identity and supplied description remain primary.</p></div></section>"
+        },
+        {
+          "id": "with-purchase-panel",
+          "label": "with purchase panel",
+          "proofKind": "rendered",
+          "markup": "<section class=\"nbc-product-detail\" data-variant-sample=\"product-detail:with-purchase-panel\"><div class=\"nbc-gallery\"><div class=\"nbc-gallery-stage\"><strong>SOFT.</strong><span>Product preview</span></div></div><aside class=\"nbc-product-buybox\"><div class=\"nbc-product-title\"><h2>NeoBrutal Soft</h2><p>Production UI system.</p></div><div class=\"nbc-price\"><strong>$149</strong><span>Team</span></div><div class=\"nbc-license-selector\"><label class=\"nbc-license-option\"><input type=\"radio\" name=\"variant-detail-license\" checked><span><strong>Team</strong><small>5 production sites</small></span><span class=\"price\">$149</span></label></div><p class=\"nbc-renewal-note\"><strong>12 months of updates included</strong><span>Renewal terms stay visible beside the purchase decision.</span></p><div class=\"nbc-purchase-actions\"><button class=\"nbc-button nbc-button--primary nbc-tactile\" type=\"button\">ADD TO CART →</button></div></aside></section>"
+        }
+      ]
+    },
+    {
+      "id": "product-gallery",
+      "batchId": "product-trust",
+      "variants": [
+        {
+          "id": "selected-thumbnail",
+          "label": "selected thumbnail",
+          "proofKind": "rendered",
+          "markup": "<div class=\"nbc-gallery\" data-variant-sample=\"product-gallery:selected-thumbnail\"><div class=\"nbc-gallery-stage\"><strong>SOFT.</strong><span>Selected preview</span></div><div class=\"nbc-gallery-thumbs\"><button class=\"nbc-gallery-thumb\" type=\"button\" aria-pressed=\"true\">Preview 1 · selected</button></div></div>"
+        },
+        {
+          "id": "unselected-thumbnail",
+          "label": "unselected thumbnail",
+          "proofKind": "rendered",
+          "markup": "<div class=\"nbc-gallery\" data-variant-sample=\"product-gallery:unselected-thumbnail\"><div class=\"nbc-gallery-stage\"><strong>TOKENS</strong><span>Available preview</span></div><div class=\"nbc-gallery-thumbs\"><button class=\"nbc-gallery-thumb\" type=\"button\" aria-pressed=\"false\">Preview 2 · not selected</button></div></div>"
+        }
+      ]
+    },
+    {
+      "id": "product-media",
+      "batchId": "product-trust",
+      "variants": [
+        {
+          "id": "preview",
+          "label": "preview",
+          "proofKind": "canonical-state",
+          "stateId": "preview"
+        },
+        {
+          "id": "code",
+          "label": "code",
+          "proofKind": "canonical-state",
+          "stateId": "code"
+        },
+        {
+          "id": "files",
+          "label": "files",
+          "proofKind": "canonical-state",
+          "stateId": "files"
+        }
+      ]
+    },
+    {
+      "id": "review-summary",
+      "batchId": "product-trust",
+      "variants": [
+        {
+          "id": "rating-summary",
+          "label": "rating summary",
+          "proofKind": "rendered",
+          "markup": "<div class=\"nbc-rating\" data-variant-sample=\"review-summary:rating-summary\"><div class=\"nbc-stars\" aria-label=\"4.9 out of 5 stars\"><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span></div><strong>4.9 / 5</strong></div>"
+        },
+        {
+          "id": "rating-plus-count",
+          "label": "rating plus count",
+          "proofKind": "rendered",
+          "markup": "<div class=\"nbc-rating\" data-variant-sample=\"review-summary:rating-plus-count\"><div class=\"nbc-stars\" aria-label=\"4.9 out of 5 stars\"><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span></div><strong>4.9 / 5</strong><small>128 supplied reviews</small></div>"
+        }
+      ]
+    },
+    {
+      "id": "testimonials",
+      "batchId": "product-trust",
+      "variants": [
+        {
+          "id": "single",
+          "label": "single",
+          "proofKind": "rendered",
+          "markup": "<div class=\"nbc-review-grid\" data-variant-sample=\"testimonials:single\"><article class=\"nbc-review\"><blockquote>Supplied testimonial quote</blockquote><footer><strong>Supplied customer</strong><span>Supplied attribution</span></footer></article></div>"
+        },
+        {
+          "id": "stacked",
+          "label": "stacked",
+          "proofKind": "rendered",
+          "markup": "<div class=\"nbc-review-grid\" data-variant-sample=\"testimonials:stacked\"><article class=\"nbc-review\"><blockquote>Supplied testimonial quote A</blockquote><footer><strong>Supplied customer A</strong><span>Supplied attribution</span></footer></article><article class=\"nbc-review\"><blockquote>Supplied testimonial quote B</blockquote><footer><strong>Supplied customer B</strong><span>Supplied attribution</span></footer></article></div>"
+        }
+      ]
+    },
+    {
+      "id": "guarantee",
+      "batchId": "product-trust",
+      "variants": [
+        {
+          "id": "guarantee",
+          "label": "guarantee",
+          "proofKind": "rendered",
+          "markup": "<div class=\"nbc-trust\" data-variant-sample=\"guarantee:guarantee\"><span class=\"nbc-trust-mark\" aria-hidden=\"true\">✓</span><div><strong>Policy-backed guarantee</strong><p>Render only the guarantee scope supplied by policy data.</p></div></div>"
+        },
+        {
+          "id": "refund-policy",
+          "label": "refund policy",
+          "proofKind": "rendered",
+          "markup": "<div class=\"nbc-trust\" data-variant-sample=\"guarantee:refund-policy\"><span class=\"nbc-trust-mark\" aria-hidden=\"true\">↺</span><div><strong>Refund policy</strong><p>Render only refund eligibility and timing supplied by policy data.</p></div></div>"
+        }
+      ]
+    },
+    {
+      "id": "license-selector",
+      "batchId": "product-trust",
+      "variants": [
+        {
+          "id": "unselected",
+          "label": "unselected",
+          "proofKind": "rendered",
+          "markup": "<div class=\"nbc-license-selector\" data-variant-sample=\"license-selector:unselected\"><label class=\"nbc-license-option\"><input type=\"radio\" name=\"variant-license-unselected\"><span><strong>Team</strong><small>5 production sites</small></span><span class=\"price\">$149</span></label></div>"
+        },
+        {
+          "id": "selected",
+          "label": "selected",
+          "proofKind": "rendered",
+          "markup": "<div class=\"nbc-license-selector\" data-variant-sample=\"license-selector:selected\"><label class=\"nbc-license-option\"><input type=\"radio\" name=\"variant-license-selected\" checked><span><strong>Team</strong><small>5 production sites</small></span><span class=\"price\">$149</span></label></div>"
+        },
+        {
+          "id": "capacity-comparison",
+          "label": "capacity comparison",
+          "proofKind": "rendered",
+          "markup": "<div class=\"nbc-license-selector\" data-variant-sample=\"license-selector:capacity-comparison\"><label class=\"nbc-license-option\"><input type=\"radio\" name=\"variant-license-comparison\" checked><span><strong>Individual</strong><small>1 production site</small></span><span class=\"price\">$49</span></label><label class=\"nbc-license-option\"><input type=\"radio\" name=\"variant-license-comparison\"><span><strong>Team</strong><small>5 production sites</small></span><span class=\"price\">$149</span></label></div>"
+        }
+      ]
+    },
+    {
+      "id": "renewal-note",
+      "batchId": "product-trust",
+      "variants": [
+        {
+          "id": "one-time-updates-window",
+          "label": "one-time updates window",
+          "proofKind": "rendered",
+          "markup": "<p class=\"nbc-renewal-note\" data-variant-sample=\"renewal-note:one-time-updates-window\"><strong>12 months of updates included</strong><span>One-time purchase · no automatic renewal in this offer.</span></p>"
+        },
+        {
+          "id": "renewal-disclosure",
+          "label": "renewal disclosure",
+          "proofKind": "rendered",
+          "markup": "<p class=\"nbc-renewal-note\" data-variant-sample=\"renewal-note:renewal-disclosure\"><strong>Recurring renewal</strong><span>Billing cadence and next renewal consequence must come from the supplied offer or billing model.</span></p>"
+        }
+      ]
+    },
+    {
+      "id": "pricing-tier",
+      "batchId": "pricing",
+      "variants": [
+        {
+          "id": "default",
+          "label": "default",
+          "proofKind": "rendered",
+          "markup": "<article class=\"nbc-plan-card\" data-variant-sample=\"pricing-tier:default\"><h3>Individual</h3><div class=\"nbc-price\"><strong>$49</strong></div><p>1 production site · 12 months updates</p><button class=\"nbc-button nbc-button--primary nbc-tactile\" type=\"button\">Choose plan</button></article>"
+        },
+        {
+          "id": "featured",
+          "label": "featured",
+          "proofKind": "rendered",
+          "markup": "<article class=\"nbc-plan-card\" data-featured=\"true\" data-variant-sample=\"pricing-tier:featured\"><span class=\"nbc-plan-ribbon\">POPULAR</span><h3>Team</h3><div class=\"nbc-price\"><strong>$149</strong></div><p>5 production sites · 12 months updates</p><button class=\"nbc-button nbc-button--primary nbc-tactile\" type=\"button\">Choose plan</button></article>"
+        }
+      ]
+    },
+    {
+      "id": "plan-comparison",
+      "batchId": "pricing",
+      "variants": [
+        {
+          "id": "desktop-table",
+          "label": "desktop table",
+          "proofKind": "responsive-backed",
+          "responsiveMode": "contained-scroll",
+          "viewport": "desktop",
+          "selectors": [
+            ".nbc-compare-wrap",
+            ".nbc-compare"
+          ]
+        },
+        {
+          "id": "narrow-scroll-container",
+          "label": "narrow scroll container",
+          "proofKind": "responsive-backed",
+          "responsiveMode": "contained-scroll",
+          "viewport": "narrow",
+          "selectors": [
+            ".nbc-compare-wrap",
+            ".nbc-compare"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "bundle-builder",
+      "batchId": "pricing",
+      "variants": [
+        {
+          "id": "no-extras",
+          "label": "no extras",
+          "proofKind": "rendered",
+          "markup": "<div class=\"nbc-bundle\" data-base-price=\"49\" data-variant-sample=\"bundle-builder:no-extras\"><label class=\"nbc-bundle-option\"><input type=\"checkbox\" value=\"20\"><span><strong>Figma source</strong><small>Optional extra</small></span><strong>+$20</strong></label><label class=\"nbc-bundle-option\"><input type=\"checkbox\" value=\"50\"><span><strong>Onboarding</strong><small>Optional session</small></span><strong>+$50</strong></label><div class=\"nbc-bundle-total\"><span>Total</span><strong data-bundle-total>$49</strong></div></div>"
+        },
+        {
+          "id": "selected-extras",
+          "label": "selected extras",
+          "proofKind": "rendered",
+          "markup": "<div class=\"nbc-bundle\" data-base-price=\"49\" data-variant-sample=\"bundle-builder:selected-extras\"><label class=\"nbc-bundle-option\"><input type=\"checkbox\" value=\"20\" checked><span><strong>Figma source</strong><small>Selected extra</small></span><strong>+$20</strong></label><label class=\"nbc-bundle-option\"><input type=\"checkbox\" value=\"50\"><span><strong>Onboarding</strong><small>Optional session</small></span><strong>+$50</strong></label><div class=\"nbc-bundle-total\"><span>Total</span><strong data-bundle-total>$69</strong></div></div>"
+        }
+      ]
+    }
+  ]
+}
