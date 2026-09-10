@@ -1,0 +1,116 @@
+{
+  "schema": "neobrutal-commerce/interactions@1",
+  "interactionVersion": "1.3.0",
+  "commerceVersion": "1.0.0",
+  "principles": [
+    {
+      "id": "compress-never-float",
+      "description": "Ordinary interactive surfaces move into their existing depth on hover and press; generic upward hover lift is prohibited."
+    },
+    {
+      "id": "cause-state-result",
+      "description": "Interaction feedback must make cause, state, and result legible instead of adding decorative motion without meaning."
+    },
+    {
+      "id": "motion-never-carries-meaning",
+      "description": "Motion may reinforce a state change, but text and programmatic state remain authoritative when motion is absent."
+    },
+    {
+      "id": "respect-user-preferences",
+      "description": "Reduced-motion and forced-colors behavior are product requirements, not optional presentation fallbacks."
+    }
+  ],
+  "tokens": {
+    "depth": "--nbc-depth",
+    "hoverCompression": "--nbc-press-hover",
+    "activeCompression": "--nbc-press-active",
+    "pressEase": "--nbc-ease-press",
+    "releaseEase": "--nbc-ease-release",
+    "fast": "--nbc-motion-fast",
+    "standard": "--nbc-motion-standard"
+  },
+  "patterns": [
+    {
+      "id": "tactile-press",
+      "title": "Tactile press",
+      "kind": "direct-manipulation",
+      "description": "Raised controls compress into their shadow. Fine-pointer hover consumes part of the depth; active consumes the remaining shadow without moving the pointer hit target away during activation.",
+      "selector": ".nbc-tactile",
+      "triggers": ["hover:fine", "active", "keyboard-activation"],
+      "inputs": ["fine-pointer", "coarse-pointer", "keyboard"],
+      "states": ["rest", "hover-compressed", "pressed"],
+      "tokenRoles": ["depth", "hoverCompression", "activeCompression", "pressEase", "releaseEase", "fast", "standard"],
+      "programmaticState": [],
+      "reducedMotion": "collapse-transitions",
+      "forcedColors": "remove-decorative-shadow",
+      "evidence": [
+        {"file": "src/base.css", "marker": ".nbc-tactile"},
+        {"file": "tests/commerce-v07.spec.mjs", "marker": "reduced-motion mode removes smooth scrolling and tactile animation"}
+      ]
+    },
+    {
+      "id": "latched-selection",
+      "title": "Latched selection",
+      "kind": "selection",
+      "description": "A selected option remains visibly and programmatically latched instead of appearing to float. Product media demonstrates pointer and arrow-key selection with one active tab.",
+      "selector": ".nbc-media-tab",
+      "triggers": ["click", "ArrowLeft", "ArrowRight"],
+      "inputs": ["pointer", "keyboard"],
+      "states": ["unselected", "selected"],
+      "tokenRoles": [],
+      "programmaticState": ["aria-selected"],
+      "reducedMotion": "selection-remains-immediate-and-programmatic",
+      "forcedColors": "programmatic-selection-remains-authoritative",
+      "evidence": [
+        {"file": "src/components/media.css", "marker": "aria-selected=\"true\""},
+        {"file": "storefront/store.js", "marker": "ArrowLeft"}
+      ]
+    },
+    {
+      "id": "processing-feedback",
+      "title": "Processing feedback",
+      "kind": "status",
+      "description": "Loading motion may reinforce processing, but it never replaces explicit status. The skeleton animation becomes static when reduced motion is requested.",
+      "selector": ".nbc-skeleton span",
+      "triggers": ["loading"],
+      "inputs": ["system"],
+      "states": ["loading"],
+      "tokenRoles": [],
+      "programmaticState": [],
+      "reducedMotion": "disable-animation",
+      "forcedColors": "replace-gradient-with-system-canvas",
+      "evidence": [
+        {"file": "src/components/state.css", "marker": "@keyframes nbc-skeleton-shift"},
+        {"file": "src/components/state.css", "marker": "prefers-reduced-motion:reduce"}
+      ]
+    },
+    {
+      "id": "result-feedback",
+      "title": "Result feedback",
+      "kind": "state-change",
+      "description": "Commerce mutations expose a persistent textual and programmatic result. Motion is optional reinforcement; lifecycle state remains legible without animation.",
+      "selector": "[data-state], [data-subscription-state]",
+      "triggers": ["quote", "apply", "transfer", "cancel", "resume"],
+      "inputs": ["action-result"],
+      "states": ["ready", "processing", "complete", "failed", "cancelled", "cancel_at_period_end"],
+      "tokenRoles": [],
+      "programmaticState": ["data-state", "data-subscription-state"],
+      "reducedMotion": "result-remains-visible-without-animation",
+      "forcedColors": "text-and-programmatic-state-remain-authoritative",
+      "evidence": [
+        {"file": "storefront/store.js", "marker": "setLifecycleBadge"},
+        {"file": "storefront/store.js", "marker": "dataset.subscriptionState"}
+      ]
+    }
+  ],
+  "exceptions": [
+    {
+      "id": "drag-lift",
+      "description": "Semantic lift is permitted only while an object is actually picked up for dragging. Hover alone never lifts an ordinary control.",
+      "productionPattern": false,
+      "evidence": [
+        {"file": "README.md", "marker": "Semantic lift is reserved for actions such as actually dragging an object."}
+      ]
+    }
+  ]
+}
