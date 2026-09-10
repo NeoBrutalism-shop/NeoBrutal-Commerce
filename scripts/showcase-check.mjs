@@ -15,9 +15,13 @@ const exactIds=(label,actual,expected)=>{
 const requiredText=(value,label)=>{if(typeof value!=='string'||!value.trim())fail(`${label} must be a non-empty string`)};
 const expectedCommerce='1.0.0';
 const expectedShowcase='1.1.0';
-const expectedBlockCount=21;
+const expectedBlockCount=23;
 const expectedBaseBlockCount=18;
-const expectedPromotedBlockIds=['trust-strip','testimonials','guarantee'];
+const expectedPromotedBlockIds=['trust-strip','testimonials','guarantee','product-detail','product-gallery'];
+const expectedPromotionGroups={
+  'trust-band':['trust-strip','testimonials','guarantee'],
+  'product-media':['product-detail','product-gallery']
+};
 const expectedCategories=['storefront','product','pricing','checkout','account','system'];
 const allowedStateTones=['neutral','info','warning','danger','success'];
 
@@ -58,6 +62,9 @@ if(docIds.length!==47)fail(`expected exactly 47 component showcase docs, receive
 if(blockIds.length!==expectedBlockCount)fail(`expected exactly ${expectedBlockCount} block showcase docs, received ${blockIds.length}`);
 if(baseBlockDocs.length!==expectedBaseBlockCount)fail(`expected ${expectedBaseBlockCount} compatibility Blocks, received ${baseBlockDocs.length}`);
 exactIds('promoted Block ids',promotedBlockDocs.map(block=>block.id),expectedPromotedBlockIds);
+for(const [parentId,expectedIds] of Object.entries(expectedPromotionGroups)){
+  exactIds(`${parentId} promoted Block ids`,promotedBlockDocs.filter(block=>block.promotedFrom===parentId).map(block=>block.id),expectedIds);
+}
 unique(componentIds,'component registry');
 unique(docIds,'component showcase');
 unique(stateDocs.map(component=>component.id),'component states showcase');
@@ -129,6 +136,7 @@ for(const block of blockDocs){
     if(!parent)fail(`block ${block.id} promotes from unknown block ${block.promotedFrom}`);
     const outsideParent=block.components.filter(id=>!parent.components.includes(id));
     if(outsideParent.length)fail(`block ${block.id} contains components outside compatibility parent ${parent.id}: ${outsideParent.join(', ')}`);
+    if(block.components.length!==1||block.components[0]!==block.id)fail(`promoted Block ${block.id} must map directly to its frozen component`);
   }
 }
 
@@ -198,11 +206,11 @@ for(const marker of [
   'promotedFrom',
   'component subset of compatibility parent'
 ])if(!showcaseClient.includes(marker))fail(`showcase runtime contract missing marker: ${marker}`);
-for(const marker of ['PROMOTED_BLOCK_IDS','BLOCK_PREVIEWS',"block.promotedFrom==='trust-band'","dataset.promotedBlocksReady='true'"])if(!blockExpansion.includes(marker))fail(`promoted Block runtime contract missing marker: ${marker}`);
+for(const marker of ['PROMOTED_BLOCK_IDS','PROMOTION_GROUPS','BLOCK_PREVIEWS','block.promotedFrom!==undefined',"'product-media':['product-detail','product-gallery']","dataset.promotedBlocksReady='true'"])if(!blockExpansion.includes(marker))fail(`promoted Block runtime contract missing marker: ${marker}`);
 for(const marker of ['[data-block-preview-for][data-responsive-mode="contained-scroll"]','[data-block-card][data-responsive-mode="grid-to-stack"]','grid-template-columns:1fr'])if(!showcaseCss.includes(marker))fail(`showcase responsive proof missing marker: ${marker}`);
 try{new Function(showcaseClient)}catch(error){fail(`component-showcase.js syntax error: ${error.message}`)}
 try{new Function(blockExpansion)}catch(error){fail(`block-expansion.js syntax error: ${error.message}`)}
-for(const marker of ['./component-showcase.css','./block-expansion.js','./component-showcase.js','SHOWCASE v1.1','component-showcase.json','blocks.json','21 reusable blocks'])if(!showcaseHtml.includes(marker))fail(`components.html missing v1.1 marker: ${marker}`);
+for(const marker of ['./component-showcase.css','./block-expansion.js','./component-showcase.js','SHOWCASE v1.1','component-showcase.json','blocks.json','23 reusable blocks'])if(!showcaseHtml.includes(marker))fail(`components.html missing v1.1 marker: ${marker}`);
 
 const categoryCounts=Object.fromEntries(expectedCategories.map(category=>[category,docs.filter(doc=>doc.category===category).length]));
 if(Object.values(categoryCounts).reduce((sum,count)=>sum+count,0)!==47)fail('component category counts do not sum to 47');
