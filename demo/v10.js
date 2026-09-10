@@ -1,8 +1,8 @@
 const EXPECTED_PAGE_LIBRARY_VERSION='1.2.0';
 const EXPECTED_COMMERCE_VERSION='1.0.0';
-const EXPECTED_BLOCK_COUNT=21;
+const EXPECTED_BLOCK_COUNT=23;
 const EXPECTED_PAGE_COMPOSED_BLOCK_COUNT=18;
-const EXPECTED_PROMOTED_BLOCK_COUNT=3;
+const EXPECTED_PROMOTED_BLOCK_COUNT=5;
 const VIEWPORTS={desktop:{label:'1280px preview'},tablet:{label:'834px preview'},mobile:{label:'390px preview'}};
 const FROZEN_V10_ROUTE_IDS=[
   {id:'home',canonical:'home'},
