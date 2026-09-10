@@ -1,0 +1,88 @@
+{
+  "schema": "neobrutal-commerce/component-demo-implementation@1",
+  "showcaseVersion": "1.1.0",
+  "commerceVersion": "1.0.0",
+  "role": "implementation-evidence-only",
+  "batchId": "product-storefront",
+  "description": "Source-backed implementation evidence for the second v1.1 product/storefront component demo-depth batch. This file does not redefine component models, actions, states, or interaction laws.",
+  "styleImport": "@neobrutal/commerce/styles.css",
+  "components": [
+    {
+      "id": "product-card",
+      "sourceFiles": ["src/components/product.css", "component-explorer.js", "src/actions/runtime.js"],
+      "selectors": [".nbc-product-card", ".nbc-product-art", ".nbc-price"],
+      "tokens": ["--nbc-space-4", "--nbc-surface", "--nbc-border-w", "--nbc-border", "--nbc-radius-lg", "--nbc-shadow", "--nbc-sky", "--nbc-text-2xl", "--nbc-muted"],
+      "copyReady": {
+        "html": "<article class=\"nbc-product-card\" data-commerce-component=\"product-card\">\n  <span class=\"nbc-badge\">Design system</span>\n  <div class=\"nbc-product-art\"><strong>SOFT.</strong></div>\n  <h3>NeoBrutal Soft</h3>\n  <div class=\"nbc-price\"><strong>$49</strong><span>Individual</span></div>\n  <button class=\"nbc-button nbc-button--primary nbc-tactile\" type=\"button\" data-action=\"add\">Add to cart</button>\n</article>",
+        "css": "@import '@neobrutal/commerce/styles.css';",
+        "js": "import {createCommerceAction} from '@neobrutal/commerce/actions';\nconst card=document.querySelector('[data-commerce-component=\"product-card\"]');\ncard.querySelector('[data-action=\"add\"]').addEventListener('click',()=>actions.dispatch(createCommerceAction('cart.add',{productId,offerId,quantity:1})));"
+      }
+    },
+    {
+      "id": "badge",
+      "sourceFiles": ["src/components/product.css", "component-explorer.js"],
+      "selectors": [".nbc-badge", ".nbc-badge--coral", ".nbc-badge--lime"],
+      "tokens": ["--nbc-yellow", "--nbc-coral", "--nbc-lime", "--nbc-text-xs"],
+      "copyReady": {
+        "html": "<span class=\"nbc-badge\" data-commerce-component=\"badge\">Design system</span>",
+        "css": "@import '@neobrutal/commerce/styles.css';",
+        "js": "const badge=document.querySelector('[data-commerce-component=\"badge\"]');\nfunction renderBadge(label,tone='default'){\n  const tones={default:'nbc-badge',coral:'nbc-badge nbc-badge--coral',lime:'nbc-badge nbc-badge--lime'};\n  if(!tones[tone])throw new Error(`Unknown badge tone: ${tone}`);\n  badge.className=tones[tone];\n  badge.textContent=label;\n}\nrenderBadge('Design system');"
+      }
+    },
+    {
+      "id": "price-block",
+      "sourceFiles": ["src/components/product.css", "component-explorer.js"],
+      "selectors": [".nbc-price", ".nbc-price strong", ".nbc-price del"],
+      "tokens": ["--nbc-muted"],
+      "copyReady": {
+        "html": "<div class=\"nbc-price\" data-commerce-component=\"price-block\">\n  <strong>$149</strong><span>/ Team</span><del>$179</del>\n</div>",
+        "css": "@import '@neobrutal/commerce/styles.css';",
+        "js": "const price=document.querySelector('[data-commerce-component=\"price-block\"]');\nfunction renderPrice({amount,currency='USD',scope,compareAt}){\n  const format=new Intl.NumberFormat(undefined,{style:'currency',currency,maximumFractionDigits:0});\n  price.querySelector('strong').textContent=format.format(amount);\n  price.querySelector('span').textContent=scope?`/ ${scope}`:'';\n  const compare=price.querySelector('del');\n  compare.hidden=!compareAt;\n  if(compareAt)compare.textContent=format.format(compareAt);\n}"
+      }
+    },
+    {
+      "id": "product-detail",
+      "sourceFiles": ["src/components/product-detail.css", "component-explorer.js"],
+      "selectors": [".nbc-product-detail", ".nbc-product-buybox", ".nbc-product-title"],
+      "tokens": ["--nbc-space-6", "--nbc-surface", "--nbc-border-w", "--nbc-border", "--nbc-radius-lg", "--nbc-shadow", "--nbc-text-2xl", "--nbc-muted"],
+      "copyReady": {
+        "html": "<section class=\"nbc-product-detail\" data-commerce-component=\"product-detail\">\n  <div class=\"nbc-gallery\"><div class=\"nbc-gallery-stage\"><strong>SOFT.</strong></div></div>\n  <aside class=\"nbc-product-buybox\">\n    <div class=\"nbc-product-title\"><h2>NeoBrutal Soft</h2><p>Production UI system.</p></div>\n    <div class=\"nbc-meta-row\"><span class=\"nbc-meta-pill\">Digital product</span></div>\n  </aside>\n</section>",
+        "css": "@import '@neobrutal/commerce/styles.css';",
+        "js": "const detail=document.querySelector('[data-commerce-component=\"product-detail\"]');\nfunction renderProductIdentity({name,description}){\n  detail.querySelector('.nbc-product-title h2').textContent=name;\n  detail.querySelector('.nbc-product-title p').textContent=description;\n}"
+      }
+    },
+    {
+      "id": "product-gallery",
+      "sourceFiles": ["src/components/product-detail.css", "component-explorer.js"],
+      "selectors": [".nbc-gallery", ".nbc-gallery-stage", ".nbc-gallery-thumb"],
+      "tokens": ["--nbc-space-3", "--nbc-sky", "--nbc-border-w", "--nbc-border", "--nbc-radius-lg", "--nbc-shadow", "--nbc-yellow", "--nbc-text-xs", "--nbc-space-2", "--nbc-surface", "--nbc-text", "--nbc-radius-sm"],
+      "copyReady": {
+        "html": "<div class=\"nbc-gallery\" data-commerce-component=\"product-gallery\">\n  <div class=\"nbc-gallery-stage\" data-gallery-stage><strong>SOFT.</strong><span>Preview 1</span></div>\n  <div class=\"nbc-gallery-thumbs\">\n    <button class=\"nbc-gallery-thumb\" type=\"button\" aria-pressed=\"true\" data-gallery-label=\"SOFT.\">Preview 1</button>\n    <button class=\"nbc-gallery-thumb\" type=\"button\" aria-pressed=\"false\" data-gallery-label=\"TOKENS\">Preview 2</button>\n    <button class=\"nbc-gallery-thumb\" type=\"button\" aria-pressed=\"false\" data-gallery-label=\"BLOCKS\">Preview 3</button>\n  </div>\n</div>",
+        "css": "@import '@neobrutal/commerce/styles.css';",
+        "js": "const gallery=document.querySelector('[data-commerce-component=\"product-gallery\"]');\nconst stage=gallery.querySelector('[data-gallery-stage] strong');\nfor(const thumb of gallery.querySelectorAll('.nbc-gallery-thumb'))thumb.addEventListener('click',()=>{\n  for(const item of gallery.querySelectorAll('.nbc-gallery-thumb'))item.setAttribute('aria-pressed',String(item===thumb));\n  stage.textContent=thumb.dataset.galleryLabel;\n});"
+      }
+    },
+    {
+      "id": "license-selector",
+      "sourceFiles": ["src/components/product.css", "component-explorer.js"],
+      "selectors": [".nbc-license-selector", ".nbc-license-option", ".nbc-license-option:has(input:checked)"],
+      "tokens": ["--nbc-border-w", "--nbc-border", "--nbc-radius-sm", "--nbc-surface", "--nbc-yellow", "--nbc-text-sm"],
+      "copyReady": {
+        "html": "<div class=\"nbc-license-selector\" data-commerce-component=\"license-selector\">\n  <label class=\"nbc-license-option\"><input type=\"radio\" name=\"license\" value=\"individual\" checked><span><strong>Individual</strong><small>1 production site</small></span><span class=\"price\">$49</span></label>\n  <label class=\"nbc-license-option\"><input type=\"radio\" name=\"license\" value=\"team\"><span><strong>Team</strong><small>5 production sites</small></span><span class=\"price\">$149</span></label>\n</div>",
+        "css": "@import '@neobrutal/commerce/styles.css';",
+        "js": "const selector=document.querySelector('[data-commerce-component=\"license-selector\"]');\nfunction selectedLicense(){\n  return selector.querySelector('input[name=\"license\"]:checked')?.value??null;\n}\nselector.addEventListener('change',()=>selector.dataset.selectedLicense=selectedLicense()??'');"
+      }
+    },
+    {
+      "id": "renewal-note",
+      "sourceFiles": ["src/components/product-detail.css", "component-explorer.js"],
+      "selectors": [".nbc-renewal-note", ".nbc-renewal-note strong"],
+      "tokens": ["--nbc-surface-2", "--nbc-border", "--nbc-text-sm"],
+      "copyReady": {
+        "html": "<p class=\"nbc-renewal-note\" data-commerce-component=\"renewal-note\"><strong>Updates included for 12 months</strong><span>Renewal timing and support scope stay explicit.</span></p>",
+        "css": "@import '@neobrutal/commerce/styles.css';",
+        "js": "const note=document.querySelector('[data-commerce-component=\"renewal-note\"]');\nfunction renderRenewalNote({headline,detail}){\n  note.querySelector('strong').textContent=headline;\n  note.querySelector('span').textContent=detail;\n}"
+      }
+    }
+  ]
+}
