@@ -69,6 +69,19 @@ test('v1.1 component demo depth audit covers exact accumulated implementation ev
   await expect(productCard.locator('[data-copy-ready-kind="html"]')).toContainText('data-commerce-component="product-card"');
   await expect(productCard.locator('[data-copy-ready-kind="js"]')).toContainText('cart.add');
 
+  const gallery=page.locator('[data-component-id="product-gallery"]');
+  await expect(gallery).toHaveAttribute('data-demo-depth-batch','product-storefront');
+  await gallery.locator('[data-component-depth-audit] summary').click();
+  await expect(depthChip(gallery,'not-applicable','Action contracts')).toBeVisible();
+  await expect(depthChip(gallery,'complete','Design tokens used')).toBeVisible();
+  await expect(gallery.locator('[data-copy-ready-kind="html"]')).toContainText('aria-pressed="true"');
+  await expect(gallery.locator('[data-copy-ready-kind="js"]')).toContainText('nbc-gallery-thumb');
+
+  const license=page.locator('[data-component-id="license-selector"]');
+  await license.locator('[data-component-depth-audit] summary').click();
+  await expect(license.locator('[data-copy-ready-kind="html"]')).toContainText('type="radio"');
+  await expect(license.locator('[data-copy-ready-kind="html"]')).toContainText('checked');
+
   const trust=page.locator('[data-component-id="trust-strip"]');
   await expect(trust).toHaveAttribute('data-demo-depth-first-batch','false');
   await expect(trust).toHaveAttribute('data-demo-depth-batch','trust-review-pricing');
