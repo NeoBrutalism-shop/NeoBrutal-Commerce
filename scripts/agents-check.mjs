@@ -184,7 +184,35 @@ for(const [file,markers] of Object.entries(docRequirements)){
   for(const marker of markers)if(!content.includes(marker))fail(`${file} missing v1.4 agent marker: ${marker}`);
 }
 
+const labFiles=['demo/v14.html','demo/v14.css','demo/v14.js','tests/commerce-v14-agents.spec.mjs'];
+for(const file of labFiles)if(!exists(file))fail(`v1.4 Agent Lab file is missing: ${file}`);
+for(const file of labFiles)if(packageAllows(file))fail(`Frozen Commerce 1.0.0 npm allowlist must not publish Agent Lab file: ${file}`);
+const labHtml=read('demo/v14.html');
+for(const marker of ['AGENT EXECUTION LAB v1.4','storefront/agents.json','data-agent-trace','id="agentRouteSelect"','data-agent-authorities','data-agent-workflow','data-agent-read-order','data-agent-outputs','data-agent-prohibitions','Show your work without exposing hidden reasoning.','repository-source guidance'])if(!labHtml.includes(marker))fail(`v1.4 Agent Lab HTML missing marker: ${marker}`);
+const labJs=read('demo/v14.js');
+for(const marker of [
+  "fetchJson('../storefront/agents.json')",
+  "fetchJson('../storefront/routes.json')",
+  "fetchJson('../storefront/pages.json')",
+  "fetchJson('../storefront/blocks.json')",
+  "fetchJson('../storefront/components.json')",
+  "agent.distribution==='repository-source'",
+  "root.dataset.agentLabReady='true'",
+  'trace.dataset.traceMissingCount',
+  "select.addEventListener('change'",
+  "maps.routes.has('product-soft')"
+])if(!labJs.includes(marker))fail(`v1.4 Agent Lab runtime missing marker: ${marker}`);
+if(/\b(?:ROUTES|expectedRouteIds)\s*=\s*\[/.test(labJs))fail('v1.4 Agent Lab must not hard-code a duplicate route catalog');
+try{new Function(labJs.replace(/^const root=.*$/m,'const root={};'))}catch(error){fail(`v1.4 Agent Lab JavaScript syntax error: ${error.message}`)}
+const labCss=read('demo/v14.css');
+if(/transition\s*:\s*all/i.test(labCss))fail('v1.4 Agent Lab transition: all is prohibited');
+if(/:hover[^\{]*\{[^\}]*translate(?:Y)?\(\s*-/i.test(labCss))fail('v1.4 Agent Lab upward hover lift is prohibited');
+for(const marker of ['@media(max-width:44rem)','@media(forced-colors:active)',':focus-visible'])if(!labCss.includes(marker))fail(`v1.4 Agent Lab CSS missing accessibility/responsive marker: ${marker}`);
+const labTest=read('tests/commerce-v14-agents.spec.mjs');
+for(const marker of ['WCAG A/AA violations','data-trace-missing-count','for(const route of source.routes.routes)','account-license','forcedColors','commerce-v14-agent-lab-${testInfo.project.name}.png'])if(!labTest.includes(marker))fail(`v1.4 Agent Lab browser proof missing marker: ${marker}`);
+for(const marker of ['Agent Execution Lab','demo/v14.html','storefront/agents.json','check:agents','Agent/LLM'])if(!readme.includes(marker))fail(`README missing v1.4 Agent Lab marker: ${marker}`);
+
 if(packageManifest.scripts?.['check:agents']!=='node scripts/agents-check.mjs')fail('Dedicated v1.4 agent conformance script is missing');
 if(!packageManifest.scripts?.check?.includes('npm run check:agents'))fail('Main quality chain does not execute v1.4 agent conformance');
 
-console.log(`NeoBrutal Commerce Agent ${agent.agentContractVersion} passed · ${agent.authorities.length} authorities · ${agent.workflow.length} workflow steps · ${agent.outputContract.length} review outputs · ${agent.distribution} · frozen Commerce ${packageManifest.version} API preserved`);
+console.log(`NeoBrutal Commerce Agent ${agent.agentContractVersion} passed · ${agent.authorities.length} authorities · ${agent.workflow.length} workflow steps · ${agent.outputContract.length} review outputs · live Agent Lab · ${agent.distribution} · frozen Commerce ${packageManifest.version} API preserved`);

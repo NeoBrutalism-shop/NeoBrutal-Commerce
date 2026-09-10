@@ -34,12 +34,13 @@ jobs:
             '/',
             '/components.html',
             '/demo/v10.html',
+            '/demo/v13.html',
             ...routePaths,
           ])];
           const isPullRequest = process.env.GITHUB_EVENT_NAME === 'pull_request';
           const publicSurfaces = isPullRequest
             ? existingPaths
-            : [...existingPaths, '/demo/v13.html'];
+            : [...existingPaths, '/demo/v14.html'];
 
           const failures = [];
           async function verify(path, { attempts = 1, marker = null } = {}) {
@@ -71,7 +72,9 @@ jobs:
           }
 
           for (const path of publicSurfaces) {
-            if (path === '/demo/v13.html') {
+            if (path === '/demo/v14.html') {
+              await verify(path, { attempts: 12, marker: 'AGENT EXECUTION LAB v1.4' });
+            } else if (path === '/demo/v13.html') {
               await verify(path, { attempts: 12, marker: 'MOTION &amp; INTERACTION LAB v1.3' });
             } else {
               await verify(path);
@@ -84,5 +87,5 @@ jobs:
             process.exit(1);
           }
 
-          console.log(`\nVerified ${publicSurfaces.length} public GitHub Pages URLs${isPullRequest ? ' against the currently deployed main site' : ', including the deployed v1.3 Motion Lab'} .`);
+          console.log(`\nVerified ${publicSurfaces.length} public GitHub Pages URLs${isPullRequest ? ' against the currently deployed main site' : ', including the deployed v1.4 Agent Execution Lab'} .`);
           NODE
