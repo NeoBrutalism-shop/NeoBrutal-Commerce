@@ -2,6 +2,7 @@ const variantAssert=(condition,message)=>{if(!condition)throw new Error(message)
 const sameVariantIds=(a,b)=>JSON.stringify([...a].sort())===JSON.stringify([...b].sort());
 const escapeVariant=value=>String(value).replace(/[&<>'"]/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[char]));
 const PROOF_KINDS=new Set(['rendered','canonical-state','responsive-backed','interaction-backed','action-backed']);
+const VARIANT_EVIDENCE_FILES=['./storefront/component-variant-evidence.json','./storefront/component-variant-evidence-account.json'];
 
 function waitForVariantShowcase(){
   if(document.documentElement.dataset.showcaseReady==='true')return Promise.resolve();
@@ -111,6 +112,18 @@ function bindVariantEvidence(card,entry){
   });
 }
 
+function mergeVariantManifests(manifests){
+  variantAssert(Array.isArray(manifests)&&manifests.length>0,'component variant evidence requires at least one manifest');
+  const root=manifests[0];
+  for(const manifest of manifests){
+    variantAssert(manifest.schema===root.schema,'component variant evidence shard schema drifted');
+    variantAssert(manifest.showcaseVersion===root.showcaseVersion&&manifest.commerceVersion===root.commerceVersion,'component variant evidence shard version drifted');
+    variantAssert(manifest.role===root.role,'component variant evidence shard role drifted');
+    variantAssert(JSON.stringify(manifest.proofKinds)===JSON.stringify(root.proofKinds),'component variant evidence shard proof-kind contract drifted');
+  }
+  return {...root,batches:manifests.flatMap(manifest=>manifest.batches||[]),components:manifests.flatMap(manifest=>manifest.components||[])};
+}
+
 function validateManifest(manifest){
   variantAssert(manifest.schema==='neobrutal-commerce/component-variant-evidence@4','unexpected component variant evidence schema');
   variantAssert(manifest.showcaseVersion==='1.1.0'&&manifest.commerceVersion==='1.0.0','component variant evidence versions drifted');
@@ -160,15 +173,18 @@ function validateManifest(manifest){
 
 async function initComponentVariantEvidence(){
   try{
-    const [evidenceResponse,interactionsResponse,componentsResponse]=await Promise.all([
-      fetch('./storefront/component-variant-evidence.json',{cache:'no-store'}),
+    const [baseEvidenceResponse,accountEvidenceResponse,interactionsResponse,componentsResponse]=await Promise.all([
+      fetch(VARIANT_EVIDENCE_FILES[0],{cache:'no-store'}),
+      fetch(VARIANT_EVIDENCE_FILES[1],{cache:'no-store'}),
       fetch('./storefront/interactions.json',{cache:'no-store'}),
       fetch('./storefront/components.json',{cache:'no-store'})
     ]);
-    if(!evidenceResponse.ok)throw new Error(`Component variant evidence request failed: ${evidenceResponse.status}`);
+    if(!baseEvidenceResponse.ok)throw new Error(`Component variant evidence request failed: ${baseEvidenceResponse.status}`);
+    if(!accountEvidenceResponse.ok)throw new Error(`Account variant evidence request failed: ${accountEvidenceResponse.status}`);
     if(!interactionsResponse.ok)throw new Error(`Interaction authority request failed: ${interactionsResponse.status}`);
     if(!componentsResponse.ok)throw new Error(`Component authority request failed: ${componentsResponse.status}`);
-    const [manifest,interactions,components]=await Promise.all([evidenceResponse.json(),interactionsResponse.json(),componentsResponse.json()]);
+    const [baseManifest,accountManifest,interactions,components]=await Promise.all([baseEvidenceResponse.json(),accountEvidenceResponse.json(),interactionsResponse.json(),componentsResponse.json()]);
+    const manifest=mergeVariantManifests([baseManifest,accountManifest]);
     validateManifest(manifest);
     const totalVariants=manifest.components.reduce((sum,entry)=>sum+entry.variants.length,0);
     const renderedVariants=manifest.components.reduce((sum,entry)=>sum+entry.variants.filter(variant=>variant.proofKind==='rendered').length,0);
