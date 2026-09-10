@@ -1,8 +1,9 @@
-const PROMOTED_BLOCK_IDS=['trust-strip','testimonials','guarantee','product-detail','product-gallery','order-confirmation'];
+const PROMOTED_BLOCK_IDS=['trust-strip','testimonials','guarantee','product-detail','product-gallery','order-confirmation','subscription-management'];
 const PROMOTION_GROUPS={
   'trust-band':['trust-strip','testimonials','guarantee'],
   'product-media':['product-detail','product-gallery'],
-  'order-success':['order-confirmation']
+  'order-success':['order-confirmation'],
+  'ownership-operations':['subscription-management']
 };
 const BLOCK_PREVIEWS={
   'trust-strip':`<div class="nbc-trust"><span class="nbc-trust-mark">✓</span><div><strong>12 months of updates</strong><p>Entitlement scope is explicit before purchase.</p></div></div>`,
@@ -10,7 +11,8 @@ const BLOCK_PREVIEWS={
   'guarantee':`<div class="nbc-trust"><span class="nbc-trust-mark">↺</span><div><strong>Fit guarantee</strong><p>Refund and support terms are policy data, never inferred by the component.</p></div></div>`,
   'product-detail':`<div class="cx-mini-stack"><span class="nbc-badge">Complete system</span><h2>NeoBrutal Soft.</h2><p>Refined Neo-Brutalism for SaaS, admin, developer and AI products.</p><ul class="nbc-feature-list"><li>Light + dark themes</li><li>Fluid clamp() foundation</li><li>Agent-readable contracts</li></ul></div>`,
   'product-gallery':`<div class="cx-mini-stack" data-promoted-gallery><div class="nbc-product-art"><strong data-block-gallery-current>SOFT. · 01</strong></div><div class="store-actions-row" role="group" aria-label="Product gallery previews"><button class="nbc-button nbc-tactile" type="button" data-block-gallery-index="01" aria-label="Show product preview 1" aria-pressed="true">01</button><button class="nbc-button nbc-tactile" type="button" data-block-gallery-index="02" aria-label="Show product preview 2" aria-pressed="false">02</button><button class="nbc-button nbc-tactile" type="button" data-block-gallery-index="03" aria-label="Show product preview 3" aria-pressed="false">03</button></div></div>`,
-  'order-confirmation':`<div class="nbc-order-success"><p class="store-kicker">ORDER COMPLETE</p><h2>Thanks — your order is confirmed.</h2><span class="nbc-order-number">#NBC-1042</span></div>`
+  'order-confirmation':`<div class="nbc-order-success"><p class="store-kicker">ORDER COMPLETE</p><h2>Thanks — your order is confirmed.</h2><span class="nbc-order-number">#NBC-1042</span></div>`,
+  'subscription-management':`<article class="nbc-lifecycle" data-promoted-subscription data-subscription-state="active"><div class="nbc-lifecycle-head"><div><p class="store-kicker">Billing subscription</p><h3>$99 / year</h3></div><span class="nbc-lifecycle-badge" data-state="active" data-block-subscription-badge>ACTIVE</span></div><dl class="nbc-lifecycle-facts"><div><dt>Renews</dt><dd>08 Sep 2027</dd></div><div><dt>Current term</dt><dd>Already paid</dd></div></dl><p class="nbc-lifecycle-note" data-block-subscription-note aria-live="polite">Canceling schedules renewal to end after the paid term; it does not erase the current license.</p><div class="nbc-subscription-actions"><button class="nbc-button nbc-tactile" type="button" data-block-subscription-cancel>CANCEL FUTURE RENEWAL</button><button class="nbc-button nbc-button--primary nbc-tactile" type="button" data-block-subscription-resume hidden>RESUME RENEWAL</button></div></article>`
 };
 const escapeHtml=value=>String(value).replace(/[&<>'"]/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[char]));
 
@@ -25,13 +27,36 @@ function renderPromotedBlock(block){
 
 function wirePromotedBlockInteractions(grid){
   grid.addEventListener('click',event=>{
-    const button=event.target.closest('[data-block-gallery-index]');
-    if(!button)return;
-    const gallery=button.closest('[data-promoted-gallery]');
-    if(!gallery)return;
-    gallery.querySelectorAll('[data-block-gallery-index]').forEach(item=>item.setAttribute('aria-pressed',String(item===button)));
-    const current=gallery.querySelector('[data-block-gallery-current]');
-    if(current)current.textContent=`SOFT. · ${button.dataset.blockGalleryIndex}`;
+    const galleryButton=event.target.closest('[data-block-gallery-index]');
+    if(galleryButton){
+      const gallery=galleryButton.closest('[data-promoted-gallery]');
+      if(!gallery)return;
+      gallery.querySelectorAll('[data-block-gallery-index]').forEach(item=>item.setAttribute('aria-pressed',String(item===galleryButton)));
+      const current=gallery.querySelector('[data-block-gallery-current]');
+      if(current)current.textContent=`SOFT. · ${galleryButton.dataset.blockGalleryIndex}`;
+      return;
+    }
+    const subscriptionButton=event.target.closest('[data-block-subscription-cancel],[data-block-subscription-resume]');
+    if(!subscriptionButton)return;
+    const subscription=subscriptionButton.closest('[data-promoted-subscription]');
+    if(!subscription)return;
+    const cancel=subscription.querySelector('[data-block-subscription-cancel]');
+    const resume=subscription.querySelector('[data-block-subscription-resume]');
+    const badge=subscription.querySelector('[data-block-subscription-badge]');
+    const note=subscription.querySelector('[data-block-subscription-note]');
+    if(subscriptionButton.matches('[data-block-subscription-cancel]')){
+      subscription.dataset.subscriptionState='cancel_at_period_end';
+      if(badge){badge.dataset.state='cancel_at_period_end';badge.textContent='CANCEL AT PERIOD END'}
+      if(cancel)cancel.hidden=true;
+      if(resume)resume.hidden=false;
+      if(note)note.textContent='Future renewal is cancelled. Access continues through 08 Sep 2027; the current license is not revoked.';
+      return;
+    }
+    subscription.dataset.subscriptionState='active';
+    if(badge){badge.dataset.state='active';badge.textContent='ACTIVE'}
+    if(resume)resume.hidden=true;
+    if(cancel)cancel.hidden=false;
+    if(note)note.textContent='Renewal resumed. The next provider-authoritative billing date remains 08 Sep 2027.';
   });
 }
 

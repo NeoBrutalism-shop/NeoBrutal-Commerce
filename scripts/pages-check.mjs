@@ -15,10 +15,10 @@ const requiredText=(value,label)=>{if(typeof value!=='string'||!value.trim())fai
 
 const expectedCommerce='1.0.0';
 const expectedPageLibrary='1.2.0';
-const expectedBlockCount=24;
+const expectedBlockCount=25;
 const expectedPageComposedBlockCount=18;
-const expectedPromotedBlockCount=6;
-const expectedPromotedBlockIds=['trust-strip','testimonials','guarantee','product-detail','product-gallery','order-confirmation'];
+const expectedPromotedBlockCount=7;
+const expectedPromotedBlockIds=['trust-strip','testimonials','guarantee','product-detail','product-gallery','order-confirmation','subscription-management'];
 const routes=json('storefront/routes.json');
 const blocks=json('storefront/blocks.json');
 const pages=json('storefront/pages.json');
@@ -98,6 +98,7 @@ for(const block of promotedBlocks){
 }
 exactIds('product-media promoted Blocks',promotedBlocks.filter(block=>block.promotedFrom==='product-media').map(block=>block.id),['product-detail','product-gallery']);
 exactIds('order-success promoted Blocks',promotedBlocks.filter(block=>block.promotedFrom==='order-success').map(block=>block.id),['order-confirmation']);
+exactIds('ownership-operations promoted Blocks',promotedBlocks.filter(block=>block.promotedFrom==='ownership-operations').map(block=>block.id),['subscription-management']);
 if(usedBlocks.size+promotedBlocks.length!==blockIds.length)fail('Page composition and promoted compatibility accounting must cover every documented Block');
 
 if(/\bconst\s+ROUTES\s*=\s*\[/.test(lab))fail('Page Lab must not hard-code a duplicate route catalog');

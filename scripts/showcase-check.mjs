@@ -15,13 +15,14 @@ const exactIds=(label,actual,expected)=>{
 const requiredText=(value,label)=>{if(typeof value!=='string'||!value.trim())fail(`${label} must be a non-empty string`)};
 const expectedCommerce='1.0.0';
 const expectedShowcase='1.1.0';
-const expectedBlockCount=24;
+const expectedBlockCount=25;
 const expectedBaseBlockCount=18;
-const expectedPromotedBlockIds=['trust-strip','testimonials','guarantee','product-detail','product-gallery','order-confirmation'];
+const expectedPromotedBlockIds=['trust-strip','testimonials','guarantee','product-detail','product-gallery','order-confirmation','subscription-management'];
 const expectedPromotionGroups={
   'trust-band':['trust-strip','testimonials','guarantee'],
   'product-media':['product-detail','product-gallery'],
-  'order-success':['order-confirmation']
+  'order-success':['order-confirmation'],
+  'ownership-operations':['subscription-management']
 };
 const expectedCategories=['storefront','product','pricing','checkout','account','system'];
 const allowedStateTones=['neutral','info','warning','danger','success'];
@@ -207,11 +208,11 @@ for(const marker of [
   'promotedFrom',
   'component subset of compatibility parent'
 ])if(!showcaseClient.includes(marker))fail(`showcase runtime contract missing marker: ${marker}`);
-for(const marker of ['PROMOTED_BLOCK_IDS','PROMOTION_GROUPS','BLOCK_PREVIEWS','block.promotedFrom!==undefined',"'product-media':['product-detail','product-gallery']","'order-success':['order-confirmation']","dataset.promotedBlocksReady='true'"])if(!blockExpansion.includes(marker))fail(`promoted Block runtime contract missing marker: ${marker}`);
+for(const marker of ['PROMOTED_BLOCK_IDS','PROMOTION_GROUPS','BLOCK_PREVIEWS','block.promotedFrom!==undefined',"'product-media':['product-detail','product-gallery']","'order-success':['order-confirmation']","'ownership-operations':['subscription-management']",'data-promoted-subscription','data-block-subscription-cancel','data-block-subscription-resume','dataset.subscriptionState',"dataset.promotedBlocksReady='true'"])if(!blockExpansion.includes(marker))fail(`promoted Block runtime contract missing marker: ${marker}`);
 for(const marker of ['[data-block-preview-for][data-responsive-mode="contained-scroll"]','[data-block-card][data-responsive-mode="grid-to-stack"]','grid-template-columns:1fr'])if(!showcaseCss.includes(marker))fail(`showcase responsive proof missing marker: ${marker}`);
 try{new Function(showcaseClient)}catch(error){fail(`component-showcase.js syntax error: ${error.message}`)}
 try{new Function(blockExpansion)}catch(error){fail(`block-expansion.js syntax error: ${error.message}`)}
-for(const marker of ['./component-showcase.css','./block-expansion.js','./component-showcase.js','SHOWCASE v1.1','component-showcase.json','blocks.json','24 reusable blocks'])if(!showcaseHtml.includes(marker))fail(`components.html missing v1.1 marker: ${marker}`);
+for(const marker of ['./component-showcase.css','./block-expansion.js','./component-showcase.js','SHOWCASE v1.1','component-showcase.json','blocks.json','25 reusable blocks'])if(!showcaseHtml.includes(marker))fail(`components.html missing v1.1 marker: ${marker}`);
 
 const categoryCounts=Object.fromEntries(expectedCategories.map(category=>[category,docs.filter(doc=>doc.category===category).length]));
 if(Object.values(categoryCounts).reduce((sum,count)=>sum+count,0)!==47)fail('component category counts do not sum to 47');

@@ -10,7 +10,7 @@ Coverage is enforced, not aspirational:
 
 - **47 / 47** frozen component IDs have dedicated live previews.
 - **47 / 47** components have human descriptions, variants, responsive behavior, theme behavior, and accessibility expectations.
-- **18 / 18** reusable Commerce blocks are documented with component composition and live-route context.
+- **25 / 25** reusable Commerce blocks are documented with component composition and live-route context.
 - **12 / 12** stateful component families expose interactive canonical-state inspectors.
 - **42 / 42** canonical component states declared by the frozen registry have explicit live examples and consequence copy.
 
@@ -45,7 +45,7 @@ The same manifest contains reusable category, responsive, theme, and accessibili
 
 ### `storefront/blocks.json`
 
-Exactly 18 reusable composition blocks. Each block declares:
+Exactly 25 reusable composition blocks. Each block declares:
 
 - stable `id` and title
 - category and description
@@ -53,6 +53,7 @@ Exactly 18 reusable composition blocks. Each block declares:
 - live production route
 - responsive and theme behavior
 - accessibility expectations
+- `promotedFrom` when a reusable child Block is promoted from a Page-composed compatibility parent
 
 Blocks never create a second Commerce runtime. They are composition guidance over existing frozen components.
 
@@ -180,28 +181,35 @@ Action path:
 
 ## Reusable block catalog
 
-The 18 v1.1 blocks are:
+The 25 v1.1 blocks are:
 
 1. `storefront-hero`
 2. `product-grid`
 3. `trust-band`
-4. `product-media`
-5. `license-purchase`
-6. `pricing-trio`
-7. `plan-comparison`
-8. `bundle-builder`
-9. `cart-summary`
-10. `checkout-shell`
-11. `payment-recovery`
-12. `order-success`
-13. `account-dashboard`
-14. `license-dashboard`
-15. `seat-management`
-16. `ownership-operations`
-17. `ownership-timeline`
-18. `system-states`
+4. `trust-strip`
+5. `testimonials`
+6. `guarantee`
+7. `product-media`
+8. `product-detail`
+9. `product-gallery`
+10. `license-purchase`
+11. `pricing-trio`
+12. `plan-comparison`
+13. `bundle-builder`
+14. `cart-summary`
+15. `checkout-shell`
+16. `payment-recovery`
+17. `order-success`
+18. `order-confirmation`
+19. `account-dashboard`
+20. `license-dashboard`
+21. `seat-management`
+22. `ownership-operations`
+23. `subscription-management`
+24. `ownership-timeline`
+25. `system-states`
 
-Their authoritative metadata is `storefront/blocks.json`; the public explorer renders the block preview and links to the real production route where the pattern is exercised.
+Their authoritative metadata is `storefront/blocks.json`; the public explorer renders every block preview and links to the real production route where the pattern is exercised. Page-composed compatibility Blocks remain available while promoted child Blocks gain reusable identities, so v1.1 documentation expansion does not force v1.2 Page migration.
 
 ## Verification
 

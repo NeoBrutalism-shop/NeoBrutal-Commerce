@@ -252,6 +252,18 @@
       "themeMode": "semantic-status"
     },
     {
+      "id": "subscription-management",
+      "title": "Subscription management",
+      "category": "account",
+      "description": "Subscription billing lifecycle controls that preserve paid-term access, distinguish terminal cancellation, and expose billing recovery without collapsing entitlement state.",
+      "components": ["subscription-management"],
+      "route": "./account/license/demo-soft-team/",
+      "responsiveMode": "state-panel",
+      "a11y": ["explicit-status", "named-controls", "consequence-visible", "programmatic-state", "status-live"],
+      "themeMode": "semantic-status",
+      "promotedFrom": "ownership-operations"
+    },
+    {
       "id": "ownership-timeline",
       "title": "Ownership timeline",
       "category": "account",
