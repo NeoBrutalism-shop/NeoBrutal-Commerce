@@ -30,6 +30,7 @@ const catalog=json('storefront/catalog.json');
 if(agent.schema!=='neobrutal-commerce/agents@1')fail('Unexpected v1.4 agent contract schema');
 if(agent.agentContractVersion!=='1.4.0')fail(`Expected agent contract version 1.4.0, received ${agent.agentContractVersion}`);
 if(agent.commerceVersion!==packageManifest.version||packageManifest.version!=='1.0.0')fail('v1.4 agent contract must preserve frozen Commerce 1.0.0');
+if(agent.distribution!=='repository-source')fail('v1.4 agent contract must remain explicitly repository-source while the npm package is frozen at Commerce 1.0.0');
 exact(agent.architecture,['Components','Blocks','Pages','Applications'],'Agent architecture');
 
 const expectedReadOrder=[
@@ -79,6 +80,21 @@ if(pages.schema!=='neobrutal-commerce/pages@1'||pages.pageLibraryVersion!=='1.2.
 if(showcase.schema!=='neobrutal-commerce/component-showcase@1'||showcase.showcaseVersion!=='1.1.0'||showcase.commerceVersion!==packageManifest.version)fail('Component showcase guidance identity drifted');
 if(componentStates.schema!=='neobrutal-commerce/component-states@1'||componentStates.showcaseVersion!=='1.1.0'||componentStates.commerceVersion!==packageManifest.version)fail('Component state examples identity drifted');
 if(interactions.schema!=='neobrutal-commerce/interactions@1'||interactions.interactionVersion!=='1.3.0'||interactions.commerceVersion!==packageManifest.version)fail('Interaction authority identity drifted');
+
+const documentationLayerManifests=[
+  'storefront/component-showcase.json',
+  'storefront/component-states.json',
+  'storefront/blocks.json',
+  'storefront/pages.json',
+  'storefront/interactions.json',
+  'storefront/agents.json'
+];
+const packageFiles=packageManifest.files||[];
+const packageAllows=file=>packageFiles.some(entry=>{
+  const normalized=String(entry).replace(/\/$/,'');
+  return file===normalized||file.startsWith(`${normalized}/`);
+});
+for(const file of documentationLayerManifests)if(packageAllows(file))fail(`Frozen Commerce 1.0.0 npm allowlist must not silently publish documentation-layer manifest: ${file}`);
 
 const expectedWorkflow=[
   'resolve-route',
@@ -140,8 +156,8 @@ for(const route of routes.routes){
     for(const state of route.states)if(!canonicalStates.has(state))fail(`Route ${route.id} references unknown canonical state ${state}`);
   }
 }
-const canonicalActions=new Set(components.canonicalActions||[]);
-uniqueStrings([...canonicalActions],'Canonical component actions');
+uniqueStrings(components.canonicalActions||[],'Canonical component actions');
+const canonicalActions=new Set(components.canonicalActions);
 const actionRuntime=read('src/actions/runtime.js');
 for(const action of canonicalActions)if(!actionRuntime.includes(action))fail(`Component registry action is absent from canonical runtime: ${action}`);
 for(const component of components.components){
@@ -159,9 +175,9 @@ for(const source of expectedReadOrder){
 }
 
 const docRequirements={
-  'AGENTS.md':['storefront/agents.json','Authority by concern','storefront/blocks.json','storefront/pages.json','storefront/interactions.json','Components → Blocks → Pages → Applications'],
-  'LLMS.md':['LLM Guidance v1.4','storefront/agents.json','Authority by concern','storefront/blocks.json','storefront/pages.json','storefront/interactions.json','Components → Blocks → Pages → Applications'],
-  'docs/AGENT-PLAYBOOK.md':['storefront/agents.json','Authority by concern','storefront/blocks.json','storefront/pages.json','storefront/interactions.json','pageContracts','blockContracts','interactionPatterns']
+  'AGENTS.md':['storefront/agents.json','repository-source','Authority by concern','storefront/blocks.json','storefront/pages.json','storefront/interactions.json','Components → Blocks → Pages → Applications'],
+  'LLMS.md':['LLM Guidance v1.4','storefront/agents.json','repository-source','Authority by concern','storefront/blocks.json','storefront/pages.json','storefront/interactions.json','Components → Blocks → Pages → Applications'],
+  'docs/AGENT-PLAYBOOK.md':['storefront/agents.json','repository-source','Authority by concern','storefront/blocks.json','storefront/pages.json','storefront/interactions.json','pageContracts','blockContracts','interactionPatterns']
 };
 for(const [file,markers] of Object.entries(docRequirements)){
   const content=read(file);
@@ -171,4 +187,4 @@ for(const [file,markers] of Object.entries(docRequirements)){
 if(packageManifest.scripts?.['check:agents']!=='node scripts/agents-check.mjs')fail('Dedicated v1.4 agent conformance script is missing');
 if(!packageManifest.scripts?.check?.includes('npm run check:agents'))fail('Main quality chain does not execute v1.4 agent conformance');
 
-console.log(`NeoBrutal Commerce Agent ${agent.agentContractVersion} passed · ${agent.authorities.length} authorities · ${agent.workflow.length} workflow steps · ${agent.outputContract.length} review outputs · frozen Commerce ${packageManifest.version} API preserved`);
+console.log(`NeoBrutal Commerce Agent ${agent.agentContractVersion} passed · ${agent.authorities.length} authorities · ${agent.workflow.length} workflow steps · ${agent.outputContract.length} review outputs · ${agent.distribution} · frozen Commerce ${packageManifest.version} API preserved`);
