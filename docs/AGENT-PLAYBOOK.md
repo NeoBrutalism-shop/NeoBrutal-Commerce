@@ -2,6 +2,8 @@
 
 This is the deterministic workflow for an LLM or coding agent implementing NeoBrutal Commerce. `storefront/agents.json` is the machine-readable v1.4 execution and review contract for this workflow.
 
+This v1.4 workflow is **repository-source** guidance. The published npm package remains frozen at Commerce 1.0.0 and intentionally omits the documentation-layer Blocks, Pages, Interactions, and Agent manifests. Use the public repository for these composition and interaction contracts when starting from an installed package.
+
 ## Architecture and authority by concern
 
 The composition hierarchy is `Components → Blocks → Pages → Applications`.
