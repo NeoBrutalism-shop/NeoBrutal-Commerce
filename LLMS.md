@@ -2,6 +2,8 @@
 
 Use this file for non-negotiable generation and integration rules. Coding agents should begin with `AGENTS.md`, then use `storefront/agents.json` as the machine-readable execution contract and this file as the ethics, interaction, and provider-boundary law layer.
 
+This v1.4 workflow is **repository-source** guidance. The published npm package remains frozen at Commerce 1.0.0 and intentionally omits the documentation-layer Blocks, Pages, Interactions, and Agent manifests. Use the public repository for those contracts when working from an installed package.
+
 ## Agent execution order
 
 The composition hierarchy is `Components → Blocks → Pages → Applications`.
