@@ -4,552 +4,92 @@
   "commerceVersion": "1.0.0",
   "role": "audit-evidence-only",
   "description": "Audit evidence for v1.1 component demo completeness. Runtime models/actions/states remain owned by storefront/components.json and storefront/states.json; interaction physics remain owned by storefront/interactions.json.",
-  "statuses": [
-    "complete",
-    "partial",
-    "missing",
-    "not-applicable"
-  ],
+  "statuses": ["complete", "partial", "missing", "not-applicable"],
   "criteria": [
-    {
-      "id": "preview",
-      "label": "Live preview",
-      "evidenceAuthority": "component-explorer.js"
-    },
-    {
-      "id": "variants",
-      "label": "All variants",
-      "evidenceAuthority": "storefront/component-showcase.json"
-    },
-    {
-      "id": "canonical-states",
-      "label": "Canonical states",
-      "evidenceAuthority": "storefront/components.json + storefront/component-states.json"
-    },
-    {
-      "id": "edge-states",
-      "label": "Disabled / loading / error / success applicability",
-      "evidenceAuthority": "storefront/components.json + storefront/component-states.json"
-    },
-    {
-      "id": "themes",
-      "label": "Light + dark proof",
-      "evidenceAuthority": "storefront/component-showcase.json + src/tokens.css"
-    },
-    {
-      "id": "devices",
-      "label": "Desktop / tablet / mobile proof",
-      "evidenceAuthority": "storefront/component-showcase.json + Browser QA"
-    },
-    {
-      "id": "interaction",
-      "label": "Hover / pressed / focus proof",
-      "evidenceAuthority": "storefront/interactions.json"
-    },
-    {
-      "id": "accessibility",
-      "label": "Accessibility notes",
-      "evidenceAuthority": "storefront/component-showcase.json"
-    },
-    {
-      "id": "tokens",
-      "label": "Design tokens used",
-      "evidenceAuthority": "src/tokens.css + component source CSS"
-    },
-    {
-      "id": "api",
-      "label": "Props / API",
-      "evidenceAuthority": "storefront/components.json + src/contracts/index.d.ts"
-    },
-    {
-      "id": "actions",
-      "label": "Action contracts",
-      "evidenceAuthority": "storefront/components.json + src/actions/runtime.js"
-    },
-    {
-      "id": "copy-ready",
-      "label": "Copy-ready HTML / CSS / JS",
-      "evidenceAuthority": "component demo implementation evidence"
-    },
-    {
-      "id": "llm-usage",
-      "label": "LLM-readable usage instructions",
-      "evidenceAuthority": "storefront/components.json agentRules + docs/AI-COMPONENT-NOTES.md"
-    }
+    {"id":"preview","label":"Live preview","evidenceAuthority":"component-explorer.js"},
+    {"id":"variants","label":"All variants","evidenceAuthority":"storefront/component-showcase.json"},
+    {"id":"canonical-states","label":"Canonical states","evidenceAuthority":"storefront/components.json + storefront/component-states.json"},
+    {"id":"edge-states","label":"Disabled / loading / error / success applicability","evidenceAuthority":"storefront/components.json + storefront/component-states.json"},
+    {"id":"themes","label":"Light + dark proof","evidenceAuthority":"storefront/component-showcase.json + src/tokens.css"},
+    {"id":"devices","label":"Desktop / tablet / mobile proof","evidenceAuthority":"storefront/component-showcase.json + Browser QA"},
+    {"id":"interaction","label":"Hover / pressed / focus proof","evidenceAuthority":"storefront/interactions.json"},
+    {"id":"accessibility","label":"Accessibility notes","evidenceAuthority":"storefront/component-showcase.json"},
+    {"id":"tokens","label":"Design tokens used","evidenceAuthority":"src/tokens.css + component source CSS"},
+    {"id":"api","label":"Props / API","evidenceAuthority":"storefront/components.json + src/contracts/index.d.ts"},
+    {"id":"actions","label":"Action contracts","evidenceAuthority":"storefront/components.json + src/actions/runtime.js"},
+    {"id":"copy-ready","label":"Copy-ready HTML / CSS / JS","evidenceAuthority":"component demo implementation evidence"},
+    {"id":"llm-usage","label":"LLM-readable usage instructions","evidenceAuthority":"storefront/components.json agentRules + docs/AI-COMPONENT-NOTES.md"}
   ],
   "defaultStatus": {
-    "preview": "complete",
-    "variants": "partial",
-    "canonical-states": "not-applicable",
-    "edge-states": "partial",
-    "themes": "partial",
-    "devices": "partial",
-    "interaction": "partial",
-    "accessibility": "complete",
-    "tokens": "missing",
-    "api": "partial",
-    "actions": "not-applicable",
-    "copy-ready": "missing",
-    "llm-usage": "partial"
+    "preview":"complete",
+    "variants":"partial",
+    "canonical-states":"not-applicable",
+    "edge-states":"partial",
+    "themes":"partial",
+    "devices":"partial",
+    "interaction":"partial",
+    "accessibility":"complete",
+    "tokens":"missing",
+    "api":"partial",
+    "actions":"not-applicable",
+    "copy-ready":"missing",
+    "llm-usage":"partial"
   },
   "components": [
-    {
-      "id": "product-card",
-      "overrides": {
-        "variants": "complete",
-        "actions": "complete",
-        "tokens": "complete",
-        "copy-ready": "complete"
-      }
-    },
-    {
-      "id": "trust-strip",
-      "overrides": {
-        "variants": "complete",
-        "tokens": "complete",
-        "copy-ready": "complete"
-      }
-    },
-    {
-      "id": "promo-band",
-      "overrides": {
-        "variants": "complete"
-      }
-    },
-    {
-      "id": "badge",
-      "overrides": {
-        "variants": "complete",
-        "tokens": "complete",
-        "copy-ready": "complete"
-      }
-    },
-    {
-      "id": "price-block",
-      "overrides": {
-        "variants": "complete",
-        "tokens": "complete",
-        "copy-ready": "complete"
-      }
-    },
-    {
-      "id": "product-detail",
-      "overrides": {
-        "variants": "complete",
-        "tokens": "complete",
-        "copy-ready": "complete"
-      }
-    },
-    {
-      "id": "product-gallery",
-      "overrides": {
-        "variants": "complete",
-        "tokens": "complete",
-        "copy-ready": "complete"
-      }
-    },
-    {
-      "id": "product-media",
-      "overrides": {
-        "variants": "complete",
-        "canonical-states": "complete",
-        "tokens": "complete",
-        "copy-ready": "complete"
-      }
-    },
-    {
-      "id": "review-summary",
-      "overrides": {
-        "variants": "complete",
-        "tokens": "complete",
-        "copy-ready": "complete"
-      }
-    },
-    {
-      "id": "testimonials",
-      "overrides": {
-        "variants": "complete",
-        "tokens": "complete",
-        "copy-ready": "complete"
-      }
-    },
-    {
-      "id": "guarantee",
-      "overrides": {
-        "variants": "complete",
-        "tokens": "complete",
-        "copy-ready": "complete"
-      }
-    },
-    {
-      "id": "license-selector",
-      "overrides": {
-        "variants": "complete",
-        "tokens": "complete",
-        "copy-ready": "complete"
-      }
-    },
-    {
-      "id": "renewal-note",
-      "overrides": {
-        "variants": "complete",
-        "tokens": "complete",
-        "copy-ready": "complete"
-      }
-    },
-    {
-      "id": "pricing-tier",
-      "overrides": {
-        "variants": "complete",
-        "actions": "complete",
-        "tokens": "complete",
-        "copy-ready": "complete"
-      }
-    },
-    {
-      "id": "plan-comparison",
-      "overrides": {
-        "variants": "complete",
-        "tokens": "complete",
-        "copy-ready": "complete"
-      }
-    },
-    {
-      "id": "bundle-builder",
-      "overrides": {
-        "variants": "complete",
-        "actions": "complete",
-        "tokens": "complete",
-        "copy-ready": "complete"
-      }
-    },
-    {
-      "id": "cart-item",
-      "overrides": {
-        "actions": "complete",
-        "tokens": "complete",
-        "copy-ready": "complete"
-      }
-    },
-    {
-      "id": "order-summary",
-      "overrides": {
-        "tokens": "complete",
-        "copy-ready": "complete"
-      }
-    },
-    {
-      "id": "coupon",
-      "overrides": {
-        "actions": "complete",
-        "tokens": "complete",
-        "copy-ready": "complete"
-      }
-    },
-    {
-      "id": "checkout-field",
-      "overrides": {
-        "tokens": "complete",
-        "copy-ready": "complete"
-      }
-    },
-    {
-      "id": "invoice-details"
-    },
-    {
-      "id": "checkout-steps",
-      "overrides": {
-        "canonical-states": "complete",
-        "tokens": "complete",
-        "copy-ready": "complete"
-      }
-    },
-    {
-      "id": "payment-method",
-      "overrides": {
-        "tokens": "complete",
-        "copy-ready": "complete"
-      }
-    },
-    {
-      "id": "payment-failure",
-      "overrides": {
-        "canonical-states": "complete",
-        "tokens": "complete",
-        "copy-ready": "complete"
-      }
-    },
-    {
-      "id": "payment-recovery",
-      "overrides": {
-        "canonical-states": "complete",
-        "actions": "complete",
-        "tokens": "complete",
-        "copy-ready": "complete"
-      }
-    },
-    {
-      "id": "processing-state",
-      "overrides": {
-        "canonical-states": "complete",
-        "tokens": "complete",
-        "copy-ready": "complete"
-      }
-    },
-    {
-      "id": "order-confirmation",
-      "overrides": {
-        "tokens": "complete",
-        "copy-ready": "complete"
-      }
-    },
-    {
-      "id": "receipt",
-      "overrides": {
-        "tokens": "complete",
-        "copy-ready": "complete"
-      }
-    },
-    {
-      "id": "download-entitlement",
-      "overrides": {
-        "actions": "complete",
-        "tokens": "complete",
-        "copy-ready": "complete"
-      }
-    },
-    {
-      "id": "account-nav",
-      "overrides": {
-        "tokens": "complete",
-        "copy-ready": "complete"
-      }
-    },
-    {
-      "id": "download-row",
-      "overrides": {
-        "actions": "complete",
-        "tokens": "complete",
-        "copy-ready": "complete"
-      }
-    },
-    {
-      "id": "purchase-history-row",
-      "overrides": {
-        "tokens": "complete",
-        "copy-ready": "complete"
-      }
-    },
-    {
-      "id": "license-card",
-      "overrides": {
-        "tokens": "complete",
-        "copy-ready": "complete"
-      }
-    },
-    {
-      "id": "invoice-history",
-      "overrides": {
-        "actions": "complete",
-        "tokens": "complete",
-        "copy-ready": "complete"
-      }
-    },
-    {
-      "id": "license-status",
-      "overrides": {
-        "canonical-states": "complete",
-        "tokens": "complete",
-        "copy-ready": "complete"
-      }
-    },
-    {
-      "id": "activation-row",
-      "overrides": {
-        "actions": "complete",
-        "tokens": "complete",
-        "copy-ready": "complete"
-      }
-    },
-    {
-      "id": "update-eligibility",
-      "overrides": {
-        "canonical-states": "complete",
-        "tokens": "complete",
-        "copy-ready": "complete"
-      }
-    },
-    {
-      "id": "seat-assignment",
-      "overrides": {
-        "actions": "complete",
-        "tokens": "complete",
-        "copy-ready": "complete"
-      }
-    },
-    {
-      "id": "renewal-state",
-      "overrides": {
-        "canonical-states": "complete",
-        "actions": "complete",
-        "tokens": "complete",
-        "copy-ready": "complete"
-      }
-    },
-    {
-      "id": "plan-change",
-      "overrides": {
-        "canonical-states": "complete",
-        "actions": "complete",
-        "tokens": "complete",
-        "copy-ready": "complete"
-      }
-    },
-    {
-      "id": "ownership-transfer",
-      "overrides": {
-        "canonical-states": "complete",
-        "actions": "complete",
-        "tokens": "complete",
-        "copy-ready": "complete"
-      }
-    },
-    {
-      "id": "subscription-management",
-      "overrides": {
-        "canonical-states": "complete",
-        "actions": "complete",
-        "tokens": "complete",
-        "copy-ready": "complete"
-      }
-    },
-    {
-      "id": "ownership-timeline",
-      "overrides": {
-        "actions": "complete",
-        "tokens": "complete",
-        "copy-ready": "complete"
-      }
-    },
-    {
-      "id": "component-contract"
-    },
-    {
-      "id": "tokens"
-    },
-    {
-      "id": "system-states",
-      "overrides": {
-        "canonical-states": "complete",
-        "tokens": "complete",
-        "copy-ready": "complete"
-      }
-    },
-    {
-      "id": "ownership-lifecycle",
-      "overrides": {
-        "tokens": "complete",
-        "copy-ready": "complete"
-      }
-    }
+    {"id":"product-card","overrides":{"variants":"complete","actions":"complete","tokens":"complete","copy-ready":"complete"}},
+    {"id":"trust-strip","overrides":{"variants":"complete","tokens":"complete","copy-ready":"complete"}},
+    {"id":"promo-band","overrides":{"variants":"complete"}},
+    {"id":"badge","overrides":{"variants":"complete","tokens":"complete","copy-ready":"complete"}},
+    {"id":"price-block","overrides":{"variants":"complete","tokens":"complete","copy-ready":"complete"}},
+    {"id":"product-detail","overrides":{"variants":"complete","tokens":"complete","copy-ready":"complete"}},
+    {"id":"product-gallery","overrides":{"variants":"complete","tokens":"complete","copy-ready":"complete"}},
+    {"id":"product-media","overrides":{"variants":"complete","canonical-states":"complete","tokens":"complete","copy-ready":"complete"}},
+    {"id":"review-summary","overrides":{"variants":"complete","tokens":"complete","copy-ready":"complete"}},
+    {"id":"testimonials","overrides":{"variants":"complete","tokens":"complete","copy-ready":"complete"}},
+    {"id":"guarantee","overrides":{"variants":"complete","tokens":"complete","copy-ready":"complete"}},
+    {"id":"license-selector","overrides":{"variants":"complete","tokens":"complete","copy-ready":"complete"}},
+    {"id":"renewal-note","overrides":{"variants":"complete","tokens":"complete","copy-ready":"complete"}},
+    {"id":"pricing-tier","overrides":{"variants":"complete","actions":"complete","tokens":"complete","copy-ready":"complete"}},
+    {"id":"plan-comparison","overrides":{"variants":"complete","tokens":"complete","copy-ready":"complete"}},
+    {"id":"bundle-builder","overrides":{"variants":"complete","actions":"complete","tokens":"complete","copy-ready":"complete"}},
+    {"id":"cart-item","overrides":{"variants":"complete","actions":"complete","tokens":"complete","copy-ready":"complete"}},
+    {"id":"order-summary","overrides":{"variants":"complete","tokens":"complete","copy-ready":"complete"}},
+    {"id":"coupon","overrides":{"variants":"complete","actions":"complete","tokens":"complete","copy-ready":"complete"}},
+    {"id":"checkout-field","overrides":{"variants":"complete","tokens":"complete","copy-ready":"complete"}},
+    {"id":"invoice-details"},
+    {"id":"checkout-steps","overrides":{"variants":"complete","canonical-states":"complete","tokens":"complete","copy-ready":"complete"}},
+    {"id":"payment-method","overrides":{"variants":"complete","tokens":"complete","copy-ready":"complete"}},
+    {"id":"payment-failure","overrides":{"variants":"complete","canonical-states":"complete","tokens":"complete","copy-ready":"complete"}},
+    {"id":"payment-recovery","overrides":{"variants":"complete","canonical-states":"complete","actions":"complete","tokens":"complete","copy-ready":"complete"}},
+    {"id":"processing-state","overrides":{"variants":"complete","canonical-states":"complete","tokens":"complete","copy-ready":"complete"}},
+    {"id":"order-confirmation","overrides":{"variants":"complete","tokens":"complete","copy-ready":"complete"}},
+    {"id":"receipt","overrides":{"variants":"complete","tokens":"complete","copy-ready":"complete"}},
+    {"id":"download-entitlement","overrides":{"variants":"complete","actions":"complete","tokens":"complete","copy-ready":"complete"}},
+    {"id":"account-nav","overrides":{"tokens":"complete","copy-ready":"complete"}},
+    {"id":"download-row","overrides":{"actions":"complete","tokens":"complete","copy-ready":"complete"}},
+    {"id":"purchase-history-row","overrides":{"tokens":"complete","copy-ready":"complete"}},
+    {"id":"license-card","overrides":{"tokens":"complete","copy-ready":"complete"}},
+    {"id":"invoice-history","overrides":{"actions":"complete","tokens":"complete","copy-ready":"complete"}},
+    {"id":"license-status","overrides":{"canonical-states":"complete","tokens":"complete","copy-ready":"complete"}},
+    {"id":"activation-row","overrides":{"actions":"complete","tokens":"complete","copy-ready":"complete"}},
+    {"id":"update-eligibility","overrides":{"canonical-states":"complete","tokens":"complete","copy-ready":"complete"}},
+    {"id":"seat-assignment","overrides":{"actions":"complete","tokens":"complete","copy-ready":"complete"}},
+    {"id":"renewal-state","overrides":{"canonical-states":"complete","actions":"complete","tokens":"complete","copy-ready":"complete"}},
+    {"id":"plan-change","overrides":{"canonical-states":"complete","actions":"complete","tokens":"complete","copy-ready":"complete"}},
+    {"id":"ownership-transfer","overrides":{"canonical-states":"complete","actions":"complete","tokens":"complete","copy-ready":"complete"}},
+    {"id":"subscription-management","overrides":{"canonical-states":"complete","actions":"complete","tokens":"complete","copy-ready":"complete"}},
+    {"id":"ownership-timeline","overrides":{"actions":"complete","tokens":"complete","copy-ready":"complete"}},
+    {"id":"component-contract"},
+    {"id":"tokens"},
+    {"id":"system-states","overrides":{"canonical-states":"complete","tokens":"complete","copy-ready":"complete"}},
+    {"id":"ownership-lifecycle","overrides":{"tokens":"complete","copy-ready":"complete"}}
   ],
   "implementationBatches": [
-    {
-      "id": "stateful-high-risk",
-      "ordinal": 1,
-      "label": "Stateful / high-risk",
-      "evidenceFile": "storefront/component-demo-implementation.json",
-      "componentIds": [
-        "product-media",
-        "checkout-steps",
-        "payment-failure",
-        "payment-recovery",
-        "processing-state",
-        "license-status",
-        "update-eligibility",
-        "renewal-state",
-        "plan-change",
-        "ownership-transfer",
-        "subscription-management",
-        "system-states"
-      ]
-    },
-    {
-      "id": "product-storefront",
-      "ordinal": 2,
-      "label": "Product / storefront",
-      "evidenceFile": "storefront/component-demo-implementation-product.json",
-      "componentIds": [
-        "product-card",
-        "badge",
-        "price-block",
-        "product-detail",
-        "product-gallery",
-        "license-selector",
-        "renewal-note"
-      ]
-    },
-    {
-      "id": "trust-review-pricing",
-      "ordinal": 3,
-      "label": "Trust / review / pricing",
-      "evidenceFile": "storefront/component-demo-implementation-trust-pricing.json",
-      "componentIds": [
-        "trust-strip",
-        "review-summary",
-        "testimonials",
-        "guarantee",
-        "pricing-tier",
-        "plan-comparison",
-        "bundle-builder"
-      ]
-    },
-    {
-      "id": "cart-checkout",
-      "ordinal": 4,
-      "label": "Cart / checkout",
-      "evidenceFile": "storefront/component-demo-implementation-cart-checkout.json",
-      "componentIds": [
-        "cart-item",
-        "order-summary",
-        "coupon",
-        "checkout-field",
-        "payment-method",
-        "order-confirmation",
-        "receipt"
-      ]
-    },
-    {
-      "id": "account-ownership",
-      "ordinal": 5,
-      "label": "Account / ownership",
-      "evidenceFile": "storefront/component-demo-implementation-account-ownership.json",
-      "componentIds": [
-        "download-entitlement",
-        "account-nav",
-        "download-row",
-        "purchase-history-row",
-        "license-card",
-        "invoice-history",
-        "activation-row",
-        "seat-assignment",
-        "ownership-timeline",
-        "ownership-lifecycle"
-      ]
-    }
+    {"id":"stateful-high-risk","ordinal":1,"label":"Stateful / high-risk","evidenceFile":"storefront/component-demo-implementation.json","componentIds":["product-media","checkout-steps","payment-failure","payment-recovery","processing-state","license-status","update-eligibility","renewal-state","plan-change","ownership-transfer","subscription-management","system-states"]},
+    {"id":"product-storefront","ordinal":2,"label":"Product / storefront","evidenceFile":"storefront/component-demo-implementation-product.json","componentIds":["product-card","badge","price-block","product-detail","product-gallery","license-selector","renewal-note"]},
+    {"id":"trust-review-pricing","ordinal":3,"label":"Trust / review / pricing","evidenceFile":"storefront/component-demo-implementation-trust-pricing.json","componentIds":["trust-strip","review-summary","testimonials","guarantee","pricing-tier","plan-comparison","bundle-builder"]},
+    {"id":"cart-checkout","ordinal":4,"label":"Cart / checkout","evidenceFile":"storefront/component-demo-implementation-cart-checkout.json","componentIds":["cart-item","order-summary","coupon","checkout-field","payment-method","order-confirmation","receipt"]},
+    {"id":"account-ownership","ordinal":5,"label":"Account / ownership","evidenceFile":"storefront/component-demo-implementation-account-ownership.json","componentIds":["download-entitlement","account-nav","download-row","purchase-history-row","license-card","invoice-history","activation-row","seat-assignment","ownership-timeline","ownership-lifecycle"]}
   ],
-  "nextImplementationBatch": [
-    "product-media",
-    "checkout-steps",
-    "payment-failure",
-    "payment-recovery",
-    "processing-state",
-    "license-status",
-    "update-eligibility",
-    "renewal-state",
-    "plan-change",
-    "ownership-transfer",
-    "subscription-management",
-    "system-states"
-  ]
+  "nextImplementationBatch": ["product-media","checkout-steps","payment-failure","payment-recovery","processing-state","license-status","update-eligibility","renewal-state","plan-change","ownership-transfer","subscription-management","system-states"]
 }
