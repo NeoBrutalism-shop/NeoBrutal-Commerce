@@ -226,6 +226,7 @@
     {
       "id": "cart-item",
       "overrides": {
+        "variants": "complete",
         "actions": "complete",
         "tokens": "complete",
         "copy-ready": "complete"
@@ -234,6 +235,7 @@
     {
       "id": "order-summary",
       "overrides": {
+        "variants": "complete",
         "tokens": "complete",
         "copy-ready": "complete"
       }
@@ -241,6 +243,7 @@
     {
       "id": "coupon",
       "overrides": {
+        "variants": "complete",
         "actions": "complete",
         "tokens": "complete",
         "copy-ready": "complete"
@@ -249,6 +252,7 @@
     {
       "id": "checkout-field",
       "overrides": {
+        "variants": "complete",
         "tokens": "complete",
         "copy-ready": "complete"
       }
@@ -259,6 +263,7 @@
     {
       "id": "checkout-steps",
       "overrides": {
+        "variants": "complete",
         "canonical-states": "complete",
         "tokens": "complete",
         "copy-ready": "complete"
@@ -267,6 +272,7 @@
     {
       "id": "payment-method",
       "overrides": {
+        "variants": "complete",
         "tokens": "complete",
         "copy-ready": "complete"
       }
@@ -274,6 +280,7 @@
     {
       "id": "payment-failure",
       "overrides": {
+        "variants": "complete",
         "canonical-states": "complete",
         "tokens": "complete",
         "copy-ready": "complete"
@@ -282,6 +289,7 @@
     {
       "id": "payment-recovery",
       "overrides": {
+        "variants": "complete",
         "canonical-states": "complete",
         "actions": "complete",
         "tokens": "complete",
@@ -291,6 +299,7 @@
     {
       "id": "processing-state",
       "overrides": {
+        "variants": "complete",
         "canonical-states": "complete",
         "tokens": "complete",
         "copy-ready": "complete"
@@ -299,6 +308,7 @@
     {
       "id": "order-confirmation",
       "overrides": {
+        "variants": "complete",
         "tokens": "complete",
         "copy-ready": "complete"
       }
@@ -306,6 +316,7 @@
     {
       "id": "receipt",
       "overrides": {
+        "variants": "complete",
         "tokens": "complete",
         "copy-ready": "complete"
       }
@@ -313,6 +324,7 @@
     {
       "id": "download-entitlement",
       "overrides": {
+        "variants": "complete",
         "actions": "complete",
         "tokens": "complete",
         "copy-ready": "complete"

@@ -1,13 +1,15 @@
 {
-  "schema": "neobrutal-commerce/component-variant-evidence@3",
+  "schema": "neobrutal-commerce/component-variant-evidence@4",
   "showcaseVersion": "1.1.0",
   "commerceVersion": "1.0.0",
   "role": "variant-evidence-only",
-  "description": "Accumulated proof for documented component variants. Variant labels remain owned by storefront/component-showcase.json. Rendered proofs use shipping component anatomy; canonical-state proofs reference storefront/component-states.json; responsive-backed proofs reference the existing live preview plus the authoritative responsive mode instead of duplicating markup.",
+  "description": "Accumulated proof for documented component variants. Variant labels remain owned by storefront/component-showcase.json. Rendered proofs use shipping component anatomy; canonical-state proofs reference storefront/component-states.json; responsive-backed proofs reference the existing live preview plus the authoritative responsive mode; interaction-backed proofs reference an existing interaction pattern and live transition; action-backed proofs reference a canonical action and normalized result model instead of fabricating provider results.",
   "proofKinds": {
     "rendered": "Explicit declarative markup rendered inside Variant proof.",
     "canonical-state": "References an existing canonical component state and its live state controls; no duplicate variant markup is created.",
-    "responsive-backed": "References the existing live component preview, authoritative responsive mode, and an explicit viewport proof; no duplicate variant markup is created."
+    "responsive-backed": "References the existing live component preview, authoritative responsive mode, and an explicit viewport proof; no duplicate variant markup is created.",
+    "interaction-backed": "References an existing interaction pattern and live component transition for a documented variant that is produced by interaction rather than static duplicate markup.",
+    "action-backed": "References a canonical Commerce action and normalized result model for a documented variant whose authoritative result must come from the adapter/runtime rather than fabricated markup."
   },
   "batches": [
     {
@@ -45,6 +47,25 @@
         "pricing-tier",
         "plan-comparison",
         "bundle-builder"
+      ]
+    },
+    {
+      "id": "checkout",
+      "ordinal": 4,
+      "label": "Cart + checkout",
+      "componentIds": [
+        "cart-item",
+        "order-summary",
+        "coupon",
+        "checkout-field",
+        "checkout-steps",
+        "payment-method",
+        "payment-failure",
+        "payment-recovery",
+        "processing-state",
+        "order-confirmation",
+        "receipt",
+        "download-entitlement"
       ]
     }
   ],
@@ -374,6 +395,271 @@
           "label": "selected extras",
           "proofKind": "rendered",
           "markup": "<div class=\"nbc-bundle\" data-base-price=\"49\" data-variant-sample=\"bundle-builder:selected-extras\"><label class=\"nbc-bundle-option\"><input type=\"checkbox\" value=\"20\" checked><span><strong>Figma source</strong><small>Selected extra</small></span><strong>+$20</strong></label><label class=\"nbc-bundle-option\"><input type=\"checkbox\" value=\"50\"><span><strong>Onboarding</strong><small>Optional session</small></span><strong>+$50</strong></label><div class=\"nbc-bundle-total\"><span>Total</span><strong data-bundle-total>$69</strong></div></div>"
+        }
+      ]
+    },
+    {
+      "id": "cart-item",
+      "batchId": "checkout",
+      "variants": [
+        {
+          "id": "default",
+          "label": "default",
+          "proofKind": "rendered",
+          "markup": "<article class=\"nbc-cart-item\" data-variant-sample=\"cart-item:default\"><div class=\"nbc-cart-thumb\" aria-hidden=\"true\">SOFT</div><div><h4>NeoBrutal Soft</h4><p>Team license · quantity 1</p></div><strong class=\"nbc-cart-price\">$149</strong></article>"
+        },
+        {
+          "id": "removable",
+          "label": "removable",
+          "proofKind": "rendered",
+          "markup": "<article class=\"nbc-cart-item\" data-variant-sample=\"cart-item:removable\"><div class=\"nbc-cart-thumb\" aria-hidden=\"true\">SOFT</div><div><h4>NeoBrutal Soft</h4><p>Team license · quantity 1</p></div><div><strong class=\"nbc-cart-price\">$149</strong><button class=\"nbc-button nbc-tactile\" type=\"button\">Remove NeoBrutal Soft</button></div></article>"
+        }
+      ]
+    },
+    {
+      "id": "order-summary",
+      "batchId": "checkout",
+      "variants": [
+        {
+          "id": "cart-quote",
+          "label": "cart quote",
+          "proofKind": "rendered",
+          "markup": "<section class=\"nbc-summary\" data-variant-sample=\"order-summary:cart-quote\" aria-label=\"Cart quote summary\"><dl class=\"nbc-summary-list\"><div class=\"nbc-summary-row\"><dt>Subtotal</dt><dd>$149.00</dd></div><div class=\"nbc-summary-row\" data-total=\"true\"><dt>Total</dt><dd>$149.00</dd></div></dl><p class=\"nbc-summary-note\">Cart totals come from the normalized CartView.</p></section>"
+        },
+        {
+          "id": "checkout-quote",
+          "label": "checkout quote",
+          "proofKind": "rendered",
+          "markup": "<section class=\"nbc-summary\" data-variant-sample=\"order-summary:checkout-quote\" aria-label=\"Checkout quote summary\"><dl class=\"nbc-summary-list\"><div class=\"nbc-summary-row\"><dt>Subtotal</dt><dd>$149.00</dd></div><div class=\"nbc-summary-row\"><dt>Tax</dt><dd>$0.00</dd></div><div class=\"nbc-summary-row\" data-total=\"true\"><dt>Total</dt><dd>$149.00</dd></div></dl><p class=\"nbc-summary-note\">Provider-normalized CheckoutQuoteView values are authoritative.</p></section>"
+        }
+      ]
+    },
+    {
+      "id": "coupon",
+      "batchId": "checkout",
+      "variants": [
+        {
+          "id": "ready",
+          "label": "ready",
+          "proofKind": "rendered",
+          "markup": "<form class=\"nbc-coupon\" data-variant-sample=\"coupon:ready\"><label for=\"variant-coupon-ready\">Coupon code</label><input id=\"variant-coupon-ready\" name=\"coupon\" autocomplete=\"off\"><button class=\"nbc-button nbc-tactile\" type=\"button\">Apply</button><p class=\"nbc-coupon-status\" aria-live=\"polite\"></p></form>"
+        },
+        {
+          "id": "accepted",
+          "label": "accepted",
+          "proofKind": "rendered",
+          "markup": "<form class=\"nbc-coupon\" data-variant-sample=\"coupon:accepted\"><label for=\"variant-coupon-accepted\">Coupon code</label><input id=\"variant-coupon-accepted\" value=\"WELCOME10\" readonly><button class=\"nbc-button nbc-tactile\" type=\"button\" disabled>Applied</button><p class=\"nbc-coupon-status\" data-state=\"success\" aria-live=\"polite\">Coupon accepted. Review the authoritative updated total.</p></form>"
+        },
+        {
+          "id": "rejected",
+          "label": "rejected",
+          "proofKind": "rendered",
+          "markup": "<form class=\"nbc-coupon\" data-variant-sample=\"coupon:rejected\"><label for=\"variant-coupon-rejected\">Coupon code</label><input id=\"variant-coupon-rejected\" value=\"NOT-VALID\"><button class=\"nbc-button nbc-tactile\" type=\"button\">Try again</button><p class=\"nbc-coupon-status\" data-state=\"error\" aria-live=\"polite\">Coupon was not accepted. The provider-authoritative total is unchanged.</p></form>"
+        }
+      ]
+    },
+    {
+      "id": "checkout-field",
+      "batchId": "checkout",
+      "variants": [
+        {
+          "id": "default",
+          "label": "default",
+          "proofKind": "rendered",
+          "markup": "<div class=\"nbc-checkout-field\" data-variant-sample=\"checkout-field:default\"><label for=\"variant-checkout-default\">Email</label><input id=\"variant-checkout-default\" type=\"email\" autocomplete=\"email\" aria-describedby=\"variant-checkout-default-help\" required><small id=\"variant-checkout-default-help\">Used for the normalized checkout contact.</small></div>"
+        },
+        {
+          "id": "filled",
+          "label": "filled",
+          "proofKind": "rendered",
+          "markup": "<div class=\"nbc-checkout-field\" data-variant-sample=\"checkout-field:filled\"><label for=\"variant-checkout-filled\">Email</label><input id=\"variant-checkout-filled\" type=\"email\" value=\"buyer@example.com\" autocomplete=\"email\" required><small>Ready for checkout validation.</small></div>"
+        },
+        {
+          "id": "invalid",
+          "label": "invalid",
+          "proofKind": "rendered",
+          "markup": "<div class=\"nbc-checkout-field\" data-variant-sample=\"checkout-field:invalid\"><label for=\"variant-checkout-invalid\">Email</label><input id=\"variant-checkout-invalid\" type=\"email\" value=\"buyer@\" aria-invalid=\"true\" aria-describedby=\"variant-checkout-invalid-error\" required><small id=\"variant-checkout-invalid-error\">Enter a valid email address.</small></div>"
+        },
+        {
+          "id": "disabled",
+          "label": "disabled",
+          "proofKind": "rendered",
+          "markup": "<div class=\"nbc-checkout-field\" data-variant-sample=\"checkout-field:disabled\"><label for=\"variant-checkout-disabled\">Email</label><input id=\"variant-checkout-disabled\" type=\"email\" value=\"buyer@example.com\" disabled><small>This field is unavailable while the current checkout step is locked.</small></div>"
+        }
+      ]
+    },
+    {
+      "id": "checkout-steps",
+      "batchId": "checkout",
+      "variants": [
+        {
+          "id": "ready",
+          "label": "ready",
+          "proofKind": "canonical-state",
+          "stateId": "ready"
+        },
+        {
+          "id": "processing",
+          "label": "processing",
+          "proofKind": "canonical-state",
+          "stateId": "processing"
+        },
+        {
+          "id": "failed",
+          "label": "failed",
+          "proofKind": "canonical-state",
+          "stateId": "failed"
+        },
+        {
+          "id": "recovered",
+          "label": "recovered",
+          "proofKind": "canonical-state",
+          "stateId": "recovered"
+        }
+      ]
+    },
+    {
+      "id": "payment-method",
+      "batchId": "checkout",
+      "variants": [
+        {
+          "id": "selected",
+          "label": "selected",
+          "proofKind": "rendered",
+          "markup": "<fieldset class=\"nbc-payment-list\" data-variant-sample=\"payment-method:selected\"><legend>Payment method</legend><label class=\"nbc-payment-method\"><input type=\"radio\" name=\"variant-payment-selected\" checked><span><strong>Card</strong><small>Normalized payment method ID</small></span></label></fieldset>"
+        },
+        {
+          "id": "unselected",
+          "label": "unselected",
+          "proofKind": "rendered",
+          "markup": "<fieldset class=\"nbc-payment-list\" data-variant-sample=\"payment-method:unselected\"><legend>Payment method</legend><label class=\"nbc-payment-method\"><input type=\"radio\" name=\"variant-payment-unselected\"><span><strong>Wallet</strong><small>Available but not selected</small></span></label></fieldset>"
+        }
+      ]
+    },
+    {
+      "id": "payment-failure",
+      "batchId": "checkout",
+      "variants": [
+        {
+          "id": "failed",
+          "label": "failed",
+          "proofKind": "canonical-state",
+          "stateId": "failed"
+        }
+      ]
+    },
+    {
+      "id": "payment-recovery",
+      "batchId": "checkout",
+      "variants": [
+        {
+          "id": "recovered",
+          "label": "recovered",
+          "proofKind": "canonical-state",
+          "stateId": "recovered"
+        },
+        {
+          "id": "processing",
+          "label": "processing",
+          "proofKind": "interaction-backed",
+          "interactionId": "result-feedback",
+          "interactionState": "processing",
+          "selectors": [
+            "[data-demo-recovery]",
+            "[data-demo-action=\"recovery\"]"
+          ]
+        },
+        {
+          "id": "complete",
+          "label": "complete",
+          "proofKind": "interaction-backed",
+          "interactionId": "result-feedback",
+          "interactionState": "complete",
+          "selectors": [
+            "[data-demo-recovery]",
+            "[data-demo-action=\"recovery\"]"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "processing-state",
+      "batchId": "checkout",
+      "variants": [
+        {
+          "id": "processing",
+          "label": "processing",
+          "proofKind": "canonical-state",
+          "stateId": "processing"
+        }
+      ]
+    },
+    {
+      "id": "order-confirmation",
+      "batchId": "checkout",
+      "variants": [
+        {
+          "id": "complete",
+          "label": "complete",
+          "proofKind": "rendered",
+          "markup": "<section class=\"nbc-order-success\" data-variant-sample=\"order-confirmation:complete\"><p>ORDER COMPLETE</p><h2>Thanks — your order is confirmed.</h2><span class=\"nbc-order-number\">#NBC-1042</span><p>$149.00 paid. Entitlement or download delivery remains separate until normalized entitlement data confirms it.</p></section>"
+        }
+      ]
+    },
+    {
+      "id": "receipt",
+      "batchId": "checkout",
+      "variants": [
+        {
+          "id": "summary-grid",
+          "label": "summary grid",
+          "proofKind": "responsive-backed",
+          "responsiveMode": "grid-to-stack",
+          "viewport": "desktop",
+          "selectors": [
+            ".nbc-receipt-grid",
+            ".nbc-receipt-grid div"
+          ]
+        },
+        {
+          "id": "stacked-facts",
+          "label": "stacked facts",
+          "proofKind": "responsive-backed",
+          "responsiveMode": "grid-to-stack",
+          "viewport": "narrow",
+          "selectors": [
+            ".nbc-receipt-grid",
+            ".nbc-receipt-grid div"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "download-entitlement",
+      "batchId": "checkout",
+      "variants": [
+        {
+          "id": "eligible",
+          "label": "eligible",
+          "proofKind": "rendered",
+          "markup": "<section class=\"nbc-update-card\" data-eligible=\"true\" data-variant-sample=\"download-entitlement:eligible\"><div><strong>NeoBrutal Soft v1.0</strong><small>Download eligible through the current entitlement term.</small><p class=\"nbc-entitlement-note\">A signed URL is requested only when you choose Download.</p></div><button class=\"nbc-button nbc-button--primary nbc-tactile\" type=\"button\">Download</button></section>"
+        },
+        {
+          "id": "ineligible",
+          "label": "ineligible",
+          "proofKind": "rendered",
+          "markup": "<section class=\"nbc-update-card\" data-eligible=\"false\" data-variant-sample=\"download-entitlement:ineligible\"><div><strong>Download unavailable</strong><small>The normalized entitlement does not currently permit a signed download.</small><p class=\"nbc-entitlement-note\">Explain the renewal or recovery path without fabricating access.</p></div><button class=\"nbc-button nbc-tactile\" type=\"button\" disabled>Download unavailable</button></section>"
+        },
+        {
+          "id": "signed-ready",
+          "label": "signed-ready",
+          "proofKind": "action-backed",
+          "actionId": "download.create",
+          "resultModel": "SignedDownloadView",
+          "selectors": [
+            ".nbc-update-card[data-eligible=\"true\"]",
+            "button"
+          ]
         }
       ]
     }
