@@ -25,35 +25,56 @@ jobs:
         run: |
           node --input-type=module <<'NODE'
           import { readFile } from 'node:fs/promises';
+          import { setTimeout as delay } from 'node:timers/promises';
 
           const base = process.env.BASE_URL.replace(/\/$/, '');
           const manifest = JSON.parse(await readFile('storefront/routes.json', 'utf8'));
           const routePaths = manifest.routes.map((route) => route.example || route.path);
-          const paths = [...new Set([
+          const existingPaths = [...new Set([
             '/',
             '/components.html',
             '/demo/v10.html',
             ...routePaths,
           ])];
+          const isPullRequest = process.env.GITHUB_EVENT_NAME === 'pull_request';
+          const publicSurfaces = isPullRequest
+            ? existingPaths
+            : [...existingPaths, '/demo/v13.html'];
 
           const failures = [];
-          for (const path of paths) {
+          async function verify(path, { attempts = 1, marker = null } = {}) {
             const url = `${base}${path}`;
-            try {
-              const response = await fetch(url, { redirect: 'follow' });
-              const html = await response.text();
-              const contentType = response.headers.get('content-type') || '';
-              const validHtml = /<html[\s>]/i.test(html) && !/Page not found/i.test(html);
-              const stayedOnProjectSite = response.url.startsWith(`${base}/`) || response.url === `${base}/`;
+            let lastFailure = 'not checked';
+            for (let attempt = 1; attempt <= attempts; attempt += 1) {
+              try {
+                const response = await fetch(url, { redirect: 'follow', cache: 'no-store' });
+                const html = await response.text();
+                const contentType = response.headers.get('content-type') || '';
+                const validHtml = /<html[\s>]/i.test(html) && !/Page not found/i.test(html);
+                const stayedOnProjectSite = response.url.startsWith(`${base}/`) || response.url === `${base}/`;
+                const markerPresent = !marker || html.includes(marker);
 
-              if (!response.ok || !contentType.includes('text/html') || !validHtml || !stayedOnProjectSite) {
-                failures.push(`${path} -> ${response.status} ${response.url} (${contentType || 'no content-type'})`);
-                continue;
+                if (response.ok && contentType.includes('text/html') && validHtml && stayedOnProjectSite && markerPresent) {
+                  console.log(`OK ${response.status} ${path} -> ${response.url}${marker ? ' · marker verified' : ''}`);
+                  return;
+                }
+                lastFailure = `${response.status} ${response.url} (${contentType || 'no content-type'})${markerPresent ? '' : ' · marker missing'}`;
+              } catch (error) {
+                lastFailure = error.message;
               }
+              if (attempt < attempts) {
+                console.log(`RETRY ${attempt}/${attempts} ${path} · ${lastFailure}`);
+                await delay(5000);
+              }
+            }
+            failures.push(`${path} -> ${lastFailure}`);
+          }
 
-              console.log(`OK ${response.status} ${path} -> ${response.url}`);
-            } catch (error) {
-              failures.push(`${path} -> ${error.message}`);
+          for (const path of publicSurfaces) {
+            if (path === '/demo/v13.html') {
+              await verify(path, { attempts: 12, marker: 'MOTION &amp; INTERACTION LAB v1.3' });
+            } else {
+              await verify(path);
             }
           }
 
@@ -63,5 +84,5 @@ jobs:
             process.exit(1);
           }
 
-          console.log(`\nVerified ${paths.length} public GitHub Pages URLs.`);
+          console.log(`\nVerified ${publicSurfaces.length} public GitHub Pages URLs${isPullRequest ? ' against the currently deployed main site' : ', including the deployed v1.3 Motion Lab'} .`);
           NODE

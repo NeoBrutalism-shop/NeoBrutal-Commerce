@@ -14,6 +14,20 @@ Use the existing hierarchy unchanged:
 
 Interaction guidance applies across those layers. Runtime meaning still comes from the frozen Commerce contracts and manifests.
 
+## Public Motion & Interaction Lab
+
+`demo/v13.html` is the permanent v1.3 inspection surface. It consumes `storefront/interactions.json` directly and exposes exactly the four production interaction patterns plus the explicit `drag-lift` exception.
+
+The lab is evidence-led rather than a parallel implementation:
+
+- tactile press uses the shipping `.nbc-tactile` class and resolves the real interaction token values;
+- latched selection uses the production media markup and the same `storefront/store.js` keyboard/pointer controller;
+- processing feedback uses the shipping system-state skeleton and keeps explicit loading copy visible;
+- result feedback uses the production subscription-management controller and persistent `data-subscription-state` result;
+- `drag-lift` is shown only as **not a production pattern** because Commerce does not currently ship a draggable interaction.
+
+The lab exposes normal system motion preference and a clearly labeled reduced-motion preview override for documentation. That override is not the accessibility gate: Browser QA separately emulates the actual `prefers-reduced-motion: reduce` preference and forced-colors mode against the shipping CSS.
+
 ## Production interaction patterns
 
 ### Tactile press
@@ -50,7 +64,7 @@ Reduced motion and forced colors are product requirements:
 - decorative depth is removed where forced colors requires it;
 - focus and state cannot depend on shadow, animation, or color alone.
 
-A future Motion Lab must demonstrate both normal and reduced-motion behavior rather than hiding reduced-motion coverage in implementation notes.
+The Motion Lab demonstrates both normal and reduced-motion presentation. Browser QA verifies the actual media preference rather than relying on implementation notes or the manual preview switch.
 
 ## Drag-lift exception
 
@@ -66,6 +80,6 @@ npm run check
 npm run test:browser
 ```
 
-`scripts/interactions-check.mjs` validates the v1.3 schema/version, frozen Commerce version boundary, exact interaction token bindings, production evidence markers, tactile hit-target physics, selection semantics, reduced-motion processing behavior, result-state evidence, the drag-lift exception, and the absence of generic upward hover lift or `transition: all`.
+`scripts/interactions-check.mjs` validates the v1.3 schema/version, frozen Commerce version boundary, exact interaction token bindings, production evidence markers, tactile hit-target physics, selection semantics, reduced-motion processing behavior, result-state evidence, the drag-lift exception, the exact 4/4 Motion Lab pattern slots, public-lab readiness/browser proof, and the absence of generic upward hover lift or `transition: all`.
 
-The next v1.3 slice can build a public Motion & Interaction Lab on top of this contract. The lab should consume `storefront/interactions.json` rather than maintaining a second taxonomy.
+`tests/commerce-v13-interactions.spec.mjs` then exercises the public lab across desktop Chromium, mobile Chromium, Firefox, and WebKit with Axe A/AA, pointer/keyboard selection, subscription result state, real reduced-motion emulation, forced-colors proof, overflow checks, and canonical desktop/mobile screenshots.
