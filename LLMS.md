@@ -1,19 +1,41 @@
-# NeoBrutal Commerce — LLM Guidance v0.8
+# NeoBrutal Commerce — LLM Guidance v1.4
 
-Use this file for non-negotiable generation and integration rules. Coding agents should begin with `AGENTS.md`, then use this file as the ethics, interaction and provider-boundary law layer.
+Use this file for non-negotiable generation and integration rules. Coding agents should begin with `AGENTS.md`, then use `storefront/agents.json` as the machine-readable execution contract and this file as the ethics, interaction, and provider-boundary law layer.
 
 ## Agent execution order
 
+The composition hierarchy is `Components → Blocks → Pages → Applications`.
+
 Before writing UI or integration code:
 
-1. locate the target route in `storefront/routes.json`;
-2. resolve route components in `storefront/components.json`;
-3. read canonical states in `storefront/states.json`;
-4. confirm normalized models/capabilities in `src/contracts/index.d.ts`;
-5. confirm canonical commands in `src/actions/runtime.js`;
-6. follow `docs/AGENT-PLAYBOOK.md` and component-specific notes in `docs/AI-COMPONENT-NOTES.md`.
+1. read `storefront/agents.json` and follow its exact workflow/output contract;
+2. locate the target route in `storefront/routes.json`;
+3. resolve route component contracts in `storefront/components.json`;
+4. inspect the route-keyed Page in `storefront/pages.json` and each referenced Block in `storefront/blocks.json`;
+5. read canonical runtime semantics in `storefront/states.json`;
+6. confirm normalized models/capabilities in `src/contracts/index.d.ts`;
+7. confirm canonical commands in `src/actions/runtime.js`;
+8. resolve interaction behavior in `storefront/interactions.json`;
+9. follow `docs/AGENT-PLAYBOOK.md` and component-specific notes in `docs/AI-COMPONENT-NOTES.md`.
 
 If a requested capability is absent, do not guess a provider-shaped contract. Extend the normalized boundary deliberately or leave the unsupported control out.
+
+## Authority by concern
+
+Do not use one global precedence list for questions owned by different layers. Resolve conflicts according to the concern being answered:
+
+- route intent, required primary components, and route-level state sets → `storefront/routes.json`;
+- Page metadata and Page → Block composition → `storefront/pages.json`;
+- reusable Block → Component composition → `storefront/blocks.json`;
+- component models/actions/states/kind/agent rules → `storefront/components.json`;
+- canonical runtime state meaning and recovery obligations → `storefront/states.json`;
+- tactile physics, interaction patterns, token roles, reduced motion, forced colors, and explicit exceptions → `storefront/interactions.json`;
+- normalized models and capability boundaries → `src/contracts/`;
+- canonical mutations and dispatch semantics → `src/actions/`;
+- renderer anatomy / CSS → implementation of already-resolved normalized meaning;
+- demo/reference copy → examples only, never a source of Commerce semantics.
+
+Provider payload shape never outranks the normalized contract. Pages do not duplicate route states, and no source may create a second interaction taxonomy beside `storefront/interactions.json`.
 
 ## Interaction laws
 
@@ -21,6 +43,7 @@ If a requested capability is absent, do not guess a provider-shaped contract. Ex
 - Raised controls compress toward their shadow on hover and fully seat on press.
 - Selection should feel latched, not floating.
 - Use motion to communicate cause, state and result.
+- Motion never carries meaning by itself; text and programmatic state remain authoritative.
 - Drag-and-drop may lift because the object is actually being picked up.
 - Preserve visible focus, reduced-motion behavior and forced-colors legibility.
 
@@ -50,19 +73,6 @@ Write path:
 - Use runtime capability flags instead of provider-name assumptions.
 - Provider quote/order/invoice output is authoritative for commercial arithmetic.
 - A renderer may add presentation state but must not change commercial or ownership meaning.
-
-## Source precedence
-
-When sources conflict, preserve this order:
-
-1. `src/contracts/`
-2. `src/actions/`
-3. `storefront/states.json`
-4. `storefront/components.json`
-5. renderer anatomy / CSS
-6. demo/reference copy
-
-Provider payload shape never outranks the normalized contract.
 
 ## Normalized models
 
@@ -144,7 +154,13 @@ A failure must preserve enough context to recover. `past_due` must expose billin
 
 `storefront/components.json` is the machine-readable component contract for agents. Every production route primary component must resolve there. Read each component's `models`, `actions`, `states`, `kind` and `agentRules` before generating it.
 
+For production route work, also resolve the route's `storefront/pages.json` Page and the referenced `storefront/blocks.json` compositions. Component contracts own component meaning; Blocks and Pages only compose that meaning into larger reusable/application structures.
+
 Preserve stable `data-commerce-component`, `data-state`, IDs and semantic elements. The registry documents meaning; the renderer/component implementation owns concrete anatomy.
+
+## Interaction contract
+
+`storefront/interactions.json` is the v1.3 machine-readable interaction authority. Use its production patterns, token roles, reduced-motion behavior, forced-colors behavior, and explicit exceptions instead of inventing local motion rules. Runtime state and action meaning still come from their own authorities.
 
 ## Renderer rule
 
@@ -169,6 +185,10 @@ Do not change Commerce component contracts to match a specific licensing provide
 ## Theme contract
 
 Set `data-theme="light"` or `data-theme="dark"` on the document root. Prefer semantic tokens over raw theme colors. Theme changes must not alter commercial/ownership meaning or tactile physics.
+
+## Agent review output
+
+Before completion, produce the exact review fields required by `storefront/agents.json`: routes affected, Page contracts, Block contracts, component contracts, normalized models, canonical actions/states, capability gates, interaction patterns, accessibility, responsive behavior, and tests changed.
 
 ## Validation
 
