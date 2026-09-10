@@ -2,7 +2,9 @@ import {defineConfig,devices} from '@playwright/test';
 
 export default defineConfig({
   testDir:'./tests',
-  timeout:35_000,
+  // The accumulated v1.1 component-depth audit expands 43 evidence panels before a full Axe A/AA scan.
+  // WebKit crossed the previous 35s ceiling during Axe cleanup with zero accessibility violations.
+  timeout:45_000,
   expect:{timeout:5_000},
   fullyParallel:true,
   use:{baseURL:'http://127.0.0.1:4173',trace:'retain-on-failure'},
