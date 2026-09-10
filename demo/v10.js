@@ -38,7 +38,7 @@ function routeSrc(route){
 }
 function buildPageLibrary(routeManifest,pageLibrary,blockManifest){
   assert(routeManifest.version===EXPECTED_COMMERCE_VERSION,'route manifest Commerce version mismatch');
-  assert(pageLibrary.schema==='neobrut-commerce/pages@1'||pageLibrary.schema==='neobrutal-commerce/pages@1','unexpected page library schema');
+  assert(pageLibrary.schema==='neobrutal-commerce/pages@1','unexpected page library schema');
   assert(pageLibrary.pageLibraryVersion===EXPECTED_PAGE_LIBRARY_VERSION,'page library version mismatch');
   assert(pageLibrary.commerceVersion===EXPECTED_COMMERCE_VERSION,'page library Commerce version mismatch');
   assert(blockManifest.schema==='neobrutal-commerce/blocks@1','unexpected blocks schema');
