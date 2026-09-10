@@ -1,6 +1,6 @@
 const EXPECTED_SHOWCASE_VERSION='1.1.0';
 const EXPECTED_COMMERCE_VERSION='1.0.0';
-const EXPECTED_BLOCK_COUNT=21;
+const EXPECTED_BLOCK_COUNT=23;
 const escapeHtml=value=>String(value).replace(/[&<>'"]/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[char]));
 const normalize=value=>String(value||'').trim().toLowerCase();
 const BLOCK_MEDIA_COPY={
@@ -84,7 +84,7 @@ function validateContracts(registry,contract,blocks,stateExamples){
   assert(blocks.showcaseVersion===EXPECTED_SHOWCASE_VERSION,'blocks showcase version mismatch');
   assert(stateExamples.showcaseVersion===EXPECTED_SHOWCASE_VERSION,'component states showcase version mismatch');
   assert(contract.commerceVersion===EXPECTED_COMMERCE_VERSION,'component showcase Commerce version mismatch');
-  assert(blocks.commerceVersion===EXPECTED_COMMERCE_VERSION,'blocks showcase Commerce version mismatch');
+  assert(blocks.commerceVersion===EXPECTED_COMMERCE_VERSION,'blocks Commerce version mismatch');
   assert(stateExamples.commerceVersion===EXPECTED_COMMERCE_VERSION,'component states Commerce version mismatch');
   assert(registry.commerceVersion===EXPECTED_COMMERCE_VERSION,'component registry Commerce version mismatch');
   assert(registry.components?.length===47,'expected 47 frozen component contracts');
