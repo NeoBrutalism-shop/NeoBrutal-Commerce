@@ -1,5 +1,5 @@
 const DEPTH_STATUS_ORDER=['complete','partial','missing','not-applicable'];
-const escapeDepth=value=>String(value).replace(/[&<>'\"]/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','\"':'&quot;'}[char]));
+const escapeDepth=value=>String(value).replace(/[&<>'"]/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[char]));
 const sameDepthIds=(a,b)=>JSON.stringify([...a].sort())===JSON.stringify([...b].sort());
 const depthAssert=(condition,message)=>{if(!condition)throw new Error(message)};
 
