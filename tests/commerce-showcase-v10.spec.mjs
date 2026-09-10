@@ -13,7 +13,7 @@ const waitForPageLibrary=async page=>{
   await expect(page.locator('html')).toHaveAttribute('data-page-library-ready','true');
   await expect(page.locator('html')).toHaveAttribute('data-page-library-version','1.2.0');
   await expect(page.locator('html')).toHaveAttribute('data-page-library-pages','10');
-  await expect(page.locator('html')).toHaveAttribute('data-page-library-blocks','24');
+  await expect(page.locator('html')).toHaveAttribute('data-page-library-blocks','25');
   await expect(page.locator('html')).toHaveAttribute('data-page-library-composed-blocks','18');
 };
 const gridTrackCount=async locator=>locator.evaluate(node=>getComputedStyle(node).gridTemplateColumns.trim().split(/\s+/).filter(Boolean).length);
@@ -32,7 +32,7 @@ for(const route of showcaseRoutes){
       await expect(page.locator('[data-component-card] [data-doc-complete]')).toHaveCount(47);
       await expect(page.locator('[data-state-matrix]')).toHaveCount(12);
       await expect(page.locator('[data-showcase-state]')).toHaveCount(42);
-      await expect(page.locator('[data-block-preview-for]')).toHaveCount(24);
+      await expect(page.locator('[data-block-preview-for]')).toHaveCount(25);
     }else{
       await waitForPageLibrary(page);
     }
@@ -69,17 +69,17 @@ test('v1.1 component explorer renders complete frozen components and documented 
   await expect(comparison.locator('.cx-doc')).toContainText('Wide semantic content scrolls only inside a keyboard-reachable local container.');
 
   await page.getByRole('tab',{name:/Blocks/}).click();
-  await expect(page.locator('[data-block-card]')).toHaveCount(24);
-  await expect(page.locator('[data-block-id]')).toHaveCount(24);
-  await expect(page.locator('[data-block-preview-for]')).toHaveCount(24);
-  await expect(page.locator('[data-block-card] [data-doc-complete]')).toHaveCount(24);
+  await expect(page.locator('[data-block-card]')).toHaveCount(25);
+  await expect(page.locator('[data-block-id]')).toHaveCount(25);
+  await expect(page.locator('[data-block-preview-for]')).toHaveCount(25);
+  await expect(page.locator('[data-block-card] [data-doc-complete]')).toHaveCount(25);
   const blockIds=await page.locator('[data-block-id]').evaluateAll(nodes=>nodes.map(node=>node.dataset.blockId).sort());
   const blockPreviewIds=await page.locator('[data-block-preview-for]').evaluateAll(nodes=>nodes.map(node=>node.dataset.blockPreviewFor).sort());
-  expect(new Set(blockPreviewIds).size).toBe(24);
+  expect(new Set(blockPreviewIds).size).toBe(25);
   expect(blockPreviewIds).toEqual(blockIds);
   await expect(page.locator('[data-block-id="checkout-shell"]')).toBeVisible();
   await expect(page.locator('[data-block-id="ownership-operations"]')).toBeVisible();
-  for(const promotedId of ['trust-strip','testimonials','guarantee','product-detail','product-gallery','order-confirmation']){
+  for(const promotedId of ['trust-strip','testimonials','guarantee','product-detail','product-gallery','order-confirmation','subscription-management']){
     await expect(page.locator(`[data-block-id="${promotedId}"]`)).toBeVisible();
     await expect(page.locator(`[data-block-preview-for="${promotedId}"]`)).toBeVisible();
   }
@@ -101,6 +101,32 @@ test('v1.1 component explorer renders complete frozen components and documented 
   await expect(orderConfirmation.locator('.nbc-order-success')).toBeVisible();
   await expect(orderConfirmation).toContainText('Thanks — your order is confirmed.');
   await expect(orderConfirmation.locator('.nbc-order-number')).toHaveText('#NBC-1042');
+
+  const subscriptionBlock=page.locator('[data-block-id="subscription-management"]');
+  const subscriptionPreview=subscriptionBlock.locator('[data-promoted-subscription]');
+  const subscriptionBadge=subscriptionBlock.locator('[data-block-subscription-badge]');
+  const subscriptionNote=subscriptionBlock.locator('[data-block-subscription-note]');
+  const cancelSubscription=subscriptionBlock.locator('[data-block-subscription-cancel]');
+  const resumeSubscription=subscriptionBlock.locator('[data-block-subscription-resume]');
+  await expect(subscriptionPreview).toHaveAttribute('data-subscription-state','active');
+  await expect(subscriptionBadge).toHaveText('ACTIVE');
+  await expect(subscriptionNote).toContainText('paid term');
+  await expect(cancelSubscription).toBeVisible();
+  await expect(resumeSubscription).toBeHidden();
+  await cancelSubscription.click();
+  await expect(subscriptionPreview).toHaveAttribute('data-subscription-state','cancel_at_period_end');
+  await expect(subscriptionBadge).toHaveText('CANCEL AT PERIOD END');
+  await expect(subscriptionNote).toContainText('Access continues through 08 Sep 2027');
+  await expect(subscriptionNote).toContainText('current license is not revoked');
+  await expect(cancelSubscription).toBeHidden();
+  await expect(resumeSubscription).toBeVisible();
+  await resumeSubscription.click();
+  await expect(subscriptionPreview).toHaveAttribute('data-subscription-state','active');
+  await expect(subscriptionBadge).toHaveText('ACTIVE');
+  await expect(subscriptionNote).toContainText('provider-authoritative billing date remains 08 Sep 2027');
+  await expect(resumeSubscription).toBeHidden();
+  await expect(cancelSubscription).toBeVisible();
+
   const checkoutBlock=page.locator('[data-block-id="checkout-shell"]');
   await checkoutBlock.locator('.cx-doc summary').click();
   await expect(checkoutBlock.locator('.cx-doc')).toContainText('grid-to-stack');
