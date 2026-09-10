@@ -53,12 +53,17 @@ Read in this order:
 1. `AGENTS.md`
 2. `LLMS.md`
 3. `docs/AGENT-PLAYBOOK.md`
-4. `storefront/routes.json`
-5. `storefront/components.json`
-6. `storefront/states.json`
-7. `docs/AI-COMPONENT-NOTES.md` when the target component is high-risk
+4. `storefront/routes.json` — authoritative route intent, required primary components, and canonical route states
+5. `storefront/components.json` — frozen component execution contracts
+6. `storefront/blocks.json` — reusable Blocks and their component membership
+7. `storefront/pages.json` — route-keyed Page metadata and Block compositions
+8. `storefront/states.json` — canonical state semantics
+9. `storefront/component-showcase.json` — component presentation, responsive, theme, and accessibility guidance
+10. `storefront/component-states.json` — explicit live examples for stateful component states
+11. `storefront/catalog.json` — reference product/license/lifecycle content
+12. `docs/AI-COMPONENT-NOTES.md` when the target component is high-risk
 
-Do not infer Commerce meaning from provider payloads or demo copy. Normalized contracts and machine-readable manifests are authoritative.
+The composition hierarchy is `Components → Blocks → Pages → Applications`. Routes remain authoritative for route intent, required `primaryComponents`, and route states; Pages add metadata and Block composition without duplicating or renaming that route contract. Do not infer Commerce meaning from provider payloads or demo copy. Normalized contracts and machine-readable manifests are authoritative.
 
 ## Production surface
 
@@ -85,7 +90,7 @@ Do not infer Commerce meaning from provider payloads or demo copy. Normalized co
 - production system-state showcase retained at: `components/index.html`
 - legacy `demo/v02.html` retained for regression coverage
 
-The component explorer reads `storefront/components.json` directly, so all 47 frozen component contracts remain visible to humans and agents. The application lab frames the real production routes instead of copying them, with desktop, tablet, mobile, light, and dark inspection controls.
+The component explorer combines `storefront/components.json`, `storefront/component-showcase.json`, `storefront/blocks.json`, and `storefront/component-states.json`, so all 47 frozen component contracts, all 18 reusable Blocks, and their live design/state guidance remain inspectable by humans and agents. The Page Lab combines the frozen route authority in `storefront/routes.json` with `storefront/pages.json` and `storefront/blocks.json`, then frames the real production routes instead of copying them, with desktop, tablet, mobile, light, and dark inspection controls.
 
 ## Production routes
 
@@ -164,14 +169,20 @@ React is injected by the consuming application; Commerce does not bundle or pin 
 ## Machine-readable contracts
 
 - `storefront/catalog.json` — product/license/lifecycle metadata
-- `storefront/routes.json` — route intent and required components/states
+- `storefront/routes.json` — authoritative route intent, required primary components, and canonical route states
 - `storefront/components.json` — component models, actions, states and agent rules
+- `storefront/blocks.json` — the 18 reusable Block identities, component membership, responsive behavior, theme behavior, and accessibility expectations
+- `storefront/pages.json` — the ten route-keyed Page identities, metadata, and Block compositions
 - `storefront/states.json` — checkout/system/ownership/operation/subscription/media taxonomy
+- `storefront/component-showcase.json` — v1.1 presentation/design guidance for all 47 frozen component contracts
+- `storefront/component-states.json` — explicit live examples for every stateful component contract
 - `tests/public-api-v09.json` — historical v0.9 RC freeze snapshot
 - `tests/public-api-v10.json` — v1.0 public API freeze snapshot
 - `src/contracts/` — normalized runtime + TypeScript model interfaces
 - `src/actions/` — canonical commands, lifecycle events and DOM bindings
 - `src/renderers/` — headless, React, action and ownership renderers
+
+`storefront/routes.json` is the route authority. A Page in `storefront/pages.json` composes registered Blocks, and the union of those Blocks' component contracts must cover every frozen `primaryComponent` required by that route.
 
 ## Quality contract
 
@@ -180,7 +191,7 @@ npm run check
 npm run test:browser
 ```
 
-`npm run check` enforces static conformance, documentation/component-registry consistency, the v1.0 public API freeze and package tarball contract, contract/action/adapter regressions and payload budgets. Browser QA runs desktop Chromium, mobile Chromium, Firefox and WebKit and includes strict WCAG A/AA Axe checks, keyboard journeys, reduced-motion, forced-colors, 320–1440px responsive checks, connected production-store stress, CLS, canonical visual regression, and the permanent GitHub Pages explorer/application-lab surfaces.
+`npm run check` enforces static conformance, documentation/component-registry consistency, the v1.0 public API freeze and package tarball contract, contract/action/adapter regressions, payload budgets, and per-route `Pages → Blocks → Components` completeness. Browser QA runs desktop Chromium, mobile Chromium, Firefox and WebKit and includes strict WCAG A/AA Axe checks, keyboard journeys, reduced-motion, forced-colors, 320–1440px responsive checks, connected production-store stress, CLS, canonical visual regression, and the permanent GitHub Pages explorer/application-lab surfaces.
 
 No known failing commerce journey is accepted for merge.
 
