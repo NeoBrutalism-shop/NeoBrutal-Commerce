@@ -14,4 +14,18 @@
 .cx-depth-chip[data-depth-status="not-applicable"]{color:var(--nbc-muted);border-style:dashed}
 .cx-depth-chip[data-depth-status="not-applicable"]::before{content:'—'}
 .cx-depth-first-batch{margin-top:var(--nbc-space-2);font-size:var(--nbc-text-xs);color:var(--nbc-muted)}
-@media (max-width:640px){.cx-depth-audit summary{align-items:flex-start;flex-direction:column}.cx-depth-summary{text-align:left}}
+.cx-depth-evidence{display:grid;gap:var(--nbc-space-3);margin-top:var(--nbc-space-3);padding:var(--nbc-space-3);border:var(--nbc-border-w) solid var(--nbc-border);border-radius:var(--nbc-radius-md);background:var(--nbc-surface-2);box-shadow:4px 4px 0 var(--nbc-shadow)}
+.cx-depth-evidence-head{display:flex;align-items:flex-start;justify-content:space-between;gap:var(--nbc-space-3)}
+.cx-depth-evidence-head strong,.cx-depth-source>strong,.cx-depth-code>strong{font-size:var(--nbc-text-xs);text-transform:uppercase;letter-spacing:.08em}
+.cx-depth-evidence-head p,.cx-depth-source p{margin-top:.25rem;color:var(--nbc-muted);font-size:var(--nbc-text-xs)}
+.cx-depth-evidence-head>span{flex:0 0 auto;padding:.25rem .45rem;border:1px solid var(--nbc-border);border-radius:999px;background:var(--nbc-lime);color:#151515;font-size:var(--nbc-text-xs);font-weight:900}
+.cx-depth-source code{overflow-wrap:anywhere}
+.cx-depth-token-list{display:flex;flex-wrap:wrap;gap:var(--nbc-space-1)}
+.cx-depth-token{padding:.28rem .45rem;border:1px solid var(--nbc-border);border-radius:var(--nbc-radius-sm);background:var(--nbc-surface);font-size:var(--nbc-text-xs);overflow-wrap:anywhere}
+.cx-depth-code-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--nbc-space-2)}
+.cx-depth-code{display:grid;min-width:0;gap:var(--nbc-space-1)}
+.cx-depth-code pre{min-width:0;max-height:14rem;margin:0;padding:var(--nbc-space-2);overflow:auto;overscroll-behavior:contain;border:1px solid var(--nbc-border);border-radius:var(--nbc-radius-sm);background:var(--nbc-bg);color:var(--nbc-text);font-size:var(--nbc-text-xs);line-height:1.45;white-space:pre;tab-size:2}
+.cx-depth-code pre:focus-visible{outline:3px solid var(--nbc-focus);outline-offset:2px}
+@media (max-width:900px){.cx-depth-code-grid{grid-template-columns:1fr}}
+@media (max-width:640px){.cx-depth-audit summary,.cx-depth-evidence-head{align-items:flex-start;flex-direction:column}.cx-depth-summary{text-align:left}.cx-depth-evidence-head>span{align-self:flex-start}}
+@media(forced-colors:active){.cx-depth-evidence{box-shadow:none}}
