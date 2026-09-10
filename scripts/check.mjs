@@ -28,8 +28,8 @@ const required=[
   'scripts/performance.mjs','scripts/docs-check.mjs','scripts/package-check.mjs','scripts/release-check.mjs','DESIGN.md','docs/EDD-MAPPING.md','docs/OWNERSHIP-LIFECYCLE.md','CHANGELOG.md','CONTRIBUTING.md','SECURITY.md',...adoptionFiles,
   'package.json','package-lock.json','LICENSE.md','playwright.config.mjs','.github/workflows/browser-qa.yml','.github/workflows/release.yml'
 ];
-const permanentSurfaces=['index.html','components.html','demo/v10.html','demo/v13.html'];
-const showcaseFiles=['.nojekyll','components.html','component-explorer.css','component-explorer.js','demo/v10.html','demo/v10.css','demo/v10.js','tests/commerce-showcase-v10.spec.mjs','demo/v13.html','demo/v13.css','demo/v13.js','tests/commerce-v13-interactions.spec.mjs'];
+const permanentSurfaces=['index.html','components.html','demo/v10.html','demo/v13.html','demo/v14.html'];
+const showcaseFiles=['.nojekyll','components.html','component-explorer.css','component-explorer.js','demo/v10.html','demo/v10.css','demo/v10.js','tests/commerce-showcase-v10.spec.mjs','demo/v13.html','demo/v13.css','demo/v13.js','tests/commerce-v13-interactions.spec.mjs','demo/v14.html','demo/v14.css','demo/v14.js','tests/commerce-v14-agents.spec.mjs'];
 for(const file of required)if(!exists(file))fail(`Missing required file: ${file}`);
 for(const file of showcaseFiles)if(!exists(file))fail(`Missing permanent showcase file: ${file}`);
 for(const file of permanentSurfaces)if(!exists(file))fail(`Missing permanent GitHub Pages surface: ${file}`);
@@ -38,7 +38,7 @@ const cssFiles=required.filter(file=>file.endsWith('.css'));
 const css=cssFiles.map(read).join('\n');
 if(/transition\s*:\s*all/i.test(css))fail('transition: all is prohibited');
 if(/:hover[^\{]*\{[^\}]*translate(?:Y)?\(\s*-/i.test(css))fail('Upward hover lift is prohibited');
-const showcaseCss=['component-explorer.css','demo/v10.css','demo/v13.css'].map(read).join('\n');
+const showcaseCss=['component-explorer.css','demo/v10.css','demo/v13.css','demo/v14.css'].map(read).join('\n');
 if(/transition\s*:\s*all/i.test(showcaseCss))fail('Showcase transition: all is prohibited');
 if(/:hover[^\{]*\{[^\}]*translate(?:Y)?\(\s*-/i.test(showcaseCss))fail('Showcase upward hover lift is prohibited');
 const baseCss=read('src/base.css');
@@ -164,8 +164,10 @@ const showcaseSpec=read('tests/commerce-showcase-v10.spec.mjs');
 for(const marker of ['47','18','all ten real production routes','WCAG A/AA','horizontal overflow','permanent showcase review surfaces'])if(!showcaseSpec.includes(marker))fail(`Showcase browser contract missing: ${marker}`);
 const motionLab=read('demo/v13.html');
 for(const marker of ['MOTION &amp; INTERACTION LAB v1.3','data-interaction-pattern="tactile-press"','data-interaction-pattern="latched-selection"','data-interaction-pattern="processing-feedback"','data-interaction-pattern="result-feedback"','data-interaction-exception="drag-lift"'])if(!motionLab.includes(marker))fail(`Permanent Motion Lab missing marker: ${marker}`);
+const agentLab=read('demo/v14.html');
+for(const marker of ['AGENT EXECUTION LAB v1.4','data-agent-trace','data-agent-authorities','data-agent-workflow','data-agent-prohibitions'])if(!agentLab.includes(marker))fail(`Permanent Agent Lab missing marker: ${marker}`);
 const readme=read('README.md');
-for(const marker of ['## Live surfaces','https://neobrutalism-shop.github.io/NeoBrutal-Commerce/','https://neobrutalism-shop.github.io/NeoBrutal-Commerce/components.html','https://neobrutalism-shop.github.io/NeoBrutal-Commerce/demo/v10.html','https://neobrutalism-shop.github.io/NeoBrutal-Commerce/demo/v13.html','Any future custom domain is an alias'])if(!readme.includes(marker))fail(`Permanent GitHub Pages documentation missing: ${marker}`);
+for(const marker of ['## Live surfaces','https://neobrutalism-shop.github.io/NeoBrutal-Commerce/','https://neobrutalism-shop.github.io/NeoBrutal-Commerce/components.html','https://neobrutalism-shop.github.io/NeoBrutal-Commerce/demo/v10.html','https://neobrutalism-shop.github.io/NeoBrutal-Commerce/demo/v13.html','https://neobrutalism-shop.github.io/NeoBrutal-Commerce/demo/v14.html','Any future custom domain is an alias'])if(!readme.includes(marker))fail(`Permanent GitHub Pages documentation missing: ${marker}`);
 
 for(const file of ['package.json','src/contracts/runtime.js','src/contracts/index.d.ts','storefront/catalog.json','storefront/routes.json','storefront/states.json','storefront/components.json','README.md','tests/contracts-v05.test.mjs','tests/reference-adapter-v05.test.mjs','tests/ownership-v06.test.mjs']){
   if(read(file).includes('0.8.0-dev'))fail(`Release file still contains dev version: ${file}`);
