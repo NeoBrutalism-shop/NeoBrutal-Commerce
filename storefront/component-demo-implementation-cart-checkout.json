@@ -1,0 +1,88 @@
+{
+  "schema": "neobrutal-commerce/component-demo-implementation@1",
+  "showcaseVersion": "1.1.0",
+  "commerceVersion": "1.0.0",
+  "role": "implementation-evidence-only",
+  "batchId": "cart-checkout",
+  "description": "Source-backed implementation evidence for the fourth v1.1 component demo-depth batch: cart and checkout. This file does not redefine component models, actions, states, or interaction laws.",
+  "styleImport": "@neobrutal/commerce/styles.css",
+  "components": [
+    {
+      "id": "cart-item",
+      "sourceFiles": ["src/components/cart.css", "component-explorer.js", "src/actions/runtime.js"],
+      "selectors": [".nbc-cart-item", ".nbc-cart-thumb", ".nbc-cart-price"],
+      "tokens": ["--nbc-space-3", "--nbc-border-w", "--nbc-border", "--nbc-radius-md", "--nbc-surface", "--nbc-sky", "--nbc-text-md", "--nbc-muted", "--nbc-text-sm"],
+      "copyReady": {
+        "html": "<article class=\"nbc-cart-item\" data-commerce-component=\"cart-item\" data-cart-id=\"cart_123\" data-line-id=\"line_123\"><div class=\"nbc-cart-thumb\" aria-hidden=\"true\">SOFT</div><div><h4>NeoBrutal Soft</h4><p>Team license · quantity 1</p></div><div><strong class=\"nbc-cart-price\">$149</strong><button class=\"nbc-button nbc-tactile\" type=\"button\" data-action=\"remove\">Remove</button></div></article>",
+        "css": "@import '@neobrutal/commerce/styles.css';",
+        "js": "import {createCommerceAction} from '@neobrutal/commerce/actions';\nconst root=document.querySelector('[data-commerce-component=\"cart-item\"]');\nroot.querySelector('[data-action=\"remove\"]').addEventListener('click',()=>actions.dispatch(createCommerceAction('cart.remove',{cartId:root.dataset.cartId,lineId:root.dataset.lineId})));"
+      }
+    },
+    {
+      "id": "order-summary",
+      "sourceFiles": ["src/components/summary.css", "component-explorer.js"],
+      "selectors": [".nbc-summary", ".nbc-summary-row", ".nbc-summary-row[data-total=\"true\"]", ".nbc-summary-note"],
+      "tokens": ["--nbc-space-3", "--nbc-space-4", "--nbc-surface", "--nbc-border-w", "--nbc-border", "--nbc-radius-lg", "--nbc-shadow", "--nbc-text-lg", "--nbc-muted", "--nbc-text-sm"],
+      "copyReady": {
+        "html": "<section class=\"nbc-summary\" data-commerce-component=\"order-summary\" aria-labelledby=\"summary-title\"><h3 id=\"summary-title\">Order summary</h3><dl class=\"nbc-summary-list\"><div class=\"nbc-summary-row\"><dt>Subtotal</dt><dd data-summary-subtotal>—</dd></div><div class=\"nbc-summary-row\"><dt>Tax</dt><dd data-summary-tax>—</dd></div><div class=\"nbc-summary-row\" data-total=\"true\"><dt>Total</dt><dd data-summary-total>—</dd></div></dl><p class=\"nbc-summary-note\">Provider-normalized quote values are authoritative.</p></section>",
+        "css": "@import '@neobrutal/commerce/styles.css';",
+        "js": "const root=document.querySelector('[data-commerce-component=\"order-summary\"]');\nconst money=value=>value?.formatted||`${value?.currency||''} ${value?.amount??'—'}`.trim();\nfunction renderOrderSummary(quote){\n  root.querySelector('[data-summary-subtotal]').textContent=money(quote.subtotal);\n  root.querySelector('[data-summary-tax]').textContent=money(quote.taxes?.reduce((sum,line)=>({amount:sum.amount+line.amount.amount,currency:line.amount.currency}),{amount:0,currency:quote.total.currency}));\n  root.querySelector('[data-summary-total]').textContent=money(quote.total);\n}"
+      }
+    },
+    {
+      "id": "coupon",
+      "sourceFiles": ["src/components/checkout.css", "component-explorer.js", "src/actions/runtime.js"],
+      "selectors": [".nbc-coupon", ".nbc-coupon input", ".nbc-coupon-status", ".nbc-coupon-status[data-state=\"success\"]", ".nbc-coupon-status[data-state=\"error\"]"],
+      "tokens": ["--nbc-border", "--nbc-radius-sm", "--nbc-surface", "--nbc-text", "--nbc-text-sm", "--nbc-success", "--nbc-danger"],
+      "copyReady": {
+        "html": "<form class=\"nbc-coupon\" data-commerce-component=\"coupon\" data-cart-id=\"cart_123\"><label for=\"coupon-code\">Coupon code</label><input id=\"coupon-code\" name=\"coupon\" autocomplete=\"off\"><button class=\"nbc-button nbc-tactile\" type=\"submit\">Apply</button><p class=\"nbc-coupon-status\" data-coupon-status aria-live=\"polite\"></p></form>",
+        "css": "@import '@neobrutal/commerce/styles.css';",
+        "js": "import {createCommerceAction} from '@neobrutal/commerce/actions';\nconst root=document.querySelector('[data-commerce-component=\"coupon\"]');\nroot.addEventListener('submit',async event=>{\n  event.preventDefault();\n  const code=new FormData(root).get('coupon')?.toString().trim();\n  const quote=await actions.dispatch(createCommerceAction('checkout.quote',{cartId:root.dataset.cartId,couponCodes:code?[code]:[]}));\n  const status=root.querySelector('[data-coupon-status]');\n  status.dataset.state=quote.messages?.length?'error':'success';\n  status.textContent=quote.messages?.join(' ')||'Quote updated. Review the authoritative total.';\n  root.dispatchEvent(new CustomEvent('quotechange',{detail:quote}));\n});"
+      }
+    },
+    {
+      "id": "checkout-field",
+      "sourceFiles": ["src/components/cart.css", "component-explorer.js"],
+      "selectors": [".nbc-checkout-field", ".nbc-checkout-field input", ".nbc-checkout-field select", ".nbc-checkout-field small"],
+      "tokens": ["--nbc-border-w", "--nbc-border", "--nbc-radius-sm", "--nbc-surface", "--nbc-text", "--nbc-muted"],
+      "copyReady": {
+        "html": "<div class=\"nbc-checkout-field\" data-commerce-component=\"checkout-field\"><label for=\"checkout-email\">Email</label><input id=\"checkout-email\" name=\"email\" type=\"email\" autocomplete=\"email\" aria-describedby=\"checkout-email-help\" required><small id=\"checkout-email-help\">Used for the normalized checkout contact.</small></div>",
+        "css": "@import '@neobrutal/commerce/styles.css';",
+        "js": "const input=document.querySelector('[data-commerce-component=\"checkout-field\"] input');\ninput.addEventListener('input',()=>input.setCustomValidity(''));\ninput.addEventListener('invalid',()=>input.setCustomValidity('Enter a valid email address.'));"
+      }
+    },
+    {
+      "id": "payment-method",
+      "sourceFiles": ["src/components/checkout.css", "component-explorer.js"],
+      "selectors": [".nbc-payment-list", ".nbc-payment-method", ".nbc-payment-method:has(input:checked)", ".nbc-payment-method input"],
+      "tokens": ["--nbc-border", "--nbc-radius-sm", "--nbc-bg", "--nbc-sky"],
+      "copyReady": {
+        "html": "<fieldset class=\"nbc-payment-list\" data-commerce-component=\"payment-method\"><legend>Payment method</legend><label class=\"nbc-payment-method\"><input type=\"radio\" name=\"payment-method\" value=\"card\" checked><span><strong>Card</strong><small>Normalized payment method ID</small></span></label><label class=\"nbc-payment-method\"><input type=\"radio\" name=\"payment-method\" value=\"wallet\"><span><strong>Wallet</strong><small>Normalized payment method ID</small></span></label></fieldset>",
+        "css": "@import '@neobrutal/commerce/styles.css';",
+        "js": "const root=document.querySelector('[data-commerce-component=\"payment-method\"]');\nroot.addEventListener('change',event=>{\n  if(event.target.matches('input[type=\"radio\"]'))root.dispatchEvent(new CustomEvent('paymentmethodchange',{detail:{paymentMethodId:event.target.value}}));\n});"
+      }
+    },
+    {
+      "id": "order-confirmation",
+      "sourceFiles": ["src/components/checkout.css", "component-explorer.js"],
+      "selectors": [".nbc-order-success", ".nbc-order-success h2", ".nbc-order-number"],
+      "tokens": ["--nbc-space-3", "--nbc-space-5", "--nbc-lime", "--nbc-radius-lg", "--nbc-text-2xl"],
+      "copyReady": {
+        "html": "<section class=\"nbc-order-success\" data-commerce-component=\"order-confirmation\"><p>ORDER COMPLETE</p><h2>Thanks — your order is confirmed.</h2><span class=\"nbc-order-number\" data-order-number>—</span><p data-order-total>—</p><p>Entitlement or download delivery is shown separately when normalized entitlement data confirms it.</p></section>",
+        "css": "@import '@neobrutal/commerce/styles.css';",
+        "js": "const root=document.querySelector('[data-commerce-component=\"order-confirmation\"]');\nfunction renderOrderConfirmation(order){\n  if(order.status!=='complete')throw new Error('Order confirmation requires a normalized complete OrderView');\n  root.querySelector('[data-order-number]').textContent=order.id;\n  root.querySelector('[data-order-total]').textContent=order.total.formatted||`${order.total.currency} ${order.total.amount}`;\n}"
+      }
+    },
+    {
+      "id": "receipt",
+      "sourceFiles": ["src/components/checkout.css", "component-explorer.js"],
+      "selectors": [".nbc-receipt-grid", ".nbc-receipt-grid div", ".nbc-receipt-grid span"],
+      "tokens": ["--nbc-text-xs"],
+      "copyReady": {
+        "html": "<section class=\"nbc-receipt-grid\" data-commerce-component=\"receipt\" aria-label=\"Receipt summary\"><div><span>Order total</span><strong data-receipt-order-total>—</strong></div><div><span>Invoice</span><strong data-receipt-invoice-number>—</strong></div><div><span>Invoice status</span><strong data-receipt-invoice-status>—</strong></div></section>",
+        "css": "@import '@neobrutal/commerce/styles.css';",
+        "js": "const root=document.querySelector('[data-commerce-component=\"receipt\"]');\nfunction renderReceipt({order,invoice}){\n  root.querySelector('[data-receipt-order-total]').textContent=order.total.formatted||`${order.total.currency} ${order.total.amount}`;\n  root.querySelector('[data-receipt-invoice-number]').textContent=invoice.number;\n  root.querySelector('[data-receipt-invoice-status]').textContent=invoice.status;\n}"
+      }
+    }
+  ]
+}
