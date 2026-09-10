@@ -1,14 +1,16 @@
-const PROMOTED_BLOCK_IDS=['trust-strip','testimonials','guarantee','product-detail','product-gallery'];
+const PROMOTED_BLOCK_IDS=['trust-strip','testimonials','guarantee','product-detail','product-gallery','order-confirmation'];
 const PROMOTION_GROUPS={
   'trust-band':['trust-strip','testimonials','guarantee'],
-  'product-media':['product-detail','product-gallery']
+  'product-media':['product-detail','product-gallery'],
+  'order-success':['order-confirmation']
 };
 const BLOCK_PREVIEWS={
   'trust-strip':`<div class="nbc-trust"><span class="nbc-trust-mark">✓</span><div><strong>12 months of updates</strong><p>Entitlement scope is explicit before purchase.</p></div></div>`,
   'testimonials':`<div class="nbc-review-grid"><article class="nbc-review"><blockquote>“The tactile grammar makes actions obvious without making the UI noisy.”</blockquote><footer><strong>Example customer</strong><span>Product team</span></footer></article></div>`,
   'guarantee':`<div class="nbc-trust"><span class="nbc-trust-mark">↺</span><div><strong>Fit guarantee</strong><p>Refund and support terms are policy data, never inferred by the component.</p></div></div>`,
   'product-detail':`<div class="cx-mini-stack"><span class="nbc-badge">Complete system</span><h2>NeoBrutal Soft.</h2><p>Refined Neo-Brutalism for SaaS, admin, developer and AI products.</p><ul class="nbc-feature-list"><li>Light + dark themes</li><li>Fluid clamp() foundation</li><li>Agent-readable contracts</li></ul></div>`,
-  'product-gallery':`<div class="cx-mini-stack" data-promoted-gallery><div class="nbc-product-art"><strong data-block-gallery-current>SOFT. · 01</strong></div><div class="store-actions-row" role="group" aria-label="Product gallery previews"><button class="nbc-button nbc-tactile" type="button" data-block-gallery-index="01" aria-label="Show product preview 1" aria-pressed="true">01</button><button class="nbc-button nbc-tactile" type="button" data-block-gallery-index="02" aria-label="Show product preview 2" aria-pressed="false">02</button><button class="nbc-button nbc-tactile" type="button" data-block-gallery-index="03" aria-label="Show product preview 3" aria-pressed="false">03</button></div></div>`
+  'product-gallery':`<div class="cx-mini-stack" data-promoted-gallery><div class="nbc-product-art"><strong data-block-gallery-current>SOFT. · 01</strong></div><div class="store-actions-row" role="group" aria-label="Product gallery previews"><button class="nbc-button nbc-tactile" type="button" data-block-gallery-index="01" aria-label="Show product preview 1" aria-pressed="true">01</button><button class="nbc-button nbc-tactile" type="button" data-block-gallery-index="02" aria-label="Show product preview 2" aria-pressed="false">02</button><button class="nbc-button nbc-tactile" type="button" data-block-gallery-index="03" aria-label="Show product preview 3" aria-pressed="false">03</button></div></div>`,
+  'order-confirmation':`<div class="nbc-order-success"><p class="store-kicker">ORDER COMPLETE</p><h2>Thanks — your order is confirmed.</h2><span class="nbc-order-number">#NBC-1042</span></div>`
 };
 const escapeHtml=value=>String(value).replace(/[&<>'"]/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[char]));
 
