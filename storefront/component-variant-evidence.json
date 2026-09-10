@@ -1,0 +1,111 @@
+{
+  "schema": "neobrutal-commerce/component-variant-evidence@1",
+  "showcaseVersion": "1.1.0",
+  "commerceVersion": "1.0.0",
+  "role": "variant-evidence-only",
+  "description": "Explicit rendered proof for documented component variants. Variant labels remain owned by storefront/component-showcase.json; this file records inspectable demo evidence only.",
+  "batch": {
+    "id": "storefront-core",
+    "ordinal": 1,
+    "label": "Storefront core",
+    "componentIds": [
+      "product-card",
+      "trust-strip",
+      "promo-band",
+      "badge",
+      "price-block"
+    ]
+  },
+  "components": [
+    {
+      "id": "product-card",
+      "variants": [
+        {
+          "id": "default",
+          "label": "default",
+          "markup": "<article class=\"nbc-product-card\" data-variant-sample=\"product-card:default\"><span class=\"nbc-badge\">Design system</span><div class=\"nbc-product-art\"><strong>SOFT.</strong></div><h3>NeoBrutal Soft</h3><div class=\"nbc-price\"><strong>$49</strong><span>Individual</span></div></article>"
+        },
+        {
+          "id": "accent-badge",
+          "label": "accent badge",
+          "markup": "<article class=\"nbc-product-card\" data-variant-sample=\"product-card:accent-badge\"><span class=\"nbc-badge nbc-badge--coral\">Bundle</span><div class=\"nbc-product-art\"><strong>SOFT.</strong></div><h3>NeoBrutal Soft</h3><div class=\"nbc-price\"><strong>$49</strong><span>Individual</span></div></article>"
+        },
+        {
+          "id": "primary-action",
+          "label": "primary action",
+          "markup": "<article class=\"nbc-product-card\" data-variant-sample=\"product-card:primary-action\"><span class=\"nbc-badge\">Design system</span><div class=\"nbc-product-art\"><strong>SOFT.</strong></div><h3>NeoBrutal Soft</h3><div class=\"nbc-price\"><strong>$49</strong><span>Individual</span></div><button class=\"nbc-button nbc-button--primary nbc-tactile\" type=\"button\">ADD TO CART →</button></article>"
+        }
+      ]
+    },
+    {
+      "id": "trust-strip",
+      "variants": [
+        {
+          "id": "check-mark-fact",
+          "label": "check-mark fact",
+          "markup": "<div class=\"nbc-trust\" data-variant-sample=\"trust-strip:check-mark-fact\"><span class=\"nbc-trust-mark\" aria-hidden=\"true\">✓</span><div><strong>12 months of updates</strong><p>Supplied entitlement scope remains explicit before purchase.</p></div></div>"
+        },
+        {
+          "id": "policy-support-fact",
+          "label": "policy/support fact",
+          "markup": "<div class=\"nbc-trust\" data-variant-sample=\"trust-strip:policy-support-fact\"><span class=\"nbc-trust-mark\" aria-hidden=\"true\">i</span><div><strong>Support policy</strong><p>Render only support terms supplied by the product or policy source.</p></div></div>"
+        }
+      ]
+    },
+    {
+      "id": "promo-band",
+      "variants": [
+        {
+          "id": "informational",
+          "label": "informational",
+          "markup": "<div class=\"store-card\" data-tone=\"yellow\" data-variant-sample=\"promo-band:informational\"><p class=\"store-kicker\">PRODUCT UPDATE</p><h3>Team onboarding is now included.</h3><p>State the supplied commercial change without urgency or scarcity claims.</p></div>"
+        },
+        {
+          "id": "highlighted-offer",
+          "label": "highlighted offer",
+          "markup": "<div class=\"store-card\" data-tone=\"pink\" data-variant-sample=\"promo-band:highlighted-offer\"><p class=\"store-kicker\">SUPPLIED OFFER</p><h3>Team license includes onboarding.</h3><p>The actual offer consequence stays visible; no countdown or fake scarcity.</p></div>"
+        }
+      ]
+    },
+    {
+      "id": "badge",
+      "variants": [
+        {
+          "id": "default",
+          "label": "default",
+          "markup": "<span class=\"nbc-badge\" data-variant-sample=\"badge:default\">Design system</span>"
+        },
+        {
+          "id": "coral",
+          "label": "coral",
+          "markup": "<span class=\"nbc-badge nbc-badge--coral\" data-variant-sample=\"badge:coral\">Bundle</span>"
+        },
+        {
+          "id": "lime",
+          "label": "lime",
+          "markup": "<span class=\"nbc-badge nbc-badge--lime\" data-variant-sample=\"badge:lime\">Active</span>"
+        }
+      ]
+    },
+    {
+      "id": "price-block",
+      "variants": [
+        {
+          "id": "one-time",
+          "label": "one-time",
+          "markup": "<div class=\"cx-mini-stack\" data-variant-sample=\"price-block:one-time\"><div class=\"nbc-price\"><strong>$49</strong><span>one-time</span></div><p class=\"store-kicker\">One-time purchase · no recurring charge</p></div>"
+        },
+        {
+          "id": "recurring",
+          "label": "recurring",
+          "markup": "<div class=\"cx-mini-stack\" data-variant-sample=\"price-block:recurring\"><div class=\"nbc-price\"><strong>$149</strong><span>/ year</span></div><p class=\"store-kicker\">Renews annually until cancelled · current term remains explicit</p></div>"
+        },
+        {
+          "id": "license-scoped",
+          "label": "license-scoped",
+          "markup": "<div class=\"cx-mini-stack\" data-variant-sample=\"price-block:license-scoped\"><div class=\"nbc-price\"><strong>$149</strong><span>Team</span></div><p class=\"store-kicker\">5 production sites · 12 months of updates</p></div>"
+        }
+      ]
+    }
+  ]
+}

@@ -14,6 +14,7 @@ const waitForDepthAudit=async page=>{
 };
 
 test('v1.1 component demo depth audit covers exact accumulated implementation evidence',async({page})=>{
+  test.setTimeout(45_000); // Expanded 43-component evidence + full Axe A/AA scan is intentionally exhaustive.
   const runtimeFailures=[];
   page.on('pageerror',error=>runtimeFailures.push(error.message));
   page.on('console',message=>{if(message.type()==='error')runtimeFailures.push(message.text())});

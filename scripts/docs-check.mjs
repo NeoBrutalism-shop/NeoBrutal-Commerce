@@ -11,9 +11,10 @@ const required=[
   'docs/ADOPTION.md','docs/AGENT-PLAYBOOK.md','docs/AI-COMPONENT-NOTES.md',
   'docs/RECIPES.md','docs/THEMING.md','docs/MIGRATION.md','docs/PROVIDER-EXAMPLES.md','docs/RELEASE-CANDIDATE.md','docs/PUBLIC-RELEASE.md',
   'docs/V1.1-COMPONENT-DEMO-DEPTH-AUDIT.md',
-  'storefront/components.json','storefront/component-showcase.json','storefront/component-states.json','storefront/component-demo-depth.json',
+  'storefront/components.json','storefront/component-showcase.json','storefront/component-states.json','storefront/component-demo-depth.json','storefront/component-variant-evidence.json',
   'storefront/component-demo-implementation.json','storefront/component-demo-implementation-product.json','storefront/component-demo-implementation-trust-pricing.json','storefront/component-demo-implementation-cart-checkout.json','storefront/component-demo-implementation-account-ownership.json','storefront/blocks.json',
-  'component-depth-audit.js','component-depth-audit.css','tests/component-demo-depth-v11.spec.mjs','scripts/component-demo-implementation-check.mjs'
+  'component-depth-audit.js','component-depth-audit.css','component-variant-evidence.js','component-variant-evidence.css',
+  'tests/component-demo-depth-v11.spec.mjs','tests/component-variant-evidence-v11.spec.mjs','scripts/component-demo-implementation-check.mjs','scripts/component-variant-evidence-check.mjs'
 ];
 for(const file of required)if(!fs.existsSync(path.join(root,file)))fail(`Missing adoption file: ${file}`);
 
@@ -97,6 +98,7 @@ for(const [id,resolved] of resolvedDepth){
 const depthCounts=Object.fromEntries(expectedDepthCriteria.map(criterion=>[criterion,Object.fromEntries(allowedDepthStatuses.map(status=>[status,0]))]));
 for(const resolved of resolvedDepth.values())for(const criterion of expectedDepthCriteria)depthCounts[criterion][resolved[criterion]]++;
 if(depthCounts.preview.complete!==47||depthCounts.accessibility.complete!==47)fail('Existing 47/47 preview and accessibility coverage must remain complete');
+if(depthCounts.variants.complete!==5||depthCounts.variants.partial!==42)fail('Variant audit must remain exact at 5 complete / 42 partial for the first explicit proof batch');
 if(depthCounts['canonical-states'].complete!==12||depthCounts['canonical-states']['not-applicable']!==35)fail('Canonical-state audit must remain 12 complete / 35 not-applicable until the frozen registry changes');
 if(depthCounts.actions.complete!==16||depthCounts.actions['not-applicable']!==31)fail('Action-contract audit must remain 16 complete / 31 not-applicable until the frozen registry changes');
 if(depthCounts.tokens.complete!==43||depthCounts.tokens.missing!==4||depthCounts['copy-ready'].complete!==43||depthCounts['copy-ready'].missing!==4)fail('Accumulated demo implementation evidence must remain exact at 43 complete / 4 missing for token and copy-ready criteria');
@@ -104,12 +106,14 @@ if(depthCounts.tokens.complete!==43||depthCounts.tokens.missing!==4||depthCounts
 const depthClient=read('component-depth-audit.js');
 const depthCss=read('component-depth-audit.css');
 const depthBrowser=read('tests/component-demo-depth-v11.spec.mjs');
+const variantBrowser=read('tests/component-variant-evidence-v11.spec.mjs');
 try{new Function(depthClient)}catch(error){fail(`component-depth-audit.js syntax error: ${error.message}`)}
 if(/transition\s*:\s*all/i.test(depthCss)||/:hover[^\{]*\{[^\}]*translate(?:Y)?\(\s*-/i.test(depthCss))fail('Component demo depth UI violates motion/tactile laws');
 for(const marker of ['component-demo-depth.json','implementationBatches','data-component-depth-audit','dataset.componentDepthReady','dataset.componentImplementationAudited','dataset.componentImplementationBatches','data-demo-depth-first-batch'])if(!depthClient.includes(marker))fail(`Component demo depth runtime missing marker: ${marker}`);
 for(const marker of ['47*13','data-demo-depth-first-batch','data-demo-depth-batch','Canonical states','Action contracts','Design tokens used','Copy-ready HTML / CSS / JS','AxeBuilder','43','trust-review-pricing','cart-checkout','account-ownership'])if(!depthBrowser.includes(marker))fail(`Component demo depth Browser QA missing marker: ${marker}`);
+for(const marker of ['13','data-component-variant-evidence','data-variant-choice','data-variant-current','AxeBuilder','aria-pressed','product-card','trust-strip','promo-band','badge','price-block'])if(!variantBrowser.includes(marker))fail(`Component variant evidence Browser QA missing marker: ${marker}`);
 const explorerHtml=read('components.html');
-for(const marker of ['./component-depth-audit.css','./component-depth-audit.js','demo-depth audit'])if(!explorerHtml.includes(marker))fail(`components.html missing component demo depth marker: ${marker}`);
+for(const marker of ['./component-depth-audit.css','./component-depth-audit.js','./component-variant-evidence.css','./component-variant-evidence.js','demo-depth audit'])if(!explorerHtml.includes(marker))fail(`components.html missing component demo depth marker: ${marker}`);
 
 const componentsDoc=read('COMPONENTS.md');
 const documentedBlockCount=`${blocks.blocks.length} / ${blocks.blocks.length}`;
@@ -117,7 +121,7 @@ for(const marker of ['Showcase v1.1 / Commerce v1.0','47 / 47',documentedBlockCo
 for(const block of blocks.blocks)if(!componentsDoc.includes(`\`${block.id}\``))fail(`COMPONENTS.md missing current Block id: ${block.id}`);
 
 const depthDoc=read('docs/V1.1-COMPONENT-DEMO-DEPTH-AUDIT.md');
-for(const marker of ['v1.1 Component demo depth audit','audit evidence only','47','12','43','4','16','Design tokens used','Copy-ready HTML / CSS / JS','First implementation-depth batch','Second implementation-depth batch','Third implementation-depth batch','Fourth implementation-depth batch','Fifth implementation-depth batch','storefront/component-demo-depth.json','storefront/component-demo-implementation.json','storefront/component-demo-implementation-product.json','storefront/component-demo-implementation-trust-pricing.json','storefront/component-demo-implementation-cart-checkout.json','storefront/component-demo-implementation-account-ownership.json'])if(!depthDoc.includes(marker))fail(`Component demo depth audit doc missing marker: ${marker}`);
+for(const marker of ['v1.1 Component demo depth audit','audit evidence only','47','12','43','4','16','All variants','5','42','Design tokens used','Copy-ready HTML / CSS / JS','First implementation-depth batch','Second implementation-depth batch','Third implementation-depth batch','Fourth implementation-depth batch','Fifth implementation-depth batch','First variant-evidence batch','storefront/component-demo-depth.json','storefront/component-variant-evidence.json','storefront/component-demo-implementation.json','storefront/component-demo-implementation-product.json','storefront/component-demo-implementation-trust-pricing.json','storefront/component-demo-implementation-cart-checkout.json','storefront/component-demo-implementation-account-ownership.json'])if(!depthDoc.includes(marker))fail(`Component demo depth audit doc missing marker: ${marker}`);
 for(const batch of batches)for(const id of batch.componentIds)if(!depthDoc.includes(`\`${id}\``))fail(`Component demo depth audit doc missing batch component: ${id}`);
 
 const agents=read('AGENTS.md');
@@ -138,5 +142,6 @@ const providers=read('docs/PROVIDER-EXAMPLES.md');
 for(const marker of ['createEddCommerceAdapter','createLicensingBridgeAdapter','capabilities','normalize','cancel_at_period_end'])if(!providers.includes(marker))fail(`PROVIDER-EXAMPLES.md missing marker: ${marker}`);
 
 await import('./component-demo-implementation-check.mjs');
+await import('./component-variant-evidence-check.mjs');
 const documentedStates=stateExamples.components.reduce((sum,component)=>sum+component.states.length,0);
-console.log(`NeoBrutal Commerce v1.0 adoption docs + Showcase v1.1 passed · ${manifest.components.length} components · ${blocks.blocks.length} blocks · ${documentedStates} live states · ${routes.routes.length} production routes · component demo depth audit ${depthComponents.length}/${manifest.components.length} · implementation evidence ${implementationIds.length}/47`);
+console.log(`NeoBrutal Commerce v1.0 adoption docs + Showcase v1.1 passed · ${manifest.components.length} components · ${blocks.blocks.length} blocks · ${documentedStates} live states · ${routes.routes.length} production routes · component demo depth audit ${depthComponents.length}/${manifest.components.length} · implementation evidence ${implementationIds.length}/47 · variant evidence 5/47`);
