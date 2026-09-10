@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="color-scheme" content="light dark" />
+  <meta name="theme-color" content="#fff7e8" />
+  <meta name="description" content="NeoBrutal Commerce v1.3 Motion & Interaction Lab — inspect manifest-backed tactile press, latched selection, processing, result feedback, and accessibility fallbacks." />
+  <title>Motion & Interaction Lab — NeoBrutal Commerce v1.3</title>
+  <link rel="stylesheet" href="../src/index.css" />
+  <link rel="stylesheet" href="../storefront/store.css" />
+  <link rel="stylesheet" href="./v13.css" />
+  <script type="module" src="../storefront/store.js"></script>
+  <script type="module" src="./v13.js"></script>
+</head>
+<body class="motion-page">
+  <a class="motion-skip" href="#motionPatterns">Skip to interaction patterns</a>
+  <header class="motion-topbar">
+    <a class="motion-brand" href="../" aria-label="NeoBrutal Commerce home">
+      <span class="motion-brand-mark" aria-hidden="true">C.</span>
+      <span>NEOBRUTAL<small>COMMERCE · MOTION &amp; INTERACTION LAB v1.3</small></span>
+    </a>
+    <nav class="motion-surface-nav" aria-label="Live surfaces">
+      <a href="../">Flagship</a>
+      <a href="../components.html">Components + Blocks</a>
+      <a href="./v10.html">Page lab</a>
+      <a href="./v13.html" aria-current="page">Motion lab</a>
+    </nav>
+    <div class="motion-actions">
+      <button class="nbc-button nbc-tactile motion-compact" type="button" data-theme-toggle aria-pressed="false">◐ Dark</button>
+      <a class="nbc-button nbc-button--primary nbc-tactile motion-compact" href="../docs/INTERACTIONS.md">READ CONTRACT ↗</a>
+    </div>
+  </header>
+
+  <main id="motionPatterns" class="motion-shell">
+    <header class="motion-hero">
+      <div>
+        <p class="motion-kicker">MANIFEST-BACKED · SHIPPING PHYSICS · ACCESSIBLE FALLBACKS</p>
+        <h1>Motion explains.<br /><span>It never decorates.</span></h1>
+      </div>
+      <div class="motion-hero-copy">
+        <p>The lab reads <code>storefront/interactions.json</code> and demonstrates its four production patterns with the shipping Commerce CSS and runtime. No second motion taxonomy lives here.</p>
+        <div class="motion-badges" aria-label="Interaction contract summary">
+          <span class="nbc-badge nbc-badge--lime" id="patternCount">4 PATTERNS</span>
+          <span class="nbc-badge nbc-badge--yellow">COMMERCE 1.0 FROZEN</span>
+        </div>
+      </div>
+    </header>
+
+    <section class="motion-preferences" aria-labelledby="preferencesTitle">
+      <div>
+        <p class="motion-kicker">PREFERENCE PROOF</p>
+        <h2 id="preferencesTitle">User settings stay authoritative.</h2>
+        <p>Browser QA uses the real media preferences. The preview control below is only a documentation aid for comparing the reduced-motion presentation manually.</p>
+      </div>
+      <div class="motion-preference-controls">
+        <div class="motion-pref-readout">
+          <span>System motion preference</span>
+          <strong id="systemMotion" data-system-motion>Checking…</strong>
+        </div>
+        <button class="nbc-button nbc-tactile" id="motionPreviewToggle" type="button" aria-pressed="false">PREVIEW REDUCED MOTION</button>
+        <p id="motionPreviewStatus" class="motion-inline-status" role="status">Preview override off. Operating-system preference remains authoritative.</p>
+      </div>
+    </section>
+
+    <section class="motion-pattern-grid" aria-label="Production interaction patterns">
+      <article class="motion-card" data-interaction-pattern="tactile-press">
+        <header class="motion-card-head">
+          <span class="motion-index" aria-hidden="true">01</span>
+          <div><p class="motion-kicker" data-pattern-kind>DIRECT MANIPULATION</p><h2 data-pattern-title>Tactile press</h2></div>
+        </header>
+        <p class="motion-description" data-pattern-description>Loading contract…</p>
+        <div class="motion-demo motion-demo--center" data-demo="tactile-press">
+          <button class="nbc-button nbc-button--primary nbc-tactile motion-press-demo" type="button" id="pressDemo">PRESS ME</button>
+          <p class="motion-demo-result" id="pressResult" role="status">Rest → hover compresses → press consumes depth.</p>
+        </div>
+        <div class="motion-contract" data-pattern-contract></div>
+      </article>
+
+      <article class="motion-card" data-interaction-pattern="latched-selection">
+        <header class="motion-card-head">
+          <span class="motion-index" aria-hidden="true">02</span>
+          <div><p class="motion-kicker" data-pattern-kind>SELECTION</p><h2 data-pattern-title>Latched selection</h2></div>
+        </header>
+        <p class="motion-description" data-pattern-description>Loading contract…</p>
+        <div class="motion-demo" data-demo="latched-selection">
+          <div class="nbc-media" data-media>
+            <div class="nbc-media-tabs" role="tablist" aria-label="Interaction lab media states">
+              <button class="nbc-media-tab nbc-tactile" id="motion-tab-preview" role="tab" type="button" aria-controls="motion-panel-preview" aria-selected="true" data-media-tab="preview">PREVIEW</button>
+              <button class="nbc-media-tab nbc-tactile" id="motion-tab-code" role="tab" type="button" aria-controls="motion-panel-code" aria-selected="false" data-media-tab="code">CODE</button>
+              <button class="nbc-media-tab nbc-tactile" id="motion-tab-files" role="tab" type="button" aria-controls="motion-panel-files" aria-selected="false" data-media-tab="files">FILES</button>
+            </div>
+            <div class="nbc-media-panel motion-media-panel" id="motion-panel-preview" role="tabpanel" aria-labelledby="motion-tab-preview" data-media-panel="preview"><strong>PREVIEW IS LATCHED</strong><p>The selected tab remains explicit after the pointer leaves.</p></div>
+            <div class="nbc-media-panel motion-media-panel" id="motion-panel-code" role="tabpanel" aria-labelledby="motion-tab-code" data-media-panel="code" hidden><strong>CODE IS LATCHED</strong><p><code>aria-selected="true"</code> carries the programmatic state.</p></div>
+            <div class="nbc-media-panel motion-media-panel" id="motion-panel-files" role="tabpanel" aria-labelledby="motion-tab-files" data-media-panel="files" hidden><strong>FILES IS LATCHED</strong><p>Arrow keys use the same production media controller.</p></div>
+          </div>
+        </div>
+        <div class="motion-contract" data-pattern-contract></div>
+      </article>
+
+      <article class="motion-card" data-interaction-pattern="processing-feedback">
+        <header class="motion-card-head">
+          <span class="motion-index" aria-hidden="true">03</span>
+          <div><p class="motion-kicker" data-pattern-kind>STATUS</p><h2 data-pattern-title>Processing feedback</h2></div>
+        </header>
+        <p class="motion-description" data-pattern-description>Loading contract…</p>
+        <div class="motion-demo" data-demo="processing-feedback">
+          <div class="nbc-state" data-state="loading" aria-live="polite">
+            <p class="motion-kicker">LOADING · TEXT REMAINS AUTHORITATIVE</p>
+            <strong>Preparing your Commerce workspace…</strong>
+            <div class="nbc-skeleton" aria-hidden="true"><span></span><span></span><span></span></div>
+            <p>Animation may reinforce processing, but removing it never removes the status.</p>
+          </div>
+        </div>
+        <div class="motion-contract" data-pattern-contract></div>
+      </article>
+
+      <article class="motion-card" data-interaction-pattern="result-feedback">
+        <header class="motion-card-head">
+          <span class="motion-index" aria-hidden="true">04</span>
+          <div><p class="motion-kicker" data-pattern-kind>STATE CHANGE</p><h2 data-pattern-title>Result feedback</h2></div>
+        </header>
+        <p class="motion-description" data-pattern-description>Loading contract…</p>
+        <div class="motion-demo" data-demo="result-feedback">
+          <section class="motion-subscription" data-commerce-component="subscription-management" data-subscription-state="active" aria-labelledby="subscriptionDemoTitle">
+            <div class="motion-result-line">
+              <div><p class="motion-kicker">SUBSCRIPTION</p><h3 id="subscriptionDemoTitle">Annual renewal</h3></div>
+              <span class="nbc-badge nbc-badge--lime" data-subscription-badge data-state="active">ACTIVE</span>
+            </div>
+            <p data-subscription-note>Renewal is active. The next provider-authoritative billing date remains 08 Sep 2027.</p>
+            <div class="motion-result-actions">
+              <button class="nbc-button nbc-tactile" type="button" data-subscription-cancel>CANCEL FUTURE RENEWAL</button>
+              <button class="nbc-button nbc-button--primary nbc-tactile" type="button" data-subscription-resume hidden>RESUME RENEWAL</button>
+            </div>
+            <ul class="motion-timeline" data-ownership-timeline aria-label="Demo result history"></ul>
+          </section>
+        </div>
+        <div class="motion-contract" data-pattern-contract></div>
+      </article>
+    </section>
+
+    <section class="motion-exception" data-interaction-exception="drag-lift" aria-labelledby="dragTitle">
+      <div>
+        <p class="motion-kicker">EXCEPTION · NOT A PRODUCTION PATTERN</p>
+        <h2 id="dragTitle">Drag may lift. Hover may not.</h2>
+      </div>
+      <p id="dragDescription">Semantic lift is permitted only while an object is actually picked up for dragging. NeoBrutal Commerce does not currently ship a production drag interaction, so this lab does not fake one.</p>
+    </section>
+
+    <section class="motion-token-panel" aria-labelledby="tokensTitle">
+      <header><p class="motion-kicker">SHIPPING TOKEN BINDINGS</p><h2 id="tokensTitle">One physics source.</h2><p>The values below are read from the manifest roles and resolved from the actual CSS custom properties in this page.</p></header>
+      <dl class="motion-token-grid" id="tokenGrid"></dl>
+    </section>
+
+    <p class="motion-status" id="motionStatus" role="status">Loading the manifest-backed interaction contract…</p>
+  </main>
+
+  <footer class="motion-footer"><strong>NEOBRUTAL COMMERCE</strong><span>Permanent Motion &amp; Interaction Lab v1.3 · frozen Commerce v1.0 runtime</span><a href="https://github.com/NeoBrutalism-shop/NeoBrutal-Commerce">View source ↗</a></footer>
+</body>
+</html>
