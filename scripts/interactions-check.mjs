@@ -15,7 +15,7 @@ const escapeRegExp=value=>value.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
 
 const requiredFiles=[
   'storefront/interactions.json','src/tokens.css','src/base.css','src/components/media.css','src/components/state.css',
-  'storefront/store.js','tests/commerce-v07.spec.mjs','DESIGN.md','README.md','package.json'
+  'storefront/store.js','tests/commerce-v07.spec.mjs','DESIGN.md','README.md','docs/INTERACTIONS.md','package.json'
 ];
 for(const file of requiredFiles)if(!exists(file))fail(`missing interaction evidence: ${file}`);
 
@@ -27,7 +27,7 @@ const mediaCss=read('src/components/media.css');
 const stateCss=read('src/components/state.css');
 const storeJs=read('storefront/store.js');
 const design=read('DESIGN.md');
-const readme=read('README.md');
+const interactionGuide=read('docs/INTERACTIONS.md');
 
 if(contract.schema!=='neobrutal-commerce/interactions@1')fail(`unexpected schema: ${contract.schema}`);
 if(contract.interactionVersion!=='1.3.0')fail(`interaction contract must use exact 1.3.0, received ${contract.interactionVersion}`);
@@ -126,7 +126,7 @@ for(const evidence of drag.evidence){
 }
 
 for(const marker of ['Compress, never float.','Motion communicates cause, state and result.'])if(!design.includes(marker))fail(`DESIGN.md interaction law missing: ${marker}`);
-for(const marker of ['Motion & Interaction v1.3','storefront/interactions.json','scripts/interactions-check.mjs'])if(!readme.includes(marker))fail(`README missing v1.3 interaction marker: ${marker}`);
+for(const marker of ['# Motion & Interaction v1.3','storefront/interactions.json','scripts/interactions-check.mjs','productionPattern: false'])if(!interactionGuide.includes(marker))fail(`docs/INTERACTIONS.md missing v1.3 marker: ${marker}`);
 if(pkg.files?.includes('storefront/interactions.json'))fail('v1.3 documentation contract must stay outside the frozen v1.0 npm package files allowlist');
 if(pkg.exports?.['./interactions'])fail('v1.3 documentation contract must not create a new v1.0 package export');
 if(pkg.scripts?.['check:interactions']!=='node scripts/interactions-check.mjs')fail('check:interactions script is missing');
