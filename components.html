@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <meta name="color-scheme" content="light dark" />
   <meta name="theme-color" content="#fff7e8" />
-  <meta name="description" content="NeoBrutal Commerce v1.1 interactive component and block explorer — 47 frozen Commerce v1.0 component contracts, 18 reusable blocks, real states, and implementation guidance." />
+  <meta name="description" content="NeoBrutal Commerce v1.1 interactive component and block explorer — 47 frozen Commerce v1.0 component contracts, 21 reusable blocks, real states, and implementation guidance." />
   <title>Components + Blocks — NeoBrutal Commerce</title>
   <link rel="stylesheet" href="./src/index.css" />
   <link rel="stylesheet" href="./storefront/store.css" />
@@ -13,6 +13,7 @@
   <link rel="stylesheet" href="./component-showcase.css" />
   <link rel="stylesheet" href="./showcase-fixes.css" />
   <script type="module" src="./component-explorer.js"></script>
+  <script type="module" src="./block-expansion.js"></script>
   <script type="module" src="./component-showcase.js"></script>
   <script type="module">
     let demoControlId=0;
@@ -60,7 +61,7 @@
       <label class="cx-search"><span aria-hidden="true">⌕</span><input id="componentSearch" type="search" aria-label="Find component or block" placeholder="Find a component or block…" autocomplete="off" /><kbd>/</kbd></label>
       <div class="cx-mode" role="tablist" aria-label="Explorer mode">
         <button class="cx-mode-button nbc-tactile" id="componentsTab" type="button" role="tab" aria-selected="true" aria-controls="componentsPanel">Components <span>47</span></button>
-        <button class="cx-mode-button nbc-tactile" id="blocksTab" type="button" role="tab" aria-selected="false" aria-controls="blocksPanel">Blocks <span>18</span></button>
+        <button class="cx-mode-button nbc-tactile" id="blocksTab" type="button" role="tab" aria-selected="false" aria-controls="blocksPanel">Blocks <span>21</span></button>
       </div>
       <nav class="cx-category-nav" id="categoryNav" aria-label="Component categories">
         <button type="button" data-category="all" aria-pressed="true">All components <span>47</span></button>
@@ -87,7 +88,7 @@
         </div>
         <div class="cx-stats" aria-label="Explorer coverage">
           <div><strong id="componentCount">47</strong><span>components</span></div>
-          <div><strong>18</strong><span>blocks</span></div>
+          <div><strong>21</strong><span>blocks</span></div>
           <div aria-label="10 pages"><strong>10</strong><span>pages</span></div>
           <div><strong>4</strong><span>browsers</span></div>
         </div>
@@ -108,7 +109,7 @@
           <div><p class="cx-kicker">BLOCKS</p><h2>Compose faster without inventing structure.</h2></div>
           <p>Blocks combine frozen components into reusable commerce sections. Their v1.1 manifest documents composition, responsive behavior, theme behavior, and accessibility expectations without creating a second runtime API.</p>
         </div>
-        <div class="cx-result-meta" aria-live="polite"><strong id="blockCount">18 blocks</strong><span>Each block links to the production route where the pattern is exercised.</span></div>
+        <div class="cx-result-meta" aria-live="polite"><strong id="blockCount">21 blocks</strong><span>Each block links to the production route where the pattern is exercised.</span></div>
         <div class="cx-block-grid" id="blockGrid"></div>
         <div class="cx-empty" id="blockEmpty" hidden><strong>No matching block.</strong><span>Try “pricing”, “checkout”, “ownership”, “trust”, “account”, or an accessibility rule.</span></div>
       </section>
