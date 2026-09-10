@@ -2,6 +2,8 @@
 
 Use this file as the first read for coding agents working in this repository. `storefront/agents.json` is the machine-readable v1.4 execution contract; it coordinates the existing authorities without copying or replacing their domain data.
 
+This v1.4 workflow is **repository-source** guidance. The published npm package remains frozen at Commerce 1.0.0 and intentionally does not ship the v1.1–v1.4 documentation-layer manifests. Agents working from an installed package should use the public repository when they need the Blocks, Pages, Interactions, or Agent contracts.
+
 ## Architecture and authority by concern
 
 The composition hierarchy is:
