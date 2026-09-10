@@ -18,10 +18,18 @@ test('v1.2 Page Lab derives canonical route states without copying them into Pag
     await expect(page.locator('[data-route-state-empty]')).toHaveCount(0);
   };
   const selectRoute=async routeId=>{
-    const control=page.locator(`[data-route="${routeId}"]`);
-    await expect(control).toBeVisible();
-    await control.click();
-    await expect(control).toHaveAttribute('aria-current','page');
+    const button=page.locator(`[data-route="${routeId}"]`);
+    const select=page.locator('#routeSelect');
+    if(await button.isVisible()){
+      await expect(select).toBeHidden();
+      await button.click();
+      await expect(button).toHaveAttribute('aria-current','page');
+    }else{
+      await expect(button).toBeHidden();
+      await expect(select).toBeVisible();
+      await select.selectOption(routeId);
+      await expect(select).toHaveValue(routeId);
+    }
   };
 
   await expectStates(expectedStates['account-license']);
