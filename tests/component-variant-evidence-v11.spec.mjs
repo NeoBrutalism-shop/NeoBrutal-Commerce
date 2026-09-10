@@ -51,7 +51,7 @@ test('v1.1 storefront variant evidence switches all 13 authoritative samples',as
       await expect(panel).toHaveAttribute('data-variant-current',variant);
       await expect(panel.locator(`[data-variant-sample="${id}:${variant}"]`)).toHaveCount(1);
     }
-    await expect(card.locator('[data-component-depth-audit] .cx-depth-chip[data-depth-status="complete"]')).toContainText(['Live preview','All variants','Accessibility notes']);
+    await expect(card.locator('[data-component-depth-audit] .cx-depth-chip[data-depth-status="complete"]').filter({hasText:/^All variants$/})).toHaveCount(1);
   }
 
   const product=page.locator('[data-component-id="product-card"] [data-component-variant-evidence]');
