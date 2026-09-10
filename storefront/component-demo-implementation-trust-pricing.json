@@ -1,0 +1,88 @@
+{
+  "schema": "neobrutal-commerce/component-demo-implementation@1",
+  "showcaseVersion": "1.1.0",
+  "commerceVersion": "1.0.0",
+  "role": "implementation-evidence-only",
+  "batchId": "trust-review-pricing",
+  "description": "Source-backed implementation evidence for the third v1.1 component demo-depth batch: trust/review/pricing. This file does not redefine component models, actions, states, or interaction laws.",
+  "styleImport": "@neobrutal/commerce/styles.css",
+  "components": [
+    {
+      "id": "trust-strip",
+      "sourceFiles": ["src/components/review.css", "component-explorer.js"],
+      "selectors": [".nbc-trust", ".nbc-trust-mark"],
+      "tokens": ["--nbc-lime"],
+      "copyReady": {
+        "html": "<div class=\"nbc-trust\" data-commerce-component=\"trust-strip\"><span class=\"nbc-trust-mark\" aria-hidden=\"true\">✓</span><div><strong data-trust-title>Evidence supplied by product data</strong><p data-trust-detail>Render only verified product, policy, support, or entitlement evidence.</p></div></div>",
+        "css": "@import '@neobrutal/commerce/styles.css';",
+        "js": "const root=document.querySelector('[data-commerce-component=\"trust-strip\"]');\nfunction renderTrustEvidence({title,detail,mark='✓'}){\n  root.querySelector('.nbc-trust-mark').textContent=mark;\n  root.querySelector('[data-trust-title]').textContent=title;\n  root.querySelector('[data-trust-detail]').textContent=detail;\n}\nrenderTrustEvidence({title:'Evidence supplied by product data',detail:'Render only verified product, policy, support, or entitlement evidence.'});"
+      }
+    },
+    {
+      "id": "review-summary",
+      "sourceFiles": ["src/components/review.css", "component-explorer.js"],
+      "selectors": [".nbc-rating", ".nbc-stars", ".nbc-rating strong", ".nbc-rating small"],
+      "tokens": ["--nbc-yellow", "--nbc-text-lg", "--nbc-muted"],
+      "copyReady": {
+        "html": "<div class=\"nbc-rating\" data-commerce-component=\"review-summary\"><div class=\"nbc-stars\" aria-label=\"Rating supplied by review data\" data-review-stars><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span></div><strong data-review-rating>Rating pending</strong><small data-review-count>Review count pending</small></div>",
+        "css": "@import '@neobrutal/commerce/styles.css';",
+        "js": "const root=document.querySelector('[data-commerce-component=\"review-summary\"]');\nfunction renderReviewSummary({rating,count}){\n  const value=Number(rating);\n  const total=Number(count);\n  if(!Number.isFinite(value)||!Number.isInteger(total))throw new Error('Review summary requires supplied rating and count data');\n  root.querySelector('[data-review-stars]').setAttribute('aria-label',`${value} out of 5 stars`);\n  root.querySelector('[data-review-rating]').textContent=`${value} / 5`;\n  root.querySelector('[data-review-count]').textContent=`${total} reviews`;\n}"
+      }
+    },
+    {
+      "id": "testimonials",
+      "sourceFiles": ["src/components/review.css", "component-explorer.js"],
+      "selectors": [".nbc-review-grid", ".nbc-review", ".nbc-review footer"],
+      "tokens": ["--nbc-space-4", "--nbc-border", "--nbc-surface", "--nbc-shadow", "--nbc-muted", "--nbc-text-sm"],
+      "copyReady": {
+        "html": "<div class=\"nbc-review-grid\" data-commerce-component=\"testimonials\"><article class=\"nbc-review\"><blockquote data-testimonial-quote>Supplied testimonial text</blockquote><footer><strong data-testimonial-name>Supplied customer name</strong><span data-testimonial-role>Supplied context</span></footer></article></div>",
+        "css": "@import '@neobrutal/commerce/styles.css';",
+        "js": "const root=document.querySelector('[data-commerce-component=\"testimonials\"]');\nfunction renderTestimonial({quote,name,role}){\n  root.querySelector('[data-testimonial-quote]').textContent=quote;\n  root.querySelector('[data-testimonial-name]').textContent=name;\n  root.querySelector('[data-testimonial-role]').textContent=role||'';\n}"
+      }
+    },
+    {
+      "id": "guarantee",
+      "sourceFiles": ["src/components/review.css", "component-explorer.js"],
+      "selectors": [".nbc-trust", ".nbc-trust-mark"],
+      "tokens": ["--nbc-lime"],
+      "copyReady": {
+        "html": "<div class=\"nbc-trust\" data-commerce-component=\"guarantee\"><span class=\"nbc-trust-mark\" aria-hidden=\"true\">↺</span><div><strong data-guarantee-title>Policy-backed guarantee</strong><p data-guarantee-terms>Render the supplied refund or support policy without inferring terms.</p></div></div>",
+        "css": "@import '@neobrutal/commerce/styles.css';",
+        "js": "const root=document.querySelector('[data-commerce-component=\"guarantee\"]');\nfunction renderGuarantee({title,terms}){\n  root.querySelector('[data-guarantee-title]').textContent=title;\n  root.querySelector('[data-guarantee-terms]').textContent=terms;\n}"
+      }
+    },
+    {
+      "id": "pricing-tier",
+      "sourceFiles": ["src/components/pricing.css", "component-explorer.js", "src/actions/runtime.js"],
+      "selectors": [".nbc-plan-card", ".nbc-plan-card[data-featured=\"true\"]", ".nbc-plan-ribbon"],
+      "tokens": ["--nbc-space-3", "--nbc-space-4", "--nbc-surface", "--nbc-border-w", "--nbc-border", "--nbc-radius-lg", "--nbc-shadow", "--nbc-yellow", "--nbc-coral", "--nbc-text-xs", "--nbc-text-xl"],
+      "copyReady": {
+        "html": "<article class=\"nbc-plan-card\" data-commerce-component=\"pricing-tier\"><h3 data-plan-name>Team</h3><div class=\"nbc-price\"><strong data-plan-price>$149</strong></div><p data-plan-scope>5 production sites · 12 months updates</p><button class=\"nbc-button nbc-button--primary nbc-tactile\" type=\"button\" data-action=\"add\">Choose plan</button></article>",
+        "css": "@import '@neobrutal/commerce/styles.css';",
+        "js": "import {createCommerceAction} from '@neobrutal/commerce/actions';\nconst root=document.querySelector('[data-commerce-component=\"pricing-tier\"]');\nroot.querySelector('[data-action=\"add\"]').addEventListener('click',()=>actions.dispatch(createCommerceAction('cart.add',{productId,offerId,quantity:1})));"
+      }
+    },
+    {
+      "id": "plan-comparison",
+      "sourceFiles": ["src/components/pricing.css", "component-explorer.js"],
+      "selectors": [".nbc-compare-wrap", ".nbc-compare", ".nbc-compare thead th"],
+      "tokens": ["--nbc-border-w", "--nbc-border", "--nbc-radius-md", "--nbc-surface", "--nbc-focus", "--nbc-text-sm", "--nbc-surface-2"],
+      "copyReady": {
+        "html": "<div class=\"nbc-compare-wrap\" tabindex=\"0\" data-commerce-component=\"plan-comparison\" aria-label=\"Plan comparison\"><table class=\"nbc-compare\"><thead><tr><th scope=\"col\">Plan</th><th scope=\"col\">Sites</th><th scope=\"col\">Updates</th></tr></thead><tbody><tr><th scope=\"row\">Individual</th><td>1</td><td>Included term</td></tr><tr><th scope=\"row\">Team</th><td>5</td><td>Included term</td></tr></tbody></table></div>",
+        "css": "@import '@neobrutal/commerce/styles.css';",
+        "js": "const comparison=document.querySelector('[data-commerce-component=\"plan-comparison\"]');\ncomparison.addEventListener('keydown',event=>{\n  if(event.key==='ArrowRight')comparison.scrollBy({left:80,behavior:'smooth'});\n  if(event.key==='ArrowLeft')comparison.scrollBy({left:-80,behavior:'smooth'});\n});"
+      }
+    },
+    {
+      "id": "bundle-builder",
+      "sourceFiles": ["src/components/pricing.css", "component-explorer.js", "src/actions/runtime.js"],
+      "selectors": [".nbc-bundle", ".nbc-bundle-option", ".nbc-bundle-option:has(input:checked)", ".nbc-bundle-total"],
+      "tokens": ["--nbc-space-3", "--nbc-space-4", "--nbc-surface", "--nbc-border-w", "--nbc-border", "--nbc-radius-lg", "--nbc-shadow", "--nbc-radius-sm", "--nbc-bg", "--nbc-lime", "--nbc-space-2", "--nbc-text-xl"],
+      "copyReady": {
+        "html": "<div class=\"nbc-bundle\" data-commerce-component=\"bundle-builder\" data-base-price=\"49\"><label class=\"nbc-bundle-option\"><input type=\"checkbox\" value=\"20\"><span><strong>Figma source</strong><small>Optional extra</small></span><strong>+$20</strong></label><label class=\"nbc-bundle-option\"><input type=\"checkbox\" value=\"50\"><span><strong>Onboarding</strong><small>Optional session</small></span><strong>+$50</strong></label><div class=\"nbc-bundle-total\"><span>Total</span><strong data-bundle-total>$49</strong></div><button class=\"nbc-button nbc-button--primary nbc-tactile\" type=\"button\" data-action=\"add\">Add bundle</button></div>",
+        "css": "@import '@neobrutal/commerce/styles.css';",
+        "js": "import {createCommerceAction} from '@neobrutal/commerce/actions';\nconst root=document.querySelector('[data-commerce-component=\"bundle-builder\"]');\nconst boxes=[...root.querySelectorAll('input[type=\"checkbox\"]')];\nfunction updateTotal(){\n  const total=Number(root.dataset.basePrice)+boxes.filter(box=>box.checked).reduce((sum,box)=>sum+Number(box.value),0);\n  root.querySelector('[data-bundle-total]').textContent=`$${total}`;\n}\nfor(const box of boxes)box.addEventListener('change',updateTotal);\nroot.querySelector('[data-action=\"add\"]').addEventListener('click',()=>actions.dispatch(createCommerceAction('cart.add',{productId,offerId,quantity:1,extras:boxes.filter(box=>box.checked).map(box=>box.value)})));"
+      }
+    }
+  ]
+}

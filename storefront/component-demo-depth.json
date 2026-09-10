@@ -102,7 +102,11 @@
       }
     },
     {
-      "id": "trust-strip"
+      "id": "trust-strip",
+      "overrides": {
+        "tokens": "complete",
+        "copy-ready": "complete"
+      }
     },
     {
       "id": "promo-band"
@@ -144,13 +148,25 @@
       }
     },
     {
-      "id": "review-summary"
+      "id": "review-summary",
+      "overrides": {
+        "tokens": "complete",
+        "copy-ready": "complete"
+      }
     },
     {
-      "id": "testimonials"
+      "id": "testimonials",
+      "overrides": {
+        "tokens": "complete",
+        "copy-ready": "complete"
+      }
     },
     {
-      "id": "guarantee"
+      "id": "guarantee",
+      "overrides": {
+        "tokens": "complete",
+        "copy-ready": "complete"
+      }
     },
     {
       "id": "license-selector",
@@ -169,16 +185,24 @@
     {
       "id": "pricing-tier",
       "overrides": {
-        "actions": "complete"
+        "actions": "complete",
+        "tokens": "complete",
+        "copy-ready": "complete"
       }
     },
     {
-      "id": "plan-comparison"
+      "id": "plan-comparison",
+      "overrides": {
+        "tokens": "complete",
+        "copy-ready": "complete"
+      }
     },
     {
       "id": "bundle-builder",
       "overrides": {
-        "actions": "complete"
+        "actions": "complete",
+        "tokens": "complete",
+        "copy-ready": "complete"
       }
     },
     {
@@ -393,6 +417,21 @@
         "product-gallery",
         "license-selector",
         "renewal-note"
+      ]
+    },
+    {
+      "id": "trust-review-pricing",
+      "ordinal": 3,
+      "label": "Trust / review / pricing",
+      "evidenceFile": "storefront/component-demo-implementation-trust-pricing.json",
+      "componentIds": [
+        "trust-strip",
+        "review-summary",
+        "testimonials",
+        "guarantee",
+        "pricing-tier",
+        "plan-comparison",
+        "bundle-builder"
       ]
     }
   ],

@@ -9,8 +9,8 @@ const waitForDepthAudit=async page=>{
   await expect(page.locator('html')).toHaveAttribute('data-component-depth-ready','true');
   await expect(page.locator('html')).toHaveAttribute('data-component-depth-audited','47');
   await expect(page.locator('html')).toHaveAttribute('data-component-implementation-ready','true');
-  await expect(page.locator('html')).toHaveAttribute('data-component-implementation-audited','19');
-  await expect(page.locator('html')).toHaveAttribute('data-component-implementation-batches','2');
+  await expect(page.locator('html')).toHaveAttribute('data-component-implementation-audited','26');
+  await expect(page.locator('html')).toHaveAttribute('data-component-implementation-batches','3');
 };
 
 test('v1.1 component demo depth audit covers exact accumulated implementation evidence',async({page})=>{
@@ -27,14 +27,16 @@ test('v1.1 component demo depth audit covers exact accumulated implementation ev
   await expect(page.locator('[data-component-card][data-demo-depth-first-batch="true"]')).toHaveCount(12);
   await expect(page.locator('[data-component-card][data-demo-depth-batch="stateful-high-risk"]')).toHaveCount(12);
   await expect(page.locator('[data-component-card][data-demo-depth-batch="product-storefront"]')).toHaveCount(7);
-  await expect(page.locator('[data-component-card][data-demo-depth-batch="none"]')).toHaveCount(28);
-  await expect(page.locator('[data-component-card][data-demo-implementation-evidence="true"]')).toHaveCount(19);
-  await expect(page.locator('[data-component-card][data-demo-depth-missing="0"]')).toHaveCount(19);
-  await expect(page.locator('[data-component-card][data-demo-depth-missing="2"]')).toHaveCount(28);
-  await expect(page.locator('.cx-depth-evidence[data-demo-implementation-evidence]')).toHaveCount(19);
+  await expect(page.locator('[data-component-card][data-demo-depth-batch="trust-review-pricing"]')).toHaveCount(7);
+  await expect(page.locator('[data-component-card][data-demo-depth-batch="none"]')).toHaveCount(21);
+  await expect(page.locator('[data-component-card][data-demo-implementation-evidence="true"]')).toHaveCount(26);
+  await expect(page.locator('[data-component-card][data-demo-depth-missing="0"]')).toHaveCount(26);
+  await expect(page.locator('[data-component-card][data-demo-depth-missing="2"]')).toHaveCount(21);
+  await expect(page.locator('.cx-depth-evidence[data-demo-implementation-evidence]')).toHaveCount(26);
   await expect(page.locator('[data-demo-implementation-batch="stateful-high-risk"]')).toHaveCount(12);
   await expect(page.locator('[data-demo-implementation-batch="product-storefront"]')).toHaveCount(7);
-  await expect(page.locator('[data-copy-ready-kind]')).toHaveCount(19*3);
+  await expect(page.locator('[data-demo-implementation-batch="trust-review-pricing"]')).toHaveCount(7);
+  await expect(page.locator('[data-copy-ready-kind]')).toHaveCount(26*3);
 
   const subscription=page.locator('[data-component-id="subscription-management"]');
   await expect(subscription).toHaveAttribute('data-demo-depth-first-batch','true');
@@ -81,14 +83,63 @@ test('v1.1 component demo depth audit covers exact accumulated implementation ev
   await expect(license.locator('[data-copy-ready-kind="html"]')).toContainText('checked');
 
   const trust=page.locator('[data-component-id="trust-strip"]');
-  await expect(trust).toHaveAttribute('data-demo-depth-batch','none');
-  await expect(trust).toHaveAttribute('data-demo-implementation-evidence','false');
+  await expect(trust).toHaveAttribute('data-demo-depth-first-batch','false');
+  await expect(trust).toHaveAttribute('data-demo-depth-batch','trust-review-pricing');
+  await expect(trust).toHaveAttribute('data-demo-implementation-evidence','true');
   await trust.locator('[data-component-depth-audit] summary').click();
   await expect(depthChip(trust,'not-applicable','Canonical states')).toBeVisible();
   await expect(depthChip(trust,'not-applicable','Action contracts')).toBeVisible();
-  await expect(depthChip(trust,'missing','Design tokens used')).toBeVisible();
-  await expect(depthChip(trust,'missing','Copy-ready HTML / CSS / JS')).toBeVisible();
-  await expect(trust.locator('[data-demo-implementation-evidence]')).toHaveCount(0);
+  await expect(depthChip(trust,'complete','Design tokens used')).toBeVisible();
+  await expect(depthChip(trust,'complete','Copy-ready HTML / CSS / JS')).toBeVisible();
+  await expect(trust.locator('[data-demo-implementation-evidence]')).toContainText('BATCH 3 · TRUST / REVIEW / PRICING');
+  await expect(trust.locator('[data-copy-ready-kind="html"]')).toContainText('data-trust-title');
+  await expect(trust.locator('[data-copy-ready-kind="js"]')).toContainText('renderTrustEvidence');
+
+  const review=page.locator('[data-component-id="review-summary"]');
+  await expect(review).toHaveAttribute('data-demo-depth-batch','trust-review-pricing');
+  await review.locator('[data-component-depth-audit] summary').click();
+  await expect(review.locator('[data-demo-token-list]')).toContainText('--nbc-yellow');
+  await expect(review.locator('[data-copy-ready-kind="html"]')).toContainText('Rating supplied by review data');
+  await expect(review.locator('[data-copy-ready-kind="js"]')).toContainText('requires supplied rating and count data');
+
+  const testimonials=page.locator('[data-component-id="testimonials"]');
+  await testimonials.locator('[data-component-depth-audit] summary').click();
+  await expect(testimonials.locator('[data-copy-ready-kind="html"]')).toContainText('Supplied testimonial text');
+  await expect(testimonials.locator('[data-copy-ready-kind="js"]')).toContainText('renderTestimonial');
+
+  const guarantee=page.locator('[data-component-id="guarantee"]');
+  await guarantee.locator('[data-component-depth-audit] summary').click();
+  await expect(guarantee.locator('[data-copy-ready-kind="html"]')).toContainText('Policy-backed guarantee');
+  await expect(guarantee.locator('[data-copy-ready-kind="html"]')).toContainText('without inferring terms');
+
+  const pricing=page.locator('[data-component-id="pricing-tier"]');
+  await expect(pricing).toHaveAttribute('data-demo-depth-batch','trust-review-pricing');
+  await pricing.locator('[data-component-depth-audit] summary').click();
+  await expect(depthChip(pricing,'complete','Action contracts')).toBeVisible();
+  await expect(pricing.locator('[data-copy-ready-kind="html"]')).toContainText('5 production sites · 12 months updates');
+  await expect(pricing.locator('[data-copy-ready-kind="js"]')).toContainText('cart.add');
+
+  const comparison=page.locator('[data-component-id="plan-comparison"]');
+  await comparison.locator('[data-component-depth-audit] summary').click();
+  await expect(comparison.locator('[data-copy-ready-kind="html"]')).toContainText('tabindex="0"');
+  await expect(comparison.locator('[data-copy-ready-kind="html"]')).toContainText('scope="col"');
+  await expect(comparison.locator('[data-copy-ready-kind="js"]')).toContainText('ArrowRight');
+
+  const bundle=page.locator('[data-component-id="bundle-builder"]');
+  await bundle.locator('[data-component-depth-audit] summary').click();
+  const bundleHtml=bundle.locator('[data-copy-ready-kind="html"]');
+  await expect(bundleHtml).toContainText('type="checkbox"');
+  await expect(bundleHtml).not.toContainText('checked');
+  await expect(bundleHtml).toContainText('data-bundle-total');
+  await expect(bundle.locator('[data-copy-ready-kind="js"]')).toContainText('cart.add');
+
+  const remaining=page.locator('[data-component-id="promo-band"]');
+  await expect(remaining).toHaveAttribute('data-demo-depth-batch','none');
+  await expect(remaining).toHaveAttribute('data-demo-implementation-evidence','false');
+  await remaining.locator('[data-component-depth-audit] summary').click();
+  await expect(depthChip(remaining,'missing','Design tokens used')).toBeVisible();
+  await expect(depthChip(remaining,'missing','Copy-ready HTML / CSS / JS')).toBeVisible();
+  await expect(remaining.locator('[data-demo-implementation-evidence]')).toHaveCount(0);
 
   const results=await new AxeBuilder({page}).withTags(['wcag2a','wcag2aa','wcag21a','wcag21aa']).analyze();
   expect(results.violations,'expanded component depth audit WCAG A/AA violations').toEqual([]);
@@ -100,18 +151,23 @@ test('v1.1 accumulated depth evidence survives theme and narrow-screen inspectio
   await waitForDepthAudit(page);
   const subscription=page.locator('[data-component-id="subscription-management"]');
   const productCard=page.locator('[data-component-id="product-card"]');
+  const trust=page.locator('[data-component-id="trust-strip"]');
+  const pricing=page.locator('[data-component-id="pricing-tier"]');
   await subscription.locator('[data-component-depth-audit] summary').click();
   await productCard.locator('[data-component-depth-audit] summary').click();
+  await trust.locator('[data-component-depth-audit] summary').click();
+  await pricing.locator('[data-component-depth-audit] summary').click();
 
   await page.locator('#themeToggle').click();
   await expect(page.locator('html')).toHaveAttribute('data-theme','dark');
-  await expect(subscription.locator('[data-component-depth-audit]')).toBeVisible();
-  await expect(productCard.locator('[data-component-depth-audit]')).toBeVisible();
-  await expect(subscription.locator('[data-demo-implementation-evidence]')).toBeVisible();
-  await expect(productCard.locator('[data-demo-implementation-evidence]')).toBeVisible();
-  await expect(subscription.locator('.cx-depth-summary')).toContainText('0 missing');
-  await expect(productCard.locator('.cx-depth-summary')).toContainText('0 missing');
+  for(const card of [subscription,productCard,trust,pricing]){
+    await expect(card.locator('[data-component-depth-audit]')).toBeVisible();
+    await expect(card.locator('[data-demo-implementation-evidence]')).toBeVisible();
+    await expect(card.locator('.cx-depth-summary')).toContainText('0 missing');
+  }
   await expect(productCard.locator('[data-copy-ready-kind="html"] pre')).toBeVisible();
+  await expect(trust.locator('[data-copy-ready-kind="html"] pre')).toBeVisible();
+  await expect(pricing.locator('[data-copy-ready-kind="html"] pre')).toBeVisible();
 
   const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth);
   expect(overflow,'accumulated component depth implementation evidence must not introduce document horizontal overflow').toBeLessThanOrEqual(1);
