@@ -4,6 +4,8 @@ All notable NeoBrutal Commerce changes are recorded here. v1.0 freezes the publi
 
 ## [Unreleased]
 
+- Hardened the v1.0 release preflight so CI locks the published-GitHub-Release-only trigger, exact OIDC permission boundary, dynamic version/tag guard, reproducible dependency install, ordered quality/browser gates, single public npm publish command and tokenless trusted-publishing requirement.
+- Documented the GitHub Release publication boundary explicitly: repository-side checks are safe preflight, while npm trusted-publisher configuration remains an external prerequisite that must be verified before publishing `v1.0.0`.
 - Post-v1 changes must preserve the public API freeze unless they are explicitly scheduled for a major release.
 
 ## [1.0.0] — Public Release
