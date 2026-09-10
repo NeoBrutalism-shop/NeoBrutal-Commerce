@@ -43,7 +43,9 @@ for(const component of manifest.components){
 }
 
 const componentsDoc=read('COMPONENTS.md');
-for(const marker of ['Showcase v1.1 / Commerce v1.0','47 / 47','18 / 18','42 / 42','storefront/component-showcase.json','storefront/component-states.json','storefront/blocks.json','scripts/showcase-check.mjs']){if(!componentsDoc.includes(marker)){console.error(`COMPONENTS.md missing v1.1 showcase marker: ${marker}`);process.exit(1);}}
+const documentedBlockCount=`${blocks.blocks.length} / ${blocks.blocks.length}`;
+for(const marker of ['Showcase v1.1 / Commerce v1.0','47 / 47',documentedBlockCount,'42 / 42','storefront/component-showcase.json','storefront/component-states.json','storefront/blocks.json','scripts/showcase-check.mjs']){if(!componentsDoc.includes(marker)){console.error(`COMPONENTS.md missing v1.1 showcase marker: ${marker}`);process.exit(1);}}
+for(const block of blocks.blocks){if(!componentsDoc.includes(`\`${block.id}\``)){console.error(`COMPONENTS.md missing current Block id: ${block.id}`);process.exit(1);}}
 const agents=read('AGENTS.md');
 for(const marker of ['storefront/components.json','docs/AGENT-PLAYBOOK.md','docs/AI-COMPONENT-NOTES.md','Read before write','Do not guess']){if(!agents.includes(marker)){console.error(`AGENTS.md missing adoption marker: ${marker}`);process.exit(1);}}
 const adoption=read('docs/ADOPTION.md');
