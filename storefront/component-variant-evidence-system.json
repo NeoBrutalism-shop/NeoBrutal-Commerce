@@ -33,7 +33,7 @@
       "id": "tokens",
       "batchId": "system-foundation",
       "variants": [
-        {"id": "semantic-colors", "label": "semantic colors", "proofKind": "rendered", "markup": "<div class=\"cx-token-grid\" data-variant-sample=\"tokens:semantic-colors\" aria-label=\"Existing semantic color tokens\"><div class=\"cx-token cx-token--yellow\"><code>--nbc-yellow</code></div><div class=\"cx-token cx-token--coral\"><code>--nbc-coral</code></div><div class=\"cx-token cx-token--lime\"><code>--nbc-lime</code></div><div class=\"cx-token cx-token--sky\"><code>--nbc-sky</code></div></div>"},
+        {"id": "semantic-colors", "label": "semantic colors", "proofKind": "rendered", "markup": "<div class=\"cx-token-grid\" data-variant-sample=\"tokens:semantic-colors\" aria-label=\"Existing semantic color tokens\" style=\"color:#151515\"><div class=\"cx-token cx-token--yellow\"><code>--nbc-yellow</code></div><div class=\"cx-token cx-token--coral\"><code>--nbc-coral</code></div><div class=\"cx-token cx-token--lime\"><code>--nbc-lime</code></div><div class=\"cx-token cx-token--sky\"><code>--nbc-sky</code></div></div>"},
         {"id": "depth", "label": "depth", "proofKind": "rendered", "markup": "<div class=\"cx-mini-row\" data-variant-sample=\"tokens:depth\"><code>--nbc-depth</code><strong>6px</strong></div>"},
         {"id": "press", "label": "press", "proofKind": "rendered", "markup": "<div class=\"cx-mini-stack\" data-variant-sample=\"tokens:press\"><div class=\"cx-mini-row\"><code>--nbc-press-hover</code><strong>3px</strong></div><div class=\"cx-mini-row\"><code>--nbc-press-active</code><strong>6px</strong></div></div>"}
       ]
