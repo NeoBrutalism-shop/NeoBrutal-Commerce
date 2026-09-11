@@ -59,7 +59,7 @@ async function initSystemDepthExtension(){
     systemDepthAssert(Array.isArray(extension.components)&&extension.components.length===4&&new Set(extension.components).size===4,'System depth extension must promote exact four unique components');
     systemDepthAssert(Array.isArray(extension.remainingPartial)&&extension.remainingPartial.length===5&&new Set(extension.remainingPartial.map(item=>item.id)).size===5,'System depth extension must preserve exact five remaining partial components');
 
-    await Promise.all([waitForSystemPrerequisite('componentDepthAccountReady'),waitForSystemPrerequisite('componentVariantReady')]);
+    await Promise.all([waitForSystemPrerequisite('componentDepthAccountReady'),waitForSystemPrerequisite('componentVariantSystemReady')]);
     systemDepthAssert(document.documentElement.dataset.componentVariantAudited==='42','System depth promotion requires combined 42-component variant evidence');
     systemDepthAssert(document.documentElement.dataset.componentVariantCount==='117','System depth promotion requires combined 117-variant evidence');
     systemDepthAssert(document.documentElement.dataset.componentDepthVariantComplete==='38'&&document.documentElement.dataset.componentDepthVariantPartial==='9','System depth promotion requires certified Account depth stage 38 complete / 9 partial');
