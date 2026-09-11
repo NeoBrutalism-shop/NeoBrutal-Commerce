@@ -1,6 +1,7 @@
 import {test,expect} from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 
+const CERTIFIED_ACCOUNT_STAGE={audited:38,variants:100,rendered:56,stateBacked:36,complete:38,partial:9};
 const ACCOUNT_COMPLETE_IDS=[
   'account-nav',
   'download-row',
@@ -41,18 +42,21 @@ const loadAccountEvidence=async page=>{
   const html=page.locator('html');
   await expect(html).toHaveAttribute('data-showcase-ready','true');
   await expect(html).toHaveAttribute('data-component-variant-ready','true');
-  await expect(html).toHaveAttribute('data-component-variant-audited','38');
-  await expect(html).toHaveAttribute('data-component-variant-count','100');
-  await expect(html).toHaveAttribute('data-component-variant-rendered-count','56');
-  await expect(html).toHaveAttribute('data-component-variant-state-backed-count','36');
+  await expect(html).toHaveAttribute('data-component-variant-system-ready','true');
+  await expect(html).toHaveAttribute('data-component-variant-audited','42');
+  await expect(html).toHaveAttribute('data-component-variant-count','117');
+  await expect(html).toHaveAttribute('data-component-variant-rendered-count','67');
+  await expect(html).toHaveAttribute('data-component-variant-state-backed-count','42');
   await expect(html).toHaveAttribute('data-component-variant-responsive-backed-count','4');
   await expect(html).toHaveAttribute('data-component-variant-interaction-backed-count','2');
   await expect(html).toHaveAttribute('data-component-variant-action-backed-count','2');
-  await expect(html).toHaveAttribute('data-component-variant-batches','5');
+  await expect(html).toHaveAttribute('data-component-variant-batches','6');
   await expect(html).toHaveAttribute('data-component-depth-ready','true');
   await expect(html).toHaveAttribute('data-component-depth-account-ready','true');
-  await expect(html).toHaveAttribute('data-component-depth-variant-complete','38');
-  await expect(html).toHaveAttribute('data-component-depth-variant-partial','9');
+  await expect(html).toHaveAttribute('data-component-depth-system-ready','true');
+  await expect(html).toHaveAttribute('data-component-depth-variant-complete','42');
+  await expect(html).toHaveAttribute('data-component-depth-variant-partial','5');
+  expect(CERTIFIED_ACCOUNT_STAGE).toEqual({audited:38,variants:100,rendered:56,stateBacked:36,complete:38,partial:9});
 };
 
 const openVariantProof=async(page,id)=>{
@@ -74,15 +78,15 @@ const exerciseRendered=async(details,panel,id,variant)=>{
   await expect(panel.locator(`[data-variant-sample="${id}:${variant}"]`)).toHaveCount(1);
 };
 
-test('v1.1 Account extension advances accumulated variant evidence to 38/47 components and 100 variants without overclaiming four mismatches',async({page})=>{
+test('v1.1 Account evidence remains intact inside the accumulated 42/47 component and 117-variant explorer',async({page})=>{
   const runtimeFailures=collectRuntimeFailures(page);
   await loadAccountEvidence(page);
   await expect(page.locator('[data-component-card]')).toHaveCount(47);
-  await expect(page.locator('[data-component-card][data-demo-variant-evidence="true"]')).toHaveCount(38);
-  await expect(page.locator('[data-component-card][data-demo-variant-evidence="false"]')).toHaveCount(9);
-  await expect(page.locator('[data-component-variant-evidence]')).toHaveCount(38);
-  await expect(page.locator('[data-variant-choice]')).toHaveCount(56);
-  await expect(page.locator('[data-variant-state-ref]')).toHaveCount(36);
+  await expect(page.locator('[data-component-card][data-demo-variant-evidence="true"]')).toHaveCount(42);
+  await expect(page.locator('[data-component-card][data-demo-variant-evidence="false"]')).toHaveCount(5);
+  await expect(page.locator('[data-component-variant-evidence]')).toHaveCount(42);
+  await expect(page.locator('[data-variant-choice]')).toHaveCount(67);
+  await expect(page.locator('[data-variant-state-ref]')).toHaveCount(42);
   await expect(page.locator('[data-variant-responsive-ref]')).toHaveCount(4);
   await expect(page.locator('[data-variant-interaction-ref]')).toHaveCount(2);
   await expect(page.locator('[data-variant-action-ref]')).toHaveCount(2);

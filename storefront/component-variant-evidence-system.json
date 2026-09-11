@@ -1,0 +1,65 @@
+{
+  "schema": "neobrutal-commerce/component-variant-evidence@4",
+  "showcaseVersion": "1.1.0",
+  "commerceVersion": "1.0.0",
+  "role": "variant-evidence-only",
+  "description": "Sixth source-audited variant-evidence shard for System + foundation. It exposes only existing frozen contract, token, state, and ownership-lifecycle authority; it does not create production states, actions, models, or tokens.",
+  "proofKinds": {
+    "rendered": "Explicit declarative markup rendered inside Variant proof.",
+    "canonical-state": "References an existing canonical component state and its live state controls; no duplicate variant markup is created.",
+    "responsive-backed": "References the existing live component preview, authoritative responsive mode, and an explicit viewport proof; no duplicate variant markup is created.",
+    "interaction-backed": "References an existing interaction pattern and live component transition for a documented variant that is produced by interaction rather than static duplicate markup.",
+    "action-backed": "References a canonical Commerce action and normalized result model for a documented variant whose authoritative result must come from the adapter/runtime rather than fabricated markup."
+  },
+  "batches": [
+    {
+      "id": "system-foundation",
+      "ordinal": 6,
+      "label": "System + foundation",
+      "componentIds": ["component-contract", "tokens", "system-states", "ownership-lifecycle"]
+    }
+  ],
+  "components": [
+    {
+      "id": "component-contract",
+      "batchId": "system-foundation",
+      "variants": [
+        {"id": "model", "label": "model", "proofKind": "rendered", "markup": "<div class=\"cx-mini-row\" data-variant-sample=\"component-contract:model\"><span><strong>Model</strong><small class=\"store-kicker\">Normalized data boundary</small></span><code>ProductView</code></div>"},
+        {"id": "action", "label": "action", "proofKind": "rendered", "markup": "<div class=\"cx-mini-row\" data-variant-sample=\"component-contract:action\"><span><strong>Action</strong><small class=\"store-kicker\">Canonical command</small></span><code>cart.add</code></div>"},
+        {"id": "state", "label": "state", "proofKind": "rendered", "markup": "<div class=\"cx-mini-row\" data-variant-sample=\"component-contract:state\"><span><strong>State</strong><small class=\"store-kicker\">Explicit taxonomy</small></span><code>ready</code></div>"}
+      ]
+    },
+    {
+      "id": "tokens",
+      "batchId": "system-foundation",
+      "variants": [
+        {"id": "semantic-colors", "label": "semantic colors", "proofKind": "rendered", "markup": "<div class=\"cx-token-grid\" data-variant-sample=\"tokens:semantic-colors\" aria-label=\"Existing semantic color tokens\" style=\"color:#151515\"><div class=\"cx-token cx-token--yellow\"><code>--nbc-yellow</code></div><div class=\"cx-token cx-token--coral\"><code>--nbc-coral</code></div><div class=\"cx-token cx-token--lime\"><code>--nbc-lime</code></div><div class=\"cx-token cx-token--sky\"><code>--nbc-sky</code></div></div>"},
+        {"id": "depth", "label": "depth", "proofKind": "rendered", "markup": "<div class=\"cx-mini-row\" data-variant-sample=\"tokens:depth\"><code>--nbc-depth</code><strong>6px</strong></div>"},
+        {"id": "press", "label": "press", "proofKind": "rendered", "markup": "<div class=\"cx-mini-stack\" data-variant-sample=\"tokens:press\"><div class=\"cx-mini-row\"><code>--nbc-press-hover</code><strong>3px</strong></div><div class=\"cx-mini-row\"><code>--nbc-press-active</code><strong>6px</strong></div></div>"}
+      ]
+    },
+    {
+      "id": "system-states",
+      "batchId": "system-foundation",
+      "variants": [
+        {"id": "empty", "label": "empty", "proofKind": "canonical-state", "stateId": "empty"},
+        {"id": "loading", "label": "loading", "proofKind": "canonical-state", "stateId": "loading"},
+        {"id": "error", "label": "error", "proofKind": "canonical-state", "stateId": "error"},
+        {"id": "offline", "label": "offline", "proofKind": "canonical-state", "stateId": "offline"},
+        {"id": "permission", "label": "permission", "proofKind": "canonical-state", "stateId": "permission"},
+        {"id": "unsupported", "label": "unsupported", "proofKind": "canonical-state", "stateId": "unsupported"}
+      ]
+    },
+    {
+      "id": "ownership-lifecycle",
+      "batchId": "system-foundation",
+      "variants": [
+        {"id": "active", "label": "active", "proofKind": "rendered", "markup": "<article class=\"nbc-lifecycle\" data-variant-sample=\"ownership-lifecycle:active\"><div class=\"nbc-lifecycle-head\"><div><strong>Ownership state</strong><p class=\"nbc-lifecycle-note\">Normalized lifecycle status; related records remain separate.</p></div><span class=\"nbc-lifecycle-badge\" data-state=\"active\">Active</span></div></article>"},
+        {"id": "grace", "label": "grace", "proofKind": "rendered", "markup": "<article class=\"nbc-lifecycle\" data-variant-sample=\"ownership-lifecycle:grace\"><div class=\"nbc-lifecycle-head\"><div><strong>Ownership state</strong><p class=\"nbc-lifecycle-note\">Normalized lifecycle status; related records remain separate.</p></div><span class=\"nbc-lifecycle-badge\" data-state=\"grace\">Grace</span></div></article>"},
+        {"id": "expired", "label": "expired", "proofKind": "rendered", "markup": "<article class=\"nbc-lifecycle\" data-variant-sample=\"ownership-lifecycle:expired\"><div class=\"nbc-lifecycle-head\"><div><strong>Ownership state</strong><p class=\"nbc-lifecycle-note\">Normalized lifecycle status; related records remain separate.</p></div><span class=\"nbc-lifecycle-badge\" data-state=\"expired\">Expired</span></div></article>"},
+        {"id": "cancelled", "label": "cancelled", "proofKind": "rendered", "markup": "<article class=\"nbc-lifecycle\" data-variant-sample=\"ownership-lifecycle:cancelled\"><div class=\"nbc-lifecycle-head\"><div><strong>Ownership state</strong><p class=\"nbc-lifecycle-note\">Normalized lifecycle status; related records remain separate.</p></div><span class=\"nbc-lifecycle-badge\" data-state=\"cancelled\">Cancelled</span></div></article>"},
+        {"id": "refunded", "label": "refunded", "proofKind": "rendered", "markup": "<article class=\"nbc-lifecycle\" data-variant-sample=\"ownership-lifecycle:refunded\"><div class=\"nbc-lifecycle-head\"><div><strong>Ownership state</strong><p class=\"nbc-lifecycle-note\">Normalized lifecycle status; related records remain separate.</p></div><span class=\"nbc-lifecycle-badge\" data-state=\"refunded\">Refunded</span></div></article>"}
+      ]
+    }
+  ]
+}

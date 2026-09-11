@@ -4,7 +4,8 @@ const loadVariantExplorer=async page=>{
   await page.goto('/components.html',{waitUntil:'networkidle'});
   await expect(page.locator('html')).toHaveAttribute('data-showcase-ready','true');
   await expect(page.locator('html')).toHaveAttribute('data-component-variant-ready','true');
-  await expect(page.locator('html')).toHaveAttribute('data-component-variant-audited','38');
+  await expect(page.locator('html')).toHaveAttribute('data-component-variant-system-ready','true');
+  await expect(page.locator('html')).toHaveAttribute('data-component-variant-audited','42');
 };
 
 const openVariantProof=async(page,id)=>{

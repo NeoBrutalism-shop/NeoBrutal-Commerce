@@ -1,0 +1,21 @@
+{
+  "schema": "neobrutal-commerce/component-demo-depth-extension@1",
+  "showcaseVersion": "1.1.0",
+  "commerceVersion": "1.0.0",
+  "role": "audit-evidence-extension",
+  "criterion": "variants",
+  "status": "complete",
+  "baseComplete": 38,
+  "extensionComplete": 4,
+  "combinedComplete": 42,
+  "combinedPartial": 5,
+  "evidenceFile": "storefront/component-variant-evidence-system.json",
+  "components": ["component-contract", "tokens", "system-states", "ownership-lifecycle"],
+  "remainingPartial": [
+    {"id": "invoice-details", "reason": "The live input demo and frozen InvoiceDetails contract exist, but this component is outside the certified implementation-evidence set and needs a dedicated residual evidence audit before promotion."},
+    {"id": "purchase-history-row", "reason": "Showcase label `paid order` does not exactly match frozen OrderStatus; the production contract uses `complete` for successful orders."},
+    {"id": "invoice-history", "reason": "Showcase label `open` is not a frozen InvoiceStatus; InvoiceStatus is paid | refunded | void."},
+    {"id": "activation-row", "reason": "Showcase label `removable` has no canonical activation removal/deactivation action in frozen Commerce v1.0."},
+    {"id": "seat-assignment", "reason": "Showcase label `capacity reached` has no capacity value in the component's frozen model/action result authority."}
+  ]
+}
