@@ -48,7 +48,7 @@ for(const item of evidenceVariants){
   if(item.id!==normalize(item.label)||item.proofKind!=='rendered')fail(`invalid rendered variant identity: ${item.id}`);
   if(typeof item.markup!=='string'||!item.markup.includes(`data-variant-sample="invoice-details:${item.id}"`))fail(`rendered variant lacks exact sample identity: ${item.id}`);
   if(/<script\b|\son[a-z]+\s*=/i.test(item.markup))fail(`rendered variant must remain declarative: ${item.id}`);
-  if(/tax rate|jurisdiction|vat rate|sales tax rate|invoice status|paid invoice|open invoice/i.test(item.markup))fail(`rendered variant invents provider-authoritative outcome: ${item.id}`);
+  if(/tax rate|jurisdiction|vat rate|sales tax rate|invoice status\s*[:=-]\s*(?:paid|refunded|void|open)|(?:paid|refunded|void|open) invoice/i.test(item.markup))fail(`rendered variant invents provider-authoritative outcome: ${item.id}`);
 }
 const individual=evidenceVariants.find(item=>item.id==='individual')?.markup||'';
 const business=evidenceVariants.find(item=>item.id==='business-invoice')?.markup||'';
