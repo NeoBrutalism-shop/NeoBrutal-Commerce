@@ -55,7 +55,7 @@ function validateInvoiceImplementation(manifest,registry){
   invoiceAssert(evidence.copyReady?.html?.includes('data-commerce-component="invoice-details"'),'invoice-details copy-ready HTML missing stable anatomy');
   invoiceAssert(evidence.copyReady?.css?.trim()==="@import '@neobrutal/commerce/styles.css';",'invoice-details copy-ready CSS must use frozen public style export');
   invoiceAssert(!/createCommerceAction\s*\(/.test(evidence.copyReady?.js||''),'invoice-details copy-ready JS must not invent a Commerce action');
-  invoiceAssert((evidence.copyReady?.js||'').includes('data-invoice-requested'),'invoice-details copy-ready JS must expose requested/not-requested input state');
+  invoiceAssert((evidence.copyReady?.js||'').includes('dataset.invoiceRequested'),'invoice-details copy-ready JS must expose requested/not-requested input state');
   invoiceAssert(!/(tax\s*=|rate\s*=|jurisdiction|invoice\.status)/i.test(evidence.copyReady?.js||''),'invoice-details copy-ready JS must not calculate or infer provider-authoritative outcomes');
   return evidence;
 }
