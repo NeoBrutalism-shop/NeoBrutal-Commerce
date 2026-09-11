@@ -16,11 +16,15 @@ const components=json('storefront/components.json');
 const states=json('storefront/component-states.json');
 const statefulImplementation=json('storefront/component-demo-implementation.json');
 const accountImplementation=json('storefront/component-demo-implementation-account-ownership.json');
+const packageManifest=json('package.json');
 const contractTypes=read('src/contracts/index.d.ts');
 const tokenCss=read('src/tokens.css');
 const explorer=read('component-explorer.js');
-const runtime=read('component-variant-evidence.js');
+const explorerHtml=read('components.html');
+const baseRuntime=read('component-variant-evidence.js');
+const systemRuntime=read('component-variant-evidence-system.js');
 const browser=read('tests/component-variant-evidence-system-v11.spec.mjs');
+const report=read('docs/V1.1-SYSTEM-VARIANT-EVIDENCE.md');
 
 for(const manifest of [base,account,system]){
   if(manifest.schema!=='neobrutal-commerce/component-variant-evidence@4'||manifest.showcaseVersion!=='1.1.0'||manifest.commerceVersion!=='1.0.0'||manifest.role!=='variant-evidence-only')fail('System variant evidence shard version/schema/role drifted');
@@ -102,7 +106,7 @@ for(const stateId of ['empty','loading','error','offline','permission','unsuppor
   const variant=systemStates?.get(stateId);
   if(variant?.proofKind!=='canonical-state'||variant.stateId!==stateId||!stateById.get('system-states')?.has(stateId))fail(`System-states proof must reuse exact canonical state: ${stateId}`);
 }
-if(!statefulImplementation.components.some(component=>component.id==='system-states'&&component.copyReady?.js.includes("'empty','loading','error','offline','permission','unsupported'")))fail('System-states proof lost source-backed six-state implementation authority');
+if(!statefulImplementation.components.some(component=>component.id==='system-states'&&component.copyReady?.js.includes("['empty','loading','error','offline','permission','unsupported']")))fail('System-states proof lost source-backed six-state implementation authority');
 
 if(!contractTypes.includes("export type OwnershipState='active'|'grace'|'expired'|'cancelled'|'refunded';"))fail('Ownership lifecycle frozen OwnershipState taxonomy drifted');
 const lifecycle=systemById.get('ownership-lifecycle');
@@ -114,7 +118,13 @@ const lifecycleContract=frozenById.get('ownership-lifecycle');
 if(!same(lifecycleContract?.models||[],['LicenseView','SubscriptionView','OwnershipEventView']))fail('Ownership-lifecycle frozen model boundary drifted');
 if(!accountImplementation.components.some(component=>component.id==='ownership-lifecycle'&&component.copyReady?.html.includes('Do not infer one lifecycle record from another.')))fail('Ownership-lifecycle proof lost implementation separation guardrail');
 
-for(const marker of ['component-variant-evidence-system.json','VARIANT_EVIDENCE_FILES','mergeVariantManifests'])if(!runtime.includes(marker))fail(`Variant runtime missing System evidence aggregation marker: ${marker}`);
-for(const marker of ['42','117','67','42','component-contract','tokens','system-states','ownership-lifecycle','invoice-details','purchase-history-row','invoice-history','activation-row','seat-assignment','AxeBuilder'])if(!browser.includes(marker))fail(`System variant Browser QA missing marker: ${marker}`);
+for(const marker of ['component-variant-evidence-account.json','VARIANT_EVIDENCE_FILES','mergeVariantManifests'])if(!baseRuntime.includes(marker))fail(`Certified base + Account runtime marker drifted: ${marker}`);
+for(const marker of ['component-variant-evidence-system.json','componentVariantSystemReady','componentDepthAccountReady','system-foundation','42','117'])if(!systemRuntime.includes(marker))fail(`System additive runtime missing marker: ${marker}`);
+if(!explorerHtml.includes('./component-variant-evidence-system.js'))fail('Components explorer must load additive System variant runtime');
+for(const marker of ['42','117','67','component-contract','tokens','system-states','ownership-lifecycle','invoice-details','purchase-history-row','invoice-history','activation-row','seat-assignment','AxeBuilder'])if(!browser.includes(marker))fail(`System variant Browser QA missing marker: ${marker}`);
+for(const marker of ['System + foundation variant evidence','42 / 47','117 authoritative variants','67 rendered','42 canonical-state-backed','4 responsive-backed','2 interaction-backed','2 action-backed','component-contract','tokens','system-states','ownership-lifecycle','invoice-details','purchase-history-row','invoice-history','activation-row','seat-assignment'])if(!report.includes(marker))fail(`System variant evidence report missing marker: ${marker}`);
+const systemCommand=packageManifest.scripts?.['check:system-variants']||'';
+if(!systemCommand.includes('component-variant-evidence-system-check.mjs')||!systemCommand.includes('component-demo-depth-system-check.mjs'))fail('package.json must expose both System variant static checks');
+if(!(packageManifest.scripts?.check||'').includes('check:system-variants'))fail('npm run check must include check:system-variants');
 
 console.log('System variant evidence passed · 4 components · 17 variants · combined 42/47 components / 117 variants · 67 rendered / 42 canonical-state-backed / 4 responsive-backed / 2 interaction-backed / 2 action-backed · exact five residual components remain partial');
