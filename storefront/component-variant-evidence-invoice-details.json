@@ -1,0 +1,48 @@
+{
+  "schema": "neobrutal-commerce/component-variant-evidence@4",
+  "showcaseVersion": "1.1.0",
+  "commerceVersion": "1.0.0",
+  "role": "variant-evidence-only",
+  "description": "Seventh source-audited variant-evidence shard for invoice-details. It demonstrates request-off, business-invoice input, and recoverable local validation without fabricating provider tax, jurisdiction, invoice-status, or pricing outcomes.",
+  "proofKinds": {
+    "rendered": "Explicit declarative markup rendered inside Variant proof.",
+    "canonical-state": "References an existing canonical component state and its live state controls; no duplicate variant markup is created.",
+    "responsive-backed": "References the existing live component preview, authoritative responsive mode, and an explicit viewport proof; no duplicate variant markup is created.",
+    "interaction-backed": "References an existing interaction pattern and live component transition for a documented variant that is produced by interaction rather than static duplicate markup.",
+    "action-backed": "References a canonical Commerce action and normalized result model for a documented variant whose authoritative result must come from the adapter/runtime rather than fabricated markup."
+  },
+  "batches": [
+    {
+      "id": "invoice-details-residual",
+      "ordinal": 7,
+      "label": "Invoice details residual",
+      "componentIds": ["invoice-details"]
+    }
+  ],
+  "components": [
+    {
+      "id": "invoice-details",
+      "batchId": "invoice-details-residual",
+      "variants": [
+        {
+          "id": "individual",
+          "label": "individual",
+          "proofKind": "rendered",
+          "markup": "<section class=\"cx-mini-stack\" data-variant-sample=\"invoice-details:individual\"><label class=\"cx-mini-row\"><span><strong>Business invoice</strong><small class=\"store-kicker\">Optional billing record details</small></span><input type=\"checkbox\" aria-label=\"Request business invoice\"></label><p class=\"store-kicker\">Invoice details are not requested. Provider-normalized quote values remain authoritative for tax and totals.</p></section>"
+        },
+        {
+          "id": "business-invoice",
+          "label": "business invoice",
+          "proofKind": "rendered",
+          "markup": "<section class=\"cx-mini-stack\" data-variant-sample=\"invoice-details:business-invoice\"><div class=\"nbc-checkout-field\"><label for=\"invoice-proof-legal-name\">Company / legal name</label><input id=\"invoice-proof-legal-name\" value=\"Northstar Studio\" required></div><div class=\"nbc-checkout-field\"><label for=\"invoice-proof-tax-id\">Tax ID</label><input id=\"invoice-proof-tax-id\" value=\"IN-EXAMPLE-001\"></div><p class=\"store-kicker\">These fields describe the requested invoice only; they do not predict tax treatment or invoice status.</p></section>"
+        },
+        {
+          "id": "validation",
+          "label": "validation",
+          "proofKind": "rendered",
+          "markup": "<section class=\"cx-mini-stack\" data-variant-sample=\"invoice-details:validation\"><div class=\"nbc-checkout-field\"><label for=\"invoice-proof-invalid-name\">Company / legal name</label><input id=\"invoice-proof-invalid-name\" value=\"\" required aria-invalid=\"true\" aria-describedby=\"invoice-proof-name-error\"><small id=\"invoice-proof-name-error\">Enter a legal name when requesting a business invoice.</small></div><p class=\"store-kicker\">Validation is local input guidance; provider-returned quote and invoice data remain authoritative.</p></section>"
+        }
+      ]
+    }
+  ]
+}
