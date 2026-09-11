@@ -1,0 +1,22 @@
+{
+  "schema": "neobrutal-commerce/component-demo-implementation@1",
+  "showcaseVersion": "1.1.0",
+  "commerceVersion": "1.0.0",
+  "role": "implementation-evidence-only",
+  "batchId": "invoice-details-residual",
+  "description": "Source-backed implementation evidence for invoice-details. This file documents reusable input anatomy and local validation only; it does not redefine provider tax, pricing, jurisdiction, invoice status, models, actions, or canonical states.",
+  "styleImport": "@neobrutal/commerce/styles.css",
+  "components": [
+    {
+      "id": "invoice-details",
+      "sourceFiles": ["src/components/cart.css", "component-explorer.js", "src/contracts/index.d.ts"],
+      "selectors": [".nbc-checkout-field", ".nbc-checkout-field input", ".nbc-checkout-field small"],
+      "tokens": ["--nbc-border-w", "--nbc-border", "--nbc-radius-sm", "--nbc-surface", "--nbc-text", "--nbc-muted"],
+      "copyReady": {
+        "html": "<section data-commerce-component=\"invoice-details\" data-invoice-requested=\"false\"><label><input type=\"checkbox\" data-invoice-request> Request a business invoice</label><div data-invoice-fields hidden><div class=\"nbc-checkout-field\"><label for=\"invoice-legal-name\">Company / legal name</label><input id=\"invoice-legal-name\" name=\"invoiceLegalName\" autocomplete=\"organization\" aria-describedby=\"invoice-legal-name-help\"><small id=\"invoice-legal-name-help\">Required only when a business invoice is requested.</small></div><div class=\"nbc-checkout-field\"><label for=\"invoice-tax-id\">Tax ID</label><input id=\"invoice-tax-id\" name=\"invoiceTaxId\" autocomplete=\"off\"></div></div><p>Tax, totals, and invoice outcomes must come from normalized provider-returned quote or invoice data.</p></section>",
+        "css": "@import '@neobrutal/commerce/styles.css';",
+        "js": "const root=document.querySelector('[data-commerce-component=\"invoice-details\"]');\nconst request=root.querySelector('[data-invoice-request]');\nconst fields=root.querySelector('[data-invoice-fields]');\nconst legalName=root.querySelector('#invoice-legal-name');\nrequest.addEventListener('change',()=>{\n  const requested=request.checked;\n  root.dataset.invoiceRequested=String(requested);\n  fields.hidden=!requested;\n  legalName.required=requested;\n  if(!requested)legalName.setCustomValidity('');\n});\nlegalName.addEventListener('input',()=>legalName.setCustomValidity(''));\nlegalName.addEventListener('invalid',()=>legalName.setCustomValidity('Enter a legal name when requesting a business invoice.'));"
+      }
+    }
+  ]
+}
