@@ -56,62 +56,35 @@ function validateInvoiceImplementation(manifest,registry){
   invoiceAssert(evidence.copyReady?.css?.trim()==="@import '@neobrutal/commerce/styles.css';",'invoice-details copy-ready CSS must use frozen public style export');
   invoiceAssert(!/createCommerceAction\s*\(/.test(evidence.copyReady?.js||''),'invoice-details copy-ready JS must not invent a Commerce action');
   invoiceAssert((evidence.copyReady?.js||'').includes('data-invoice-requested'),'invoice-details copy-ready JS must expose requested/not-requested input state');
-  invoiceAssert(!(evidence.copyReady?.js||'').match(/tax\s*=|rate\s*=|jurisdiction|invoice\.status/i),'invoice-details copy-ready JS must not calculate or infer provider-authoritative outcomes');
+  invoiceAssert(!/(tax\s*=|rate\s*=|jurisdiction|invoice\.status)/i.test(evidence.copyReady?.js||''),'invoice-details copy-ready JS must not calculate or infer provider-authoritative outcomes');
   return evidence;
 }
 
 function renderInvoiceVariantEvidence(entry){
-  const choices=entry.variants.map((variant,index)=>`<button class="cx-variant-choice nbc-tactile" type="button" data-variant-choice="${escapeInvoice(variant.id)}" aria-pressed="${index===0?'true':'false'}">${escapeInvoice(variant.label)}</button>`).join('');
-  return `<details class="cx-variant-evidence" data-component-variant-evidence data-variant-batch="invoice-details-residual"><summary><span>Variant proof</span><span>3/3</span></summary><div class="cx-variant-body"><div class="cx-variant-rendered-proof" data-variant-rendered-proof><div class="cx-variant-choices" role="group" aria-label="invoice-details rendered variants">${choices}</div><div class="cx-variant-panel" data-variant-panel data-variant-current="${escapeInvoice(entry.variants[0].id)}">${entry.variants[0].markup}</div></div></div></details>`;
+  const choices=entry.variants.map((variant,index)=>`<button class="cx-variant-choice nbc-tactile" type="button" data-invoice-variant-choice="${escapeInvoice(variant.id)}" aria-pressed="${index===0?'true':'false'}">${escapeInvoice(variant.label)}</button>`).join('');
+  return `<details class="cx-variant-evidence" data-invoice-variant-evidence data-variant-batch="invoice-details-residual"><summary><span>Residual variant proof</span><span>3/3</span></summary><div class="cx-variant-body"><div class="cx-variant-rendered-proof"><div class="cx-variant-choices" role="group" aria-label="invoice-details rendered variants">${choices}</div><div class="cx-variant-panel" data-invoice-variant-panel data-variant-current="${escapeInvoice(entry.variants[0].id)}">${entry.variants[0].markup}</div></div></div></details>`;
 }
 
 function renderInvoiceImplementationEvidence(evidence){
   const sources=evidence.sourceFiles.map(file=>`<code>${escapeInvoice(file)}</code>`).join(' · ');
   const tokens=evidence.tokens.map(token=>`<code class="cx-depth-token">${escapeInvoice(token)}</code>`).join('');
   const code=['html','css','js'].map(kind=>`<section class="cx-depth-code" data-invoice-copy-ready-kind="${kind}"><strong>${kind.toUpperCase()}</strong><pre tabindex="0"><code>${escapeInvoice(evidence.copyReady[kind])}</code></pre></section>`).join('');
-  return `<div class="cx-depth-evidence" data-invoice-implementation-evidence><div class="cx-depth-evidence-head"><div><strong>Residual implementation evidence</strong><p>Reusable invoice-request anatomy and local validation only. Tax, totals, jurisdiction, and invoice outcomes remain provider-authoritative.</p></div><span>BATCH 6 · INVOICE DETAILS RESIDUAL</span></div><div class="cx-depth-source"><strong>Sources</strong><p>${sources}</p></div><div class="cx-depth-token-list" data-invoice-token-list>${tokens}</div><div class="cx-depth-code-grid">${code}</div></div>`;
+  return `<div class="cx-depth-evidence" data-invoice-implementation-evidence><div class="cx-depth-evidence-head"><div><strong>Residual implementation evidence</strong><p>Reusable invoice-request anatomy and local validation only. Tax, totals, jurisdiction, and invoice outcomes remain provider-authoritative.</p></div><span>RESIDUAL · INVOICE DETAILS</span></div><div class="cx-depth-source"><strong>Sources</strong><p>${sources}</p></div><div class="cx-depth-token-list" data-invoice-token-list>${tokens}</div><div class="cx-depth-code-grid">${code}</div></div>`;
 }
 
 function bindInvoiceVariants(card,entry){
-  const details=card.querySelector('[data-component-variant-evidence]');
-  const panel=details?.querySelector('[data-variant-panel]');
-  const choices=[...(details?.querySelectorAll('[data-variant-choice]')||[])];
+  const details=card.querySelector('[data-invoice-variant-evidence]');
+  const panel=details?.querySelector('[data-invoice-variant-panel]');
+  const choices=[...(details?.querySelectorAll('[data-invoice-variant-choice]')||[])];
   invoiceAssert(details&&panel&&choices.length===3,'invoice-details rendered variant controls are incomplete');
   const variants=new Map(entry.variants.map(variant=>[variant.id,variant]));
   for(const choice of choices)choice.addEventListener('click',()=>{
-    const variant=variants.get(choice.dataset.variantChoice);
-    invoiceAssert(variant,`unknown invoice-details variant choice: ${choice.dataset.variantChoice}`);
+    const variant=variants.get(choice.dataset.invoiceVariantChoice);
+    invoiceAssert(variant,`unknown invoice-details variant choice: ${choice.dataset.invoiceVariantChoice}`);
     for(const peer of choices)peer.setAttribute('aria-pressed',String(peer===choice));
     panel.dataset.variantCurrent=variant.id;
     panel.innerHTML=variant.markup;
   });
-}
-
-function invoiceDepthChip(card,label){
-  return [...card.querySelectorAll('[data-component-depth-audit] .cx-depth-chip')].find(chip=>chip.textContent.trim()===label);
-}
-
-function promoteInvoiceVariantDepth(card){
-  const chip=invoiceDepthChip(card,'All variants');
-  invoiceAssert(chip?.dataset.depthStatus==='partial','invoice-details All variants audit must be partial before residual promotion');
-  const completeGroup=card.querySelector('[data-component-depth-audit] [data-depth-group="complete"] .cx-depth-chips');
-  invoiceAssert(completeGroup,'invoice-details complete audit group missing');
-  chip.dataset.depthStatus='complete';
-  completeGroup.append(chip);
-  const audit=card.querySelector('[data-component-depth-audit]');
-  for(const group of audit.querySelectorAll('[data-depth-group]')){
-    const status=group.dataset.depthGroup;
-    const count=group.querySelectorAll('.cx-depth-chip').length;
-    const heading=group.querySelector(':scope > strong');
-    if(heading)heading.textContent=`${status.replace('-', ' ')} · ${count}`;
-  }
-  const complete=audit.querySelectorAll('.cx-depth-chip[data-depth-status="complete"]').length;
-  const partial=audit.querySelectorAll('.cx-depth-chip[data-depth-status="partial"]').length;
-  const missing=audit.querySelectorAll('.cx-depth-chip[data-depth-status="missing"]').length;
-  const summary=audit.querySelector('.cx-depth-summary');
-  invoiceAssert(summary,'invoice-details audit summary missing');
-  summary.textContent=`${complete} complete · ${partial} partial · ${missing} missing`;
-  card.dataset.demoDepthPartial=String(partial);
 }
 
 async function initInvoiceDetailsEvidence(){
@@ -139,37 +112,24 @@ async function initInvoiceDetailsEvidence(){
 
     const card=document.querySelector('[data-component-card][data-component-id="invoice-details"]');
     invoiceAssert(card,'invoice-details component card missing');
-    invoiceAssert(card.dataset.demoVariantEvidence==='false','invoice-details variant evidence was already promoted');
-    invoiceAssert(!card.querySelector('[data-component-variant-evidence]'),'invoice-details already contains variant proof');
+    invoiceAssert(card.dataset.demoVariantEvidence==='false','invoice-details aggregate variant audit must remain partial in this evidence-only slice');
+    invoiceAssert(!card.querySelector('[data-invoice-variant-evidence]'),'invoice-details already contains residual variant proof');
     const depthAudit=card.querySelector('[data-component-depth-audit]');
     invoiceAssert(depthAudit,'invoice-details depth audit missing');
     depthAudit.insertAdjacentHTML('beforebegin',renderInvoiceVariantEvidence(variantEntry));
     depthAudit.insertAdjacentHTML('beforeend',renderInvoiceImplementationEvidence(implementationEvidence));
     bindInvoiceVariants(card,variantEntry);
-    card.dataset.demoVariantEvidence='true';
+    card.dataset.invoiceVariantEvidence='true';
     card.dataset.invoiceImplementationEvidence='true';
-    promoteInvoiceVariantDepth(card);
 
-    root.dataset.componentVariantInvoiceReady='true';
-    root.dataset.componentVariantInvoiceAudited='43';
-    root.dataset.componentVariantInvoiceCount='120';
-    root.dataset.componentVariantInvoiceRenderedCount='70';
-    root.dataset.componentVariantInvoiceStateBackedCount='42';
-    root.dataset.componentVariantInvoiceResponsiveBackedCount='4';
-    root.dataset.componentVariantInvoiceInteractionBackedCount='2';
-    root.dataset.componentVariantInvoiceActionBackedCount='2';
-    root.dataset.componentVariantInvoiceBatches='7';
-    root.dataset.componentDepthInvoiceReady='true';
-    root.dataset.componentDepthInvoiceVariantComplete='43';
-    root.dataset.componentDepthInvoiceVariantPartial='4';
-    root.dataset.componentImplementationInvoiceReady='true';
-    root.dataset.componentImplementationInvoiceEvidence='1';
-    root.dataset.componentImplementationCombined='44';
+    root.dataset.componentInvoiceEvidenceReady='true';
+    root.dataset.componentInvoiceVariantEvidence='3';
+    root.dataset.componentInvoiceImplementationEvidence='1';
+    root.dataset.componentInvoiceEvidenceBaseVariantStage='42/117';
+    root.dataset.componentInvoiceEvidenceBaseImplementationStage='43/5';
     document.dispatchEvent(new CustomEvent('nbc:invoice-details-evidence-ready'));
   }catch(error){
-    document.documentElement.dataset.componentVariantInvoiceReady='error';
-    document.documentElement.dataset.componentDepthInvoiceReady='error';
-    document.documentElement.dataset.componentImplementationInvoiceReady='error';
+    document.documentElement.dataset.componentInvoiceEvidenceReady='error';
     console.error(error);
   }
 }
