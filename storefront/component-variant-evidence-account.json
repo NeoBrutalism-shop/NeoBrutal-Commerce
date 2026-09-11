@@ -1,0 +1,170 @@
+{
+  "schema": "neobrutal-commerce/component-variant-evidence@4",
+  "showcaseVersion": "1.1.0",
+  "commerceVersion": "1.0.0",
+  "role": "variant-evidence-only",
+  "description": "Fifth source-audited variant-evidence shard for Account + ownership. Variant labels remain owned by storefront/component-showcase.json; canonical states, normalized models, and canonical actions remain owned by their existing frozen authorities.",
+  "proofKinds": {
+    "rendered": "Explicit declarative markup rendered inside Variant proof.",
+    "canonical-state": "References an existing canonical component state and its live state controls; no duplicate variant markup is created.",
+    "responsive-backed": "References the existing live component preview, authoritative responsive mode, and an explicit viewport proof; no duplicate variant markup is created.",
+    "interaction-backed": "References an existing interaction pattern and live component transition for a documented variant that is produced by interaction rather than static duplicate markup.",
+    "action-backed": "References a canonical Commerce action and normalized result model for a documented variant whose authoritative result must come from the adapter/runtime rather than fabricated markup."
+  },
+  "batches": [
+    {
+      "id": "account-ownership",
+      "ordinal": 5,
+      "label": "Account + ownership",
+      "componentIds": [
+        "account-nav",
+        "download-row",
+        "license-card",
+        "license-status",
+        "update-eligibility",
+        "renewal-state",
+        "plan-change",
+        "ownership-transfer",
+        "subscription-management",
+        "ownership-timeline"
+      ]
+    }
+  ],
+  "components": [
+    {
+      "id": "account-nav",
+      "batchId": "account-ownership",
+      "variants": [
+        {
+          "id": "current",
+          "label": "current",
+          "proofKind": "rendered",
+          "markup": "<nav class=\"nbc-account-nav\" data-variant-sample=\"account-nav:current\" aria-label=\"Account sample\"><a class=\"nbc-account-tab\" href=\"./account/\" aria-current=\"page\">Downloads <span>2</span></a><a class=\"nbc-account-tab\" href=\"./account/?view=purchases\">Purchases <span>4</span></a></nav>"
+        },
+        {
+          "id": "inactive",
+          "label": "inactive",
+          "proofKind": "rendered",
+          "markup": "<nav class=\"nbc-account-nav\" data-variant-sample=\"account-nav:inactive\" aria-label=\"Account sample\"><a class=\"nbc-account-tab\" href=\"./account/?view=purchases\">Purchases <span>4</span></a></nav>"
+        }
+      ]
+    },
+    {
+      "id": "download-row",
+      "batchId": "account-ownership",
+      "variants": [
+        {
+          "id": "eligible",
+          "label": "eligible",
+          "proofKind": "rendered",
+          "markup": "<article class=\"nbc-download-row\" data-variant-sample=\"download-row:eligible\"><div class=\"nbc-download-meta\"><strong>NeoBrutal Soft</strong><small>Download eligible through the current entitlement.</small></div><span class=\"nbc-download-version\">v1.0</span><button class=\"nbc-button nbc-button--primary nbc-tactile\" type=\"button\">Download</button></article>"
+        },
+        {
+          "id": "unavailable",
+          "label": "unavailable",
+          "proofKind": "rendered",
+          "markup": "<article class=\"nbc-download-row\" data-variant-sample=\"download-row:unavailable\"><div class=\"nbc-download-meta\"><strong>NeoBrutal Soft</strong><small>Download unavailable for the current normalized entitlement.</small></div><span class=\"nbc-download-version\">v1.0</span><button class=\"nbc-button nbc-tactile\" type=\"button\" disabled>Download unavailable</button></article>"
+        }
+      ]
+    },
+    {
+      "id": "license-card",
+      "batchId": "account-ownership",
+      "variants": [
+        {
+          "id": "active",
+          "label": "active",
+          "proofKind": "rendered",
+          "markup": "<article class=\"nbc-license-card\" data-variant-sample=\"license-card:active\"><div class=\"nbc-license-head\"><div><p>TEAM LICENSE</p><h3>NeoBrutal Soft</h3></div><span class=\"nbc-license-status\">Active</span></div><div class=\"nbc-license-key\"><span>NBC-SOFT-••••-1042</span></div><div class=\"nbc-license-grid\"><div class=\"nbc-license-stat\"><span>Sites</span><strong>3 / 5</strong></div><div class=\"nbc-license-stat\"><span>Seats</span><strong>4 / 5</strong></div><div class=\"nbc-license-stat\"><span>Updates</span><strong>Eligible</strong></div></div></article>"
+        },
+        {
+          "id": "limited",
+          "label": "limited",
+          "proofKind": "rendered",
+          "markup": "<article class=\"nbc-license-card\" data-variant-sample=\"license-card:limited\"><div class=\"nbc-license-head\"><div><p>TEAM LICENSE</p><h3>NeoBrutal Soft</h3></div><span class=\"nbc-license-status nbc-license-status--warning\">Capacity limited</span></div><div class=\"nbc-license-key\"><span>NBC-SOFT-••••-1042</span></div><div class=\"nbc-license-grid\"><div class=\"nbc-license-stat\"><span>Sites</span><strong>5 / 5</strong></div><div class=\"nbc-license-stat\"><span>Seats</span><strong>5 / 5</strong></div><div class=\"nbc-license-stat\"><span>Consequence</span><strong>Current capacity reached</strong></div></div></article>"
+        },
+        {
+          "id": "expired-context",
+          "label": "expired context",
+          "proofKind": "rendered",
+          "markup": "<article class=\"nbc-license-card\" data-variant-sample=\"license-card:expired-context\"><div class=\"nbc-license-head\"><div><p>TEAM LICENSE</p><h3>NeoBrutal Soft</h3></div><span class=\"nbc-license-status nbc-license-status--expired\">Expired</span></div><div class=\"nbc-license-key\"><span>NBC-SOFT-••••-1042</span></div><div class=\"nbc-license-grid\"><div class=\"nbc-license-stat\"><span>Sites</span><strong>3 / 5</strong></div><div class=\"nbc-license-stat\"><span>Updates</span><strong>Unavailable</strong></div><div class=\"nbc-license-stat\"><span>Next step</span><strong>Review renewal eligibility</strong></div></div></article>"
+        }
+      ]
+    },
+    {
+      "id": "license-status",
+      "batchId": "account-ownership",
+      "variants": [
+        {"id": "active", "label": "active", "proofKind": "canonical-state", "stateId": "active"},
+        {"id": "grace", "label": "grace", "proofKind": "canonical-state", "stateId": "grace"},
+        {"id": "expired", "label": "expired", "proofKind": "canonical-state", "stateId": "expired"},
+        {"id": "cancelled", "label": "cancelled", "proofKind": "canonical-state", "stateId": "cancelled"},
+        {"id": "refunded", "label": "refunded", "proofKind": "canonical-state", "stateId": "refunded"}
+      ]
+    },
+    {
+      "id": "update-eligibility",
+      "batchId": "account-ownership",
+      "variants": [
+        {"id": "active", "label": "active", "proofKind": "canonical-state", "stateId": "active"},
+        {"id": "grace", "label": "grace", "proofKind": "canonical-state", "stateId": "grace"},
+        {"id": "expired", "label": "expired", "proofKind": "canonical-state", "stateId": "expired"}
+      ]
+    },
+    {
+      "id": "renewal-state",
+      "batchId": "account-ownership",
+      "variants": [
+        {"id": "active", "label": "active", "proofKind": "canonical-state", "stateId": "active"},
+        {"id": "grace", "label": "grace", "proofKind": "canonical-state", "stateId": "grace"},
+        {"id": "expired", "label": "expired", "proofKind": "canonical-state", "stateId": "expired"},
+        {"id": "cancelled", "label": "cancelled", "proofKind": "canonical-state", "stateId": "cancelled"},
+        {"id": "past-due", "label": "past_due", "proofKind": "canonical-state", "stateId": "past_due"}
+      ]
+    },
+    {
+      "id": "plan-change",
+      "batchId": "account-ownership",
+      "variants": [
+        {"id": "ready", "label": "ready", "proofKind": "canonical-state", "stateId": "ready"},
+        {"id": "quoted", "label": "quoted", "proofKind": "canonical-state", "stateId": "quoted"},
+        {"id": "processing", "label": "processing", "proofKind": "canonical-state", "stateId": "processing"},
+        {"id": "complete", "label": "complete", "proofKind": "canonical-state", "stateId": "complete"},
+        {"id": "failed", "label": "failed", "proofKind": "canonical-state", "stateId": "failed"}
+      ]
+    },
+    {
+      "id": "ownership-transfer",
+      "batchId": "account-ownership",
+      "variants": [
+        {"id": "ready", "label": "ready", "proofKind": "canonical-state", "stateId": "ready"},
+        {"id": "processing", "label": "processing", "proofKind": "canonical-state", "stateId": "processing"},
+        {"id": "complete", "label": "complete", "proofKind": "canonical-state", "stateId": "complete"},
+        {"id": "failed", "label": "failed", "proofKind": "canonical-state", "stateId": "failed"},
+        {"id": "pending-invitation", "label": "pending invitation", "proofKind": "action-backed", "actionId": "license.transfer.create", "resultModel": "OwnershipTransferView", "selectors": ["input", "button"]}
+      ]
+    },
+    {
+      "id": "subscription-management",
+      "batchId": "account-ownership",
+      "variants": [
+        {"id": "active", "label": "active", "proofKind": "canonical-state", "stateId": "active"},
+        {"id": "cancel-at-period-end", "label": "cancel_at_period_end", "proofKind": "canonical-state", "stateId": "cancel_at_period_end"},
+        {"id": "cancelled", "label": "cancelled", "proofKind": "canonical-state", "stateId": "cancelled"},
+        {"id": "past-due", "label": "past_due", "proofKind": "canonical-state", "stateId": "past_due"}
+      ]
+    },
+    {
+      "id": "ownership-timeline",
+      "batchId": "account-ownership",
+      "variants": [
+        {
+          "id": "chronological-event-list",
+          "label": "chronological event list",
+          "proofKind": "rendered",
+          "markup": "<ol class=\"nbc-timeline\" data-variant-sample=\"ownership-timeline:chronological-event-list\" aria-label=\"Supplied ownership history\"><li><strong>Provider-returned event A</strong><small>Supplied occurredAt value A</small></li><li><strong>Provider-returned event B</strong><small>Supplied occurredAt value B</small></li></ol>"
+        }
+      ]
+    }
+  ]
+}

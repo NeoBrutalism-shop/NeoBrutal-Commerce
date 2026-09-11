@@ -10,11 +10,11 @@ const required=[
   'AGENTS.md','LLMS.md','COMPONENTS.md',
   'docs/ADOPTION.md','docs/AGENT-PLAYBOOK.md','docs/AI-COMPONENT-NOTES.md',
   'docs/RECIPES.md','docs/THEMING.md','docs/MIGRATION.md','docs/PROVIDER-EXAMPLES.md','docs/RELEASE-CANDIDATE.md','docs/PUBLIC-RELEASE.md',
-  'docs/V1.1-COMPONENT-DEMO-DEPTH-AUDIT.md',
-  'storefront/components.json','storefront/component-showcase.json','storefront/component-states.json','storefront/component-demo-depth.json','storefront/component-variant-evidence.json',
+  'docs/V1.1-COMPONENT-DEMO-DEPTH-AUDIT.md','docs/V1.1-ACCOUNT-VARIANT-EVIDENCE.md',
+  'storefront/components.json','storefront/component-showcase.json','storefront/component-states.json','storefront/component-demo-depth.json','storefront/component-demo-depth-account.json','storefront/component-variant-evidence.json','storefront/component-variant-evidence-account.json',
   'storefront/component-demo-implementation.json','storefront/component-demo-implementation-product.json','storefront/component-demo-implementation-trust-pricing.json','storefront/component-demo-implementation-cart-checkout.json','storefront/component-demo-implementation-account-ownership.json','storefront/blocks.json',
-  'component-depth-audit.js','component-depth-audit.css','component-variant-evidence.js','component-variant-evidence.css',
-  'tests/component-demo-depth-v11.spec.mjs','tests/component-variant-evidence-v11.spec.mjs','scripts/component-demo-implementation-check.mjs','scripts/component-variant-evidence-check.mjs'
+  'component-depth-audit.js','component-depth-variant-extension.js','component-depth-audit.css','component-variant-evidence.js','component-variant-evidence.css',
+  'tests/component-demo-depth-v11.spec.mjs','tests/component-variant-evidence-v11.spec.mjs','tests/component-variant-evidence-account-v11.spec.mjs','scripts/component-demo-implementation-check.mjs','scripts/component-variant-evidence-check.mjs','scripts/component-variant-evidence-account-check.mjs','scripts/component-demo-depth-account-check.mjs'
 ];
 for(const file of required)if(!fs.existsSync(path.join(root,file)))fail(`Missing adoption file: ${file}`);
 
@@ -22,6 +22,7 @@ const manifest=json('storefront/components.json');
 const showcase=json('storefront/component-showcase.json');
 const stateExamples=json('storefront/component-states.json');
 const demoDepth=json('storefront/component-demo-depth.json');
+const accountDepthExtension=json('storefront/component-demo-depth-account.json');
 const blocks=json('storefront/blocks.json');
 const packageManifest=json('package.json');
 const routes=json('storefront/routes.json');
@@ -37,6 +38,8 @@ for(const route of routes.routes)for(const id of route.primaryComponents||[])if(
 if(showcase.schema!=='neobrutal-commerce/component-showcase@1'||showcase.showcaseVersion!=='1.1.0'||showcase.commerceVersion!==packageManifest.version)fail('v1.1 component showcase contract is missing or version-inconsistent');
 if(stateExamples.schema!=='neobrutal-commerce/component-states@1'||stateExamples.showcaseVersion!=='1.1.0'||stateExamples.commerceVersion!==packageManifest.version)fail('v1.1 component state showcase contract is missing or version-inconsistent');
 if(demoDepth.schema!=='neobrutal-commerce/component-demo-depth@1'||demoDepth.showcaseVersion!=='1.1.0'||demoDepth.commerceVersion!==packageManifest.version||demoDepth.role!=='audit-evidence-only')fail('v1.1 component demo depth audit is missing or version-inconsistent');
+if(accountDepthExtension.schema!=='neobrutal-commerce/component-demo-depth-extension@1'||accountDepthExtension.showcaseVersion!=='1.1.0'||accountDepthExtension.commerceVersion!==packageManifest.version||accountDepthExtension.role!=='audit-evidence-extension')fail('v1.1 Account demo depth extension is missing or version-inconsistent');
+if(accountDepthExtension.combinedComplete!==38||accountDepthExtension.combinedPartial!==9)fail('v1.1 Account demo depth extension must report 38 complete / 9 partial variants');
 if(blocks.schema!=='neobrutal-commerce/blocks@1'||blocks.showcaseVersion!=='1.1.0'||blocks.commerceVersion!==packageManifest.version)fail('v1.1 blocks showcase contract is missing or version-inconsistent');
 
 const canonicalActions=new Set(manifest.canonicalActions||[]);
@@ -98,22 +101,27 @@ for(const [id,resolved] of resolvedDepth){
 const depthCounts=Object.fromEntries(expectedDepthCriteria.map(criterion=>[criterion,Object.fromEntries(allowedDepthStatuses.map(status=>[status,0]))]));
 for(const resolved of resolvedDepth.values())for(const criterion of expectedDepthCriteria)depthCounts[criterion][resolved[criterion]]++;
 if(depthCounts.preview.complete!==47||depthCounts.accessibility.complete!==47)fail('Existing 47/47 preview and accessibility coverage must remain complete');
-if(depthCounts.variants.complete!==28||depthCounts.variants.partial!==19)fail('Variant audit must remain exact at 28 complete / 19 partial for the accumulated storefront + Product/trust + Pricing + Cart/checkout proof batches');
+if(depthCounts.variants.complete!==28||depthCounts.variants.partial!==19)fail('Certified four-batch base variant audit must remain exact at 28 complete / 19 partial before the Account extension is applied');
 if(depthCounts['canonical-states'].complete!==12||depthCounts['canonical-states']['not-applicable']!==35)fail('Canonical-state audit must remain 12 complete / 35 not-applicable until the frozen registry changes');
 if(depthCounts.actions.complete!==16||depthCounts.actions['not-applicable']!==31)fail('Action-contract audit must remain 16 complete / 31 not-applicable until the frozen registry changes');
 if(depthCounts.tokens.complete!==43||depthCounts.tokens.missing!==4||depthCounts['copy-ready'].complete!==43||depthCounts['copy-ready'].missing!==4)fail('Accumulated demo implementation evidence must remain exact at 43 complete / 4 missing for token and copy-ready criteria');
 
 const depthClient=read('component-depth-audit.js');
+const depthExtensionClient=read('component-depth-variant-extension.js');
 const depthCss=read('component-depth-audit.css');
 const depthBrowser=read('tests/component-demo-depth-v11.spec.mjs');
 const variantBrowser=read('tests/component-variant-evidence-v11.spec.mjs');
+const accountVariantBrowser=read('tests/component-variant-evidence-account-v11.spec.mjs');
 try{new Function(depthClient)}catch(error){fail(`component-depth-audit.js syntax error: ${error.message}`)}
+try{new Function(depthExtensionClient)}catch(error){fail(`component-depth-variant-extension.js syntax error: ${error.message}`)}
 if(/transition\s*:\s*all/i.test(depthCss)||/:hover[^\{]*\{[^\}]*translate(?:Y)?\(\s*-/i.test(depthCss))fail('Component demo depth UI violates motion/tactile laws');
 for(const marker of ['component-demo-depth.json','implementationBatches','data-component-depth-audit','dataset.componentDepthReady','dataset.componentImplementationAudited','dataset.componentImplementationBatches','data-demo-depth-first-batch'])if(!depthClient.includes(marker))fail(`Component demo depth runtime missing marker: ${marker}`);
+for(const marker of ['component-demo-depth-account.json','componentDepthAccountReady','componentDepthVariantComplete','componentDepthVariantPartial','All variants'])if(!depthExtensionClient.includes(marker))fail(`Component depth extension runtime missing marker: ${marker}`);
 for(const marker of ['47*13','data-demo-depth-first-batch','data-demo-depth-batch','Canonical states','Action contracts','Design tokens used','Copy-ready HTML / CSS / JS','AxeBuilder','43','trust-review-pricing','cart-checkout','account-ownership'])if(!depthBrowser.includes(marker))fail(`Component demo depth Browser QA missing marker: ${marker}`);
-for(const marker of ['65','48','10','4','2','1','data-component-variant-evidence','data-variant-choice','data-variant-current','data-variant-state-ref','data-variant-responsive-ref','data-variant-interaction-ref','data-variant-action-ref','data-responsive-mode','data-responsive-viewport','data-showcase-state','data-media-state','AxeBuilder','aria-pressed','product-card','trust-strip','promo-band','badge','price-block','product-detail','product-gallery','product-media','review-summary','testimonials','guarantee','license-selector','renewal-note','pricing-tier','plan-comparison','bundle-builder','cart-item','order-summary','coupon','checkout-field','checkout-steps','payment-method','payment-failure','payment-recovery','processing-state','order-confirmation','receipt','download-entitlement'])if(!variantBrowser.includes(marker))fail(`Component variant evidence Browser QA missing marker: ${marker}`);
+for(const marker of ['100','56','36','4','2','data-component-variant-evidence','data-variant-choice','data-variant-current','data-variant-state-ref','data-variant-responsive-ref','data-variant-interaction-ref','data-variant-action-ref','data-responsive-mode','data-responsive-viewport','data-showcase-state','data-media-state','AxeBuilder','aria-pressed','product-card','trust-strip','promo-band','badge','price-block','product-detail','product-gallery','product-media','review-summary','testimonials','guarantee','license-selector','renewal-note','pricing-tier','plan-comparison','bundle-builder','cart-item','order-summary','coupon','checkout-field','checkout-steps','payment-method','payment-failure','payment-recovery','processing-state','order-confirmation','receipt','download-entitlement'])if(!variantBrowser.includes(marker))fail(`Component variant evidence Browser QA missing marker: ${marker}`);
+for(const marker of ['38','100','56','36','account-nav','download-row','license-card','license-status','update-eligibility','renewal-state','plan-change','ownership-transfer','subscription-management','ownership-timeline','purchase-history-row','invoice-history','activation-row','seat-assignment','pending-invitation','license.transfer.create','OwnershipTransferView','AxeBuilder'])if(!accountVariantBrowser.includes(marker))fail(`Account variant evidence Browser QA missing marker: ${marker}`);
 const explorerHtml=read('components.html');
-for(const marker of ['./component-depth-audit.css','./component-depth-audit.js','./component-variant-evidence.css','./component-variant-evidence.js','demo-depth audit'])if(!explorerHtml.includes(marker))fail(`components.html missing component demo depth marker: ${marker}`);
+for(const marker of ['./component-depth-audit.css','./component-depth-audit.js','./component-depth-variant-extension.js','./component-variant-evidence.css','./component-variant-evidence.js','demo-depth audit'])if(!explorerHtml.includes(marker))fail(`components.html missing component demo depth marker: ${marker}`);
 
 const componentsDoc=read('COMPONENTS.md');
 const documentedBlockCount=`${blocks.blocks.length} / ${blocks.blocks.length}`;
@@ -123,6 +131,9 @@ for(const block of blocks.blocks)if(!componentsDoc.includes(`\`${block.id}\``))f
 const depthDoc=read('docs/V1.1-COMPONENT-DEMO-DEPTH-AUDIT.md');
 for(const marker of ['v1.1 Component demo depth audit','audit evidence only','47','12','43','4','28','All variants','19','65','48','10','4','2','1','canonical-state','responsive-backed','interaction-backed','action-backed','Design tokens used','Copy-ready HTML / CSS / JS','First implementation-depth batch','Second implementation-depth batch','Third implementation-depth batch','Fourth implementation-depth batch','Fifth implementation-depth batch','First variant-evidence batch','Second variant-evidence batch','Third variant-evidence batch','Fourth variant-evidence batch','Product + trust','Pricing','Cart + checkout','contained-scroll','result-feedback','download.create','SignedDownloadView','invoice-details','storefront/component-demo-depth.json','storefront/component-variant-evidence.json','storefront/component-demo-implementation.json','storefront/component-demo-implementation-product.json','storefront/component-demo-implementation-trust-pricing.json','storefront/component-demo-implementation-cart-checkout.json','storefront/component-demo-implementation-account-ownership.json'])if(!depthDoc.includes(marker))fail(`Component demo depth audit doc missing marker: ${marker}`);
 for(const batch of batches)for(const id of batch.componentIds)if(!depthDoc.includes(`\`${id}\``))fail(`Component demo depth audit doc missing batch component: ${id}`);
+
+const accountVariantDoc=read('docs/V1.1-ACCOUNT-VARIANT-EVIDENCE.md');
+for(const marker of ['Account + ownership variant evidence','38 / 47','100 authoritative variants','56 rendered','36 canonical-state-backed','4 responsive-backed','2 interaction-backed','2 action-backed','storefront/component-variant-evidence-account.json','storefront/component-demo-depth-account.json','account-nav','download-row','license-card','license-status','update-eligibility','renewal-state','plan-change','ownership-transfer','subscription-management','ownership-timeline','purchase-history-row','invoice-history','activation-row','seat-assignment','pending invitation','license.transfer.create','OwnershipTransferView','past_due','cancel_at_period_end'])if(!accountVariantDoc.includes(marker))fail(`Account variant evidence report missing marker: ${marker}`);
 
 const agents=read('AGENTS.md');
 for(const marker of ['storefront/components.json','docs/AGENT-PLAYBOOK.md','docs/AI-COMPONENT-NOTES.md','Read before write','Do not guess'])if(!agents.includes(marker))fail(`AGENTS.md missing adoption marker: ${marker}`);
@@ -144,4 +155,4 @@ for(const marker of ['createEddCommerceAdapter','createLicensingBridgeAdapter','
 await import('./component-demo-implementation-check.mjs');
 await import('./component-variant-evidence-check.mjs');
 const documentedStates=stateExamples.components.reduce((sum,component)=>sum+component.states.length,0);
-console.log(`NeoBrutal Commerce v1.0 adoption docs + Showcase v1.1 passed · ${manifest.components.length} components · ${blocks.blocks.length} blocks · ${documentedStates} live states · ${routes.routes.length} production routes · component demo depth audit ${depthComponents.length}/${manifest.components.length} · implementation evidence ${implementationIds.length}/47 · variant evidence 28/47`);
+console.log(`NeoBrutal Commerce v1.0 adoption docs + Showcase v1.1 passed · ${manifest.components.length} components · ${blocks.blocks.length} blocks · ${documentedStates} live states · ${routes.routes.length} production routes · component demo depth audit ${depthComponents.length}/${manifest.components.length} · implementation evidence ${implementationIds.length}/47 · certified base variant evidence 28/47 · Account extension ${accountDepthExtension.combinedComplete}/47`);

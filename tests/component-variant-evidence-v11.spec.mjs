@@ -51,15 +51,18 @@ const RENDERED_BATCHES={
 const waitForVariantEvidence=async page=>{
   await expect(page.locator('html')).toHaveAttribute('data-showcase-ready','true');
   await expect(page.locator('html')).toHaveAttribute('data-component-variant-ready','true');
-  await expect(page.locator('html')).toHaveAttribute('data-component-variant-audited','28');
-  await expect(page.locator('html')).toHaveAttribute('data-component-variant-count','65');
-  await expect(page.locator('html')).toHaveAttribute('data-component-variant-rendered-count','48');
-  await expect(page.locator('html')).toHaveAttribute('data-component-variant-state-backed-count','10');
+  await expect(page.locator('html')).toHaveAttribute('data-component-variant-audited','38');
+  await expect(page.locator('html')).toHaveAttribute('data-component-variant-count','100');
+  await expect(page.locator('html')).toHaveAttribute('data-component-variant-rendered-count','56');
+  await expect(page.locator('html')).toHaveAttribute('data-component-variant-state-backed-count','36');
   await expect(page.locator('html')).toHaveAttribute('data-component-variant-responsive-backed-count','4');
   await expect(page.locator('html')).toHaveAttribute('data-component-variant-interaction-backed-count','2');
-  await expect(page.locator('html')).toHaveAttribute('data-component-variant-action-backed-count','1');
-  await expect(page.locator('html')).toHaveAttribute('data-component-variant-batches','4');
+  await expect(page.locator('html')).toHaveAttribute('data-component-variant-action-backed-count','2');
+  await expect(page.locator('html')).toHaveAttribute('data-component-variant-batches','5');
   await expect(page.locator('html')).toHaveAttribute('data-component-depth-ready','true');
+  await expect(page.locator('html')).toHaveAttribute('data-component-depth-account-ready','true');
+  await expect(page.locator('html')).toHaveAttribute('data-component-depth-variant-complete','38');
+  await expect(page.locator('html')).toHaveAttribute('data-component-depth-variant-partial','9');
 };
 
 const loadVariantExplorer=async page=>{
@@ -95,18 +98,18 @@ const exerciseRenderedVariant=async(details,panel,id,variant)=>{
   await expect(panel.locator(`[data-variant-sample="${id}:${variant}"]`)).toHaveCount(1);
 };
 
-test('v1.1 accumulated variant evidence exposes 65 authoritative variants across five proof kinds',async({page})=>{
+test('v1.1 accumulated variant evidence exposes 100 authoritative variants across five proof kinds',async({page})=>{
   const runtimeFailures=collectRuntimeFailures(page);
   await loadVariantExplorer(page);
   await expect(page.locator('[data-component-card]')).toHaveCount(47);
-  await expect(page.locator('[data-component-card][data-demo-variant-evidence="true"]')).toHaveCount(28);
-  await expect(page.locator('[data-component-card][data-demo-variant-evidence="false"]')).toHaveCount(19);
-  await expect(page.locator('[data-component-variant-evidence]')).toHaveCount(28);
-  await expect(page.locator('[data-variant-choice]')).toHaveCount(48);
-  await expect(page.locator('[data-variant-state-ref]')).toHaveCount(10);
+  await expect(page.locator('[data-component-card][data-demo-variant-evidence="true"]')).toHaveCount(38);
+  await expect(page.locator('[data-component-card][data-demo-variant-evidence="false"]')).toHaveCount(9);
+  await expect(page.locator('[data-component-variant-evidence]')).toHaveCount(38);
+  await expect(page.locator('[data-variant-choice]')).toHaveCount(56);
+  await expect(page.locator('[data-variant-state-ref]')).toHaveCount(36);
   await expect(page.locator('[data-variant-responsive-ref]')).toHaveCount(4);
   await expect(page.locator('[data-variant-interaction-ref]')).toHaveCount(2);
-  await expect(page.locator('[data-variant-action-ref]')).toHaveCount(1);
+  await expect(page.locator('[data-variant-action-ref]')).toHaveCount(2);
   expect(runtimeFailures).toEqual([]);
 });
 
