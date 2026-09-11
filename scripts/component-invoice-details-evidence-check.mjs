@@ -78,7 +78,7 @@ for(const kind of ['html','css','js'])if(typeof copy[kind]!=='string'||!copy[kin
 if(!copy.html.includes('data-commerce-component="invoice-details"')||!copy.html.includes('data-invoice-request')||!copy.html.includes('autocomplete="organization"'))fail('copy-ready invoice HTML lacks stable request/input anatomy');
 if(copy.css.trim()!=="@import '@neobrutal/commerce/styles.css';")fail('copy-ready CSS must use frozen public styles export');
 if(/createCommerceAction\s*\(/.test(copy.js))fail('actionless invoice-details must not invent a Commerce action');
-if(!copy.js.includes('data-invoice-requested')||!copy.js.includes('setCustomValidity')||!copy.js.includes('legalName.required=requested'))fail('copy-ready JS must model request visibility and recoverable local validation');
+if(!copy.js.includes('dataset.invoiceRequested')||!copy.js.includes('setCustomValidity')||!copy.js.includes('legalName.required=requested'))fail('copy-ready JS must model request visibility and recoverable local validation');
 if(/tax\s*=|rate\s*=|jurisdiction|invoice\.status|stripe|woocommerce|easy digital downloads/i.test(copy.js))fail('copy-ready JS leaked provider-specific or provider-authoritative outcome logic');
 const temp=fs.mkdtempSync(path.join(os.tmpdir(),'nbc-invoice-evidence-'));
 try{
