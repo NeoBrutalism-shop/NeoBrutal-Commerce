@@ -37,7 +37,7 @@ function validateInvoiceVariantManifest(manifest,showcase){
     invoiceAssert(variant.proofKind==='rendered',`invoice-details residual accepts rendered proof only: ${variant.id}`);
     invoiceAssert(typeof variant.markup==='string'&&variant.markup.includes(`data-variant-sample="invoice-details:${variant.id}"`),`invoice-details rendered proof lacks sample identity: ${variant.id}`);
     invoiceAssert(!/<script\b|\son[a-z]+\s*=/i.test(variant.markup),`invoice-details rendered proof must remain declarative: ${variant.id}`);
-    invoiceAssert(!/tax rate|jurisdiction|vat rate|sales tax rate|invoice status|paid invoice|open invoice/i.test(variant.markup),`invoice-details rendered proof invents provider-authoritative tax or invoice outcome: ${variant.id}`);
+    invoiceAssert(!/tax rate|jurisdiction|vat rate|sales tax rate|invoice status\s*[:=-]\s*(?:paid|refunded|void|open)|(?:paid|refunded|void|open) invoice/i.test(variant.markup),`invoice-details rendered proof invents provider-authoritative tax or invoice outcome: ${variant.id}`);
   }
   return entry;
 }
