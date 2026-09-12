@@ -57,7 +57,7 @@
     }
   },
   "scripts": {
-    "check": "npm run check:static && npm run check:showcase && npm run check:showcase-hardening && npm run check:pages && npm run check:interactions && npm run check:agents && npm run check:docs && npm run check:account-variants && npm run check:system-variants && npm run check:package && npm run check:release && npm run test:contracts && npm run test:renderers && npm run test:actions && npm run test:integrations && npm run test:ownership && npm run test:performance",
+    "check": "npm run check:static && npm run check:showcase && npm run check:showcase-hardening && npm run check:pages && npm run check:interactions && npm run check:agents && npm run check:docs && npm run check:account-variants && npm run check:system-variants && npm run check:invoice-details-evidence && npm run check:package && npm run check:release && npm run test:contracts && npm run test:renderers && npm run test:actions && npm run test:integrations && npm run test:ownership && npm run test:performance",
     "check:static": "node scripts/check.mjs",
     "check:showcase": "node scripts/showcase-check.mjs",
     "check:showcase-hardening": "node scripts/showcase-hardening-check.mjs",
@@ -67,6 +67,7 @@
     "check:docs": "node scripts/docs-check.mjs",
     "check:account-variants": "node scripts/component-variant-evidence-account-check.mjs && node scripts/component-demo-depth-account-check.mjs",
     "check:system-variants": "node scripts/component-variant-evidence-system-check.mjs && node scripts/component-demo-depth-system-check.mjs",
+    "check:invoice-details-evidence": "node scripts/component-invoice-details-evidence-check.mjs",
     "check:release": "node scripts/release-check.mjs",
     "test:contracts": "node --test tests/contracts-v05.test.mjs tests/reference-adapter-v05.test.mjs",
     "test:renderers": "node --test tests/renderers-v05.test.mjs",
