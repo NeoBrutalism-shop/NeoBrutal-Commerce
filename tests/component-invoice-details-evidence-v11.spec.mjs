@@ -99,7 +99,7 @@ test('v1.1 invoice-details residual implementation proof is source-backed, copy-
   await expect(evidence.locator('[data-invoice-copy-ready-kind="html"]')).toContainText('data-commerce-component="invoice-details"');
   await expect(evidence.locator('[data-invoice-copy-ready-kind="html"]')).toContainText('autocomplete="organization"');
   const js=evidence.locator('[data-invoice-copy-ready-kind="js"]');
-  await expect(js).toContainText('data-invoice-requested');
+  await expect(js).toContainText('dataset.invoiceRequested');
   await expect(js).toContainText('setCustomValidity');
   await expect(js).not.toContainText('createCommerceAction');
   await expect(evidence).toContainText('provider-authoritative');
